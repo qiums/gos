@@ -1,0 +1,67 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="{$config[base][charset]}" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="robots" content="index, follow" />
+<title>{echo trim($pagetitle.'-'.$lang[site_name], '-')}</title>
+<link type="text/css" href="images/layout.css" rel="stylesheet" />
+<!--[if lt IE 9]><script type="text/javascript" src="0/scripts/html5.js"></script><![endif]-->
+<script type="text/javascript" src="0/js/jquery-1.10.1.min.js"></script>
+<script type="text/javascript" src="0/js/jquery.dialog.js"></script>
+<script type="text/javascript" src="0/js/jquery.form.js"></script>
+<script type="text/javascript">
+(function($){
+	jQuery.G=eval('({echo json_encode($config[env])})');
+})(jQuery);
+</script>
+</head>
+<body class="login-page lang-{$config[site][language]}">
+<div class="login-boxes">
+  <h1>{:lang('site_name')} - {:lang('supe_panel')}</h1>
+  <div class="login-form">
+    <form action="admin/home/login" method="post" name="theForm" autocomplete="off">
+    <!--{echo $this->form->hidden('qcurl','', $G[url])}-->
+    <!--{loop $form $one}-->
+    <div class="formline">
+      {$one[label]}
+      {$one[ele]}
+    </div>
+    <!--{/loop}-->
+    <div class="formline formbtn">
+      <button type="submit" class="btn btn-primary">{:lang('button.login')}</button>
+    </div>
+    </form>
+  </div>
+</div>
+<script type="text/javascript">
+$(function(){
+	$('input#qc-text-username').each(
+	function(){
+		if ($(this).val()!=='') $(this).attr('readonly', true).addClass('uneditable-input');
+	});
+	$('input#qc-text-captcha').one('focus.showcaptcha',
+	function(){
+		var src='{echo url("home/captcha")}',
+		span=$('<img>',{src:src})
+			.wrap('<span class="captcha-boxes"></span>').parent();
+		$('<a href="#">{:lang("refresh_captcah")}</a>').bind('click.recaptcha', {me: this},
+		function(e){
+			$(this).siblings('img').attr('src', src+(src.indexOf('?')==-1?'?':'&')+Math.random());
+			e.data.me.focus();
+			return false;
+		}).appendTo(span);
+		span.insertAfter(this);
+	}).parent().css('position', 'relative');
+	$('form').saveForm(function(res){
+		if (1 !== res.code) return false;
+		$.dialog('<strong>'+(res.message.replace('[username]',$('#qc-text-username').val()))+'</strong>',
+			{width:400, buttons:{'{:lang("button.continue")}': $('#qc-hidden-url').val()?$('#qc-input-hidden-url').val():'{echo url("admin")}'}});
+		return false;
+	});
+	/*$('form').ckBlur().ckSubmit();*/
+});
+</script>
+</body>
+</html>

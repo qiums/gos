@@ -1,0 +1,178 @@
+<!--{if !$_ENV[ajaxreq]}-->
+{template header}
+<!--{/if}-->
+    <div class="infos" style="display:;">
+        <div class="info_l formdiv">
+            <h2>Already Registered with Guide of Shanghai?<span>Please Sign In.</span></h2>
+            <form action="user/home/login" method="post" name="theForm" autocomplete="off">
+            <!--{echo $this->form->hidden('qcurl','', $G[url])}-->
+            <!--{loop $loginform $one}-->
+            <div class="formline">
+              {$one[label]}
+              {$one[ele]}
+            </div>
+            <!--{/loop}-->
+            <div class="formbtn queding1">
+              <button type="submit" class="qd">LOGIN</button>
+            </div>
+            </form>
+            <div class="no-account">
+            	<h2>Forgot your Password?</h2>
+                <p class="info-rp">We will send your password to the email address associated with your account. </p>
+                <div class="queding3">
+                    <input type="button" class="qd3" value="Get Password"> 
+                </div>
+            </div>
+        </div>
+        
+        <div class="info_r">
+            <h2>Not Registered Yet? Signing up is easy!</h2>
+            <p class="info-rp">As a member you can join the free dating, upload housing ads, write reviews and more</p>
+            <form action="user/home/signup" method="post" name="theForm" autocomplete="off">
+            <!--{echo $this->form->hidden('qcurl','', $G[url])}-->
+            <!--{loop $regform $one}-->
+            <div class="formline">
+              {$one[label]}
+              {$one[ele]}
+            </div>
+            <!--{/loop}-->
+            <div class="formline queding2">
+              <button type="submit" class="qd2">Sign Up</button>
+            </div>
+            </form>
+        </div>
+    </div>
+    
+    <div class="send-email" style="display:none;"><!--点击GetPassword后出现，上面内容隐藏-->
+        <div class="info_r">
+            <h2>Lost Password Recovery Form</h2>
+            <p class="info-rp">If you have forgotten your username or password, you can request to have your password emailed to your registered email address.</p>
+            <table class="m_info">
+                <tr>
+                    <td class="wid2">Email:</td>
+                    <td>
+                        <input class="" name="" type="text" value="" />
+                    </td>
+                </tr>
+            </table>
+            <div class="queding2">
+                <input type="button" class="qd2" value="Send Password" onMouseOver="this.className='qd2_'" onMouseOut="this.className='qd2'"> 
+            </div>
+        </div>
+    </div>    
+<script type="text/javascript">
+function captcha(){
+	$('li.captcha-line').remove();
+	var li=$('<li>',{'class':'captcha-line'}).append('<label for="ele-reg-captcha">Captcha?</label>'),
+		ele=$('<input>',{name:'captcha',type:'text','class':'req-string minlength4',maxlength:4})
+			.appendTo(li);
+	ele.one('focus.showcaptcha',
+	function(){
+		var src='{echo url("dir=&plug=captcha")}',
+		span=$('<img>',{src:src})
+			.wrap('<span class="captchabox"></span>').parent();
+		$('<a href="#">Refresh</a>').bind('click.recaptcha',
+		function(){
+			$(this).siblings('img').attr('src', src+(src.indexOf('?')==-1?'?':'&')+Math.random());
+			ele[0].focus();
+			return false;
+		}).appendTo(span);
+		span.insertAfter(this);
+	});
+	li.insertBefore($(this).parent().siblings('.cmdline:first'));
+};
+function login(res){
+	if (1 !== res.code) return false;
+	$.dialog('<strong>'+('{lang login_success}'.replace('[username]',$('#qc-text-username').val()))+'</strong>',
+		{width:350, buttons:{'{:lang("button.continue")}': $('#qc-input-hidden-url').val()?$('#qc-input-hidden-url').val():'{echo url("user")}'}});
+	return '';
+};
+function signup(s){
+	if (s.error){
+		captcha.call($('#ele-text-username')[0]);
+		return s;
+	}
+	$('.regfb').prev().hide()
+		.end().replaceWith('<fieldset>'
+			+'<legend>{$lang["register_success"]}</legend>'
+			+'<div class="divtip"><p>'+s.ok+'</p>{if $module_conf[special_group]}<p>{$crmail}</p>{/if}<p><a href="{echo url("member")}">&laquo; Jump to user center</p></div>'
+			+'</fieldset>');
+	return false;
+};
+function resetpass(s){
+	if (s.error){
+		captcha.call($('#ele-find-username')[0]);
+		return s;
+	}
+	/*{if 'reset'==$do}*/
+	$('.findfb').prev().hide()
+		.end().replaceWith('<fieldset>'
+			+'<legend>{$lang["resetpass_finish"]}</legend>'
+			+'<div class="divtip"><p>'+s.ok+'</p><p><a href="{echo url("member")}">Login now!</a></p></div>'
+			+'</fieldset>');
+	/*{else}*/
+	$('.findfb').prev().hide()
+		.end().replaceWith('<fieldset>'
+			+'<legend>{$lang["resetpass_request_success"]}</legend>'
+			+'<div class="divtip"><p>'+s.ok+'</p><p>{$crmail}</p></div>'
+			+'</fieldset>');/*{/if}*/
+	return false;
+};
+function ckfield(form){
+	var c=true,rs={formhash:'{$formhash}'};
+	$('[name=username],[name=email]',form)
+	.each(function(){
+		rs[$(this).attr('name')] = $.trim(this.value);
+		$(this).parent().addClass('loading');
+	});
+	$.ajax({
+		url:'{echo url("ac=check")}',
+		type:'post',data: rs,dataType:'json',async:false,
+		success:function(json){
+			$('li.loading',form).removeClass('loading');
+			c = 'undefined'==typeof json.error;
+			if(json.error){
+				form.trigger('form-check-error',[json.elem, json.error]);
+			}
+		}
+	});
+	return c;
+};
+function check(a,form,op){
+	if (false===$(form).ckForm()) return false;
+	var me=this,b=$('button',form);
+	if(!ckfield(form)) return false;
+	op.obload = $.dialog({type:'load',name:'form-loading'});
+	b.attr('disabled', true);
+};
+function run_menu(hash){
+	var ob='ul.navbox';
+	if (hash) hash=$('#d'+hash.substr(1),ob);
+	if (!hash.length) hash=$('li:first',ob);
+	hash.siblings().removeClass('active')
+		.end().addClass('active');
+	$('.divblk','.sidemain').addClass('hide')
+		.filter('.'+hash.attr('id')).removeClass('hide');
+	return false;
+}
+$(function(){
+	$(document).on('focus.getcaptcha', '#ele-reg-username,#ele-find-email', captcha);
+	$('form[name=theForm]').saveForm(login);
+	$('form[name=findForm]').saveForm({
+		success:resetpass
+	});
+	$('form[name=regForm]').saveForm({
+		beforeSubmit:check,
+		success:signup
+	});
+	$(document).on('click', '.navbox a',
+	function(){
+		var href=$(this).attr('href');
+		return run_menu(href.substr(href.lastIndexOf('#')));
+	});
+	/*<!--{if 'reset'==$do}-->*/run_menu('#findpass');/*<!--{elseif !INAJAX}-->*/run_menu(document.location.hash);/*{/if}*/
+});
+</script>
+<!--{if !$_ENV[ajaxreq]}-->
+{template footer}
+<!--{/if}-->

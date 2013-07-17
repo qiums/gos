@@ -1,0 +1,138 @@
+{template header}
+<section class="sidemain sidehack">
+  <div class="boxes shadow">
+    <h4 class="boxes-tit">{$tabletit}</h4>
+    <div class="boxes-body">
+      <table class="table table-striped">
+        <thead>
+        <tr>
+          <th style="width:5%">{lang text.id}</th>
+          <th style="width:10%">{lang form_label.prefix}</th>
+          <th class="sort_field subject">{lang form_label.channel_title}</th>
+          <th style="width:15%">{lang form_label.data_table}</th>
+          <th style="width:15%">{lang form_label.category_table}</th>
+          <th style="width:8%">{lang form_label.totalrows}</th>
+          <th style="width:20%">{lang text.manage}</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!--{loop $arrdata $key $row}-->
+        <tr>
+          <td>{$row[id]}</td>
+          <td><span class="prefix_text">{$row[prefix]}</span></td>
+          <td><span class="channel_text">{$row[channel_name]}</span></td>
+          <td>{$row[data_table]}</td>
+          <td>{echo $row[category_table]?$row[category_table]:'N/A'}</td>
+          <td>{$row[totalrows]}</td>
+          <td><a class="edit" href="#edit" rel="{$row[id]}" title="{lang form_label.channel_edit}">{lang button.edit}</a> |
+            <a class="copy" href="#copy" rel="{$row[id]}" title="{lang form_label.channel_copy}">{lang button.copy}</a> |
+            <a class="field" href="{echo url('admin/channel/field', array('id'=>$row[id]))}">{lang button.field}</a></td>
+        </tr>
+        <!--{/loop}-->
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+<div class="hide">
+  <div id="supe" class="qcform">
+  <form action="admin/channel/save" method="post" name="saveForm" class="saveForm">
+  <!--{echo $this->form->hidden('id')}-->
+  <!--{echo $this->form->hidden('ac')}-->
+    <ul>
+    <!--{loop $form $one}-->
+      <li>{$one[label]}
+        {$one[ele]}
+        {$one[tips]}</li>
+    <!--{/loop}-->
+    </ul>
+  </form>
+  </div>
+</div>
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
+<script type="text/javascript" src="0/scripts/jquery.form.js"></script>
+>>>>>>> 65f3b00cd6de68e2bd9d6d83542e33ce4e220f53
+=======
+<script type="text/javascript" src="0/scripts/jquery.form.js"></script>
+>>>>>>> 65f3b00cd6de68e2bd9d6d83542e33ce4e220f53
+<script type="text/javascript">
+var app = {
+	cache: {ele:'', id:'', data:{}},
+	get: function(){
+		var me=this, id = $(this).attr('rel');
+		if (-1 !==$(this).attr('href').lastIndexOf('#add') || app.cache['data'][id]) return app.dialog.call(this);
+		return $.post('{url admin/channel/get}', {id: id},
+			function(res){
+				if (1 !== res.code) return $.dialog(res.message, {title:'提示信息'});
+				app.cache['data'][id] = res.body;
+				return app.dialog.call(me);
+			});
+	},
+	dialog: function(){
+		var arg = {
+			target:'#supe', width:720, tip:'<a href="javascript:;" style="cursor:help">点击这里查看帮助内容</a>', id:'supe-panel',
+			buttons: {
+				'{lang button.submit}.btn-primary': app.save,
+				'{lang button.cancel}': 'close'
+			},
+			onRender: function(){
+				if (!this.ele) return ;
+				$('form', this.dbody)[0].reset();
+				if (-1 !== $(this.ele).attr('href').lastIndexOf('#add')) return ;
+				var id = $(this.ele).attr('rel');
+				app.cache['ele'] = this.ele;
+				app.cache['id'] = id;
+				$('input[name=id]').val(id);
+				$('input[name=ac]').val($(this.ele).attr('class'));
+				app.data();
+			}
+		};
+		$(this).dialog(arg);
+	},
+	save: function(){
+		var ck = true
+			, form = $('form', this.dbody);
+		if (!$(this.ele).hasClass('edit')){
+			if (app.check(form, '.prefix_text', '[name=prefix]:input', '唯一标识已经存在')){
+				if (!app.check(form, '.channel_text', '[name=channel_name]:input', '频道名称已经存在')) return ;
+			}else{
+				return ;
+			}
+		}
+		form.trigger('submit');
+	},
+	data: function(){
+		var ele = this.cache.ele
+			, data = this.cache.data[this.cache.id]
+			, iscopy = $(ele).hasClass('copy');
+		if (!data) return ;
+		$.each(data, function(key, val){
+			if (iscopy && ('prefix'===key || 'channel_name'===key)) return true;
+			$('[name=' + key + ']:input').val(val);
+		});
+	},
+	check: function(form, handle, ele, text){
+		var ck = true;
+		$(handle).each(function(){
+			if ($(this).text() == $.trim($(ele).val())){
+				ck = false; return false;
+			}
+		});
+		if (ck) return true;
+		form.trigger('form-check-error', [$(ele)[0], text]);
+		return false;
+	}
+};
+$(function(){
+	$('a[href$="#add"], a[href$="#edit"], a[href$="#copy"]')
+	.each(function(){
+		$(this).bind('click.supe-panel',
+			function(e){
+				e.preventDefault();
+				app.get.call(this);
+			});
+	});
+});
+</script>{template footer}

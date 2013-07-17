@@ -1,0 +1,57 @@
+{template header}
+<div id="container">
+  <div id="sidemain">
+    <div class="sidetitle">
+      <div class="frgt">
+        <a href="#" rel="fn/sort/for/theForm" class="icons save"><span>Save Sort</span></a>
+        <a href="#ads-supe" class="icons bind-dialog add" title="New {$appconf[app_name]}"><span>New</span></a>
+      </div>
+      <h3>{echo $supemenu[$currnav][0]. ' - '.$appconf[app_name]}</h3>
+    </div>
+    <div class="divblk clearfix">
+      <!--{echo Plugin('pagination',$pagination)}-->
+      <form action="{echo url('app/'.APPNAME.'/manage')}" method="post" name="theForm">
+      <input type="hidden" name="do" id="do" />
+      <table cellspacing="0" cellpadding="0" class="listbox">
+        <thead>
+        <tr>
+          <th style="width:2%"><input type="checkbox" id="quick" autocomplete="off" /></th>
+          <th style="width:4%">{lang text>id}</th>
+          <th>{lang text>subject}</th>
+          <th style="width:5%">Type</th>
+          <th style="width:35%">Code</th>
+          <th style="width:10%">{lang text>time}</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!--{loop $loopdata $one}-->
+        <tr>
+          <td><input type="checkbox" name="ids[]" value="$one[id]" class="quickbox" autocomplete="off" /></td>
+          <td>$one[id]</td>
+          <td class="detail">
+            <div class="rowtext"><strong>$one[subject]</strong></div>
+            <div class="clearfix rowline">
+              <span class="frgt">
+                <a href="{echo url('app/'.APPNAME.'/manage')}" rel="fn/manage/do/published/id/{$one[id]}" class="icons published{$one[published]}" title="{$one[published_text]}"></a>
+                <a href="#ads-supe" rel="{$one[id]}" class="icons bind-dialog edit" title="{lang button>edit}"></a>
+                <a href="{echo url('app/'.APPNAME.'/manage')}" class="icons delete" rel="fn/delete/id/{$one[id]}" title="{lang button>delete}"></a>
+              </span>
+              <span class="disabled clearfix">{echo run_time($one)}</span>
+            </div>
+          </td>
+          <td>{$one[runtype]}</td>
+          <td>{$one[runcode]}</td>
+          <td><p><!--{echo D::cdate($one[createtime],'y-m-d H:i')}--></p>
+            <!--{if $one[runtime]}--><p class="disabled" title="Last run time"><!--{echo D::cdate($one[runtime],'y-m-d H:i')}--></p><!--{/if}--></td>
+        </tr>
+        <!--{/loop}-->
+        </tbody>
+      </table>
+      </form>
+      <!--{echo Plugin('pagination',$pagination)}-->
+    </div>
+    <!--[if lte IE 6]><span style="float:right; position:relative;"></span><![endif]-->
+  </div>
+  <div class="clearfix"></div>
+</div>
+{template footer}

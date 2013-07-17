@@ -1,0 +1,8 @@
+<!--<script type="text/javascript" src="{echo WEBROOT}app/file/mxupload.js"></script>-->
+<script type="text/javascript">
+window['MXUPLOAD_OPTION_{echo strtoupper($_GET[type])}'] = {options:'{echo json_encode($upload_options)}',
+lang:'{echo json_encode($lang_plupload)}'};
+if('undefined'==typeof $.fn.mxupload){
+	$.getScript('{echo WEBROOT}app/file/mxupload.js');
+}
+</script>

@@ -1,0 +1,59 @@
+{template header}
+<div id="container">
+  <!--{if 'member'==CONTROLLER&&$GUSER[id]>0}-->
+  <!--{template member_menu}-->
+  <!--{/if}-->
+  <div id="sidemain">
+    <div class="sidetitle">
+      <div class="frgt">
+        <a href="#" rel="fn/sort/for/theForm" class="icons save"><span>Save Sort</span></a>
+        <a href="{echo url('app/'.APPNAME.'/supe')}" class="icons add"><span>New Poll</span></a>
+      </div>
+      <h3>{echo $supemenu[$currnav][0]. ' - '.$appconf[app_name]}</h3>
+    </div>
+    <div class="divblk clearfix">
+      <!--{echo Plugin('pagination',$pagination)}-->
+      <form action="{echo url('app/'.CONTROLLER)}" method="post" name="theForm">
+      <table cellspacing="0" cellpadding="0" class="listbox">
+        <thead>
+        <tr>
+          <th style="width:2%"><input type="checkbox" id="quick" autocomplete="off" /></th>
+          <th style="width:5%">{lang text>id}</th>
+          <th>{lang text>subject}</th>
+          <th style="width:10%">Options / Result</th>
+          <th style="width:8%">Sort</th>
+          <th style="width:12%">{lang text>time}</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!--{loop $loopdata $one}-->
+        <tr>
+          <td><input type="checkbox" name="ids[]" value="$one[id]" class="quickbox" autocomplete="off" /></td>
+          <td>$one[id]</td>
+          <td class="detail">
+            <span class="frgt">
+              <!--{if $one[bdate] OR $one[edate]}-->
+              <!--{eval $tasktitle=($one[bdate]?'Start: '.D::cdate($one[bdate]):'').($one[bdate]&&$one[edate]?'<br />':'').($one[edate]?'Finish: '.D::cdate($one[edate]):'');}-->
+              <!--{/if}-->
+              <!--{eval $other=empty($one[published])?'unpubwebsite':'pubwebsite'}-->
+              <a href="#" rel="status/published/$one[id]" title="$tasktitle" class="icons tooltip {$other}"></a>
+              <a href="{echo url('app/poll/supe/'.$one[id])}" class="icons edit" title="{lang button>edit}"></a>
+              <a href="{echo url('app/poll/delete/'.$one[id])}" class="icons delete" rel="fn/delete" title="{lang button>delete}"></a></span>
+            <p>[{$one[polltype]}] <a href="{echo url('app/poll/view/'.$one[id])}" rel="prompt/message/width/500" title="Poll Result">$one[subject]</a></p>
+            <em>$one[description]</em>
+          </td>
+          <td><a href="#result" class="bind-dialog" title="View result">{echo $one[pollnum].' / '.$one[result]}</a></td>
+          <td><span class="QKeditor" params="input/name/sortby[{$one[id]}]/size/4"><em>$one[sortby]</em></span></td>
+          <td><!--{echo D::cdate($one[createtime],'y-m-d H:i')}--></td>
+        </tr>
+        <!--{/loop}-->
+        </tbody>
+      </table>
+      </form>
+      <!--{echo Plugin('pagination',$pagination)}-->
+    </div>
+    <!--[if lte IE 6]><span style="float:right; position:relative;"></span><![endif]-->
+  </div>
+  <div class="clearfix"></div>
+</div>
+{template footer}

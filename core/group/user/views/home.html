@@ -1,0 +1,48 @@
+<!--{if !$_ENV[ajaxreq]}-->
+{template header}
+<!--{/if}-->
+	<div class="content">
+        <div class="c-down">
+        	<div class="cd-left">
+            	<h2>Sheilayy</h2>
+                <div class="head">
+                    <a class="head-img" href="#"><img src="images/img1.gif" /></a>
+                    <a class="upload" href="#" style="display:none;">Upload Image</a><!--鼠标移上去显示-->
+                </div>
+                <a class="button" href="#">Change Info</a>
+            </div>
+            <div class="c-right">
+            	<div class="right-info">
+                    <div class="title-nav">
+                        <ul>
+                            <li><a class="tnav-on" href="#">My favorites(<i>0</i>)</a></li>
+                            <li><a href="#">I have viewed(<i>0</i>)</a></li>
+                            <li><a href="#">Reviews(<i>0</i>)</a></li>
+                            <li><a href="#">Comments(<i>0</i>)</a></li>
+                        </ul>
+                    </div>
+                    <div class="c-infos">
+                    	<p class="none">Your favorites are empty.</p>
+                    </div>
+                </div>
+            </div>
+            <div style="clear:both;"></div>
+        </div>
+    </div>
+<!--{if !$_ENV[ajaxreq]}-->
+</div>
+<link rel="stylesheet" type="text/css" href="0/js/fancybox/jquery.fancybox-1.3.4.css" />
+<script type="text/javascript" src="0/js/jquery.tmpl.js"></script>
+<script type="text/javascript" src="0/js/jquery.ubbcode.js"></script>
+<script type="text/javascript" src="0/js/fancybox/jquery.fancybox-1.3.4.pack.js"></script>
+<script type="text/javascript">
+$(function(){
+	$('.dynamicload a').iscroll(300,
+	function(){
+		$(this).parent().removeClass('dynamicload');
+	});
+	$('a[rel=gallery]').fancybox();
+});
+</script>
+{template footer}
+<!--{/if}-->

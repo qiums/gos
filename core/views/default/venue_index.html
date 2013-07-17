@@ -1,0 +1,24 @@
+{template header} 
+    <div class="content">
+        <div class="c-down">
+        	{template widget/pleft}
+            <div class="c-mid">
+                <div class="fenlei">
+                	<!--{list cp.tree=do/root property=tid/venue}-->
+                    <h3><a href="{echo url('search/venue?tid='.$one[id])}">{$one[dataname]}</a></h3>
+                    <div class="clearfix">
+                      <ul>
+						<!--{list cp.tree=do/child/id/#one[id]# property=tid/venue as=row}-->
+                        <li class="cate-{$row[alias]}"><a href="{echo url('search/venue?tid='.$row[id])}">{$row[dataname]}</a></li>
+                        <!--{/list}-->
+                      </ul>
+                    </div><!--{/list}-->
+                </div>
+            </div>
+            <div class="c-right">
+                <div class="ad right"></div>
+            </div>
+            <div style="clear:both;"></div>
+        </div>
+    </div>
+{template footer}

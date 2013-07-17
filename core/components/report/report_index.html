@@ -1,0 +1,187 @@
+<!--{if !INAJAX}-->
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>{echo trim($page_title.'-'.$lang[site_name], '-')}</title>
+<!--[if lt IE 7]><style type="text/css">_body{behavior: url("{$public_dir}images/hover.htc")}</style><![endif]-->
+<link rel="stylesheet" type="text/css" href="{$static_dir}images/layout.css" />
+<link rel="stylesheet" type="text/css" href="{$public_dir}images/dialog.css" />
+<!--[if lt IE 9]><script type="text/javascript" src="scripts/html5.js"></script><![endif]-->
+<script type="text/javascript" src="scripts/jquery-1.6.min.js"></script>
+<script type="text/javascript" src="scripts/jquery.extend.js"></script>
+<script type="text/javascript">
+jQuery.G={'domain':'{echo DOMAIN}',
+'realroot':"{echo defined('REAL_WEBROOT')?REAL_WEBROOT:WEBROOT}",'webroot':'{echo WEBROOT}',
+'pubdir':'{$public_dir}','staticdir':'{$static_dir}','formhash':'{$formhash}',
+'updir':'{$UPDIR}','uid':'$user_data[id]',
+'dir':'{$DIR}','mod':'{$MODULE}','ac':'{$ACTION}',language:'{$config[base][language]}'};
+jQuery.lang={'continue':'{lang button.continue}',
+'submit':'{lang button.submit}',
+'cancel':'{lang button.cancel}',
+'auto_close':'{lang auto_close}',
+'refresh_page':'{lang refresh_page}',
+'please_wait':'{lang please_wait}'};
+var URLs={};
+</script>
+<script type="text/javascript" src="scripts/jquery.dialog.js"></script>
+<!--<script type="text/javascript" src="{$static_dir}common.js"></script>-->
+</head>
+<body>
+<div class="headline">
+  <header class="header">
+    <section class="logo"></section>
+    <section class="userpanel">
+	  <!--{if $user_data[id]>0}-->
+      <div class="downmenu listmenu">
+        <ul>
+          <li><a class="downlink" href="javascript:;">THATSMAGS<span><em></em></span></a>
+            <ul class="downul">
+              <!--{loop $city_result $one}-->
+              <!--{if $one[siteflag]}-->
+              <li><a href="{echo url('','',$one[alias])}" target="_blank">that's {$one[dataname]}</a></li><!--{/if}-->
+              <!--{/loop}-->
+              <li><a href="http://www.urban-family.com">Urban Family</a></li>
+            </ul>
+          </li>
+          <li><a class="downlink" href="member">{$user_data[name]}<span><em></em></span></a>
+            <ul class="downul">
+              <li><a href="account">Account Setting</a></li>
+              <li><a href="add/venue">+ Add Listings</a></li>
+              <li><a href="add/events">+ Add Events</a></li>
+            </ul>
+          </li>
+          <li><a href="#message">Message(<small>0</small>)</a></li>
+          <!--{if $user_perm[admin]}--><li><a href="{echo url('dir=admin')}" class="red">Admin Panel</a></li><!--{/if}-->
+          <li><a href="member/logout">Logout</a></li>
+        </ul>
+      </div>
+      <!--{else}--><a href="dir=member">Login</a> <a href="dir=member&ac=sign">Sign up</a><!--{/if}-->
+    </section>
+    <section class="sitenav">
+    </section>
+  </header>
+</div>
+<div id="wrapper" class="wrapper userwrapper">
+  <section class="usertab clearfix">
+    <h3 class="bigname">{$user_info[username]}</h3>
+    <ul>
+      <!--{loop $menu $key $one}-->
+      <!--{if $item AND FALSE!==strpos($key,$item)}--><!--{echo '<li class="active">';$head_title=$one;}-->
+      <!--{else}--><li><!--{/if}--><a href="{echo url($key,'','')}">{$one}</a></li>
+      <!--{/loop}-->
+    </ul>
+  </section>
+  <article class="container">
+    <aside class="sidelft sidehack">
+      <fieldset class="catedata">
+        <legend>Please note</legend>
+        <div class="tips"></div>
+      </fieldset>
+    </aside>
+<!--{/if}-->
+    <aside class="arcside sidemain sidehack">
+      <h3 class="sampletitle">REPORT \ {$head_title}</h3>
+      <article class="{echo 'databody'.('en'==$config[base][language]?' w120':'')}">
+        <form action="{echo url('app/report/save','','')}" method="post" autocomplete="off">
+        <!--{if 'venue'==$item}--><div class="divtip">
+          <p>Venue listings include restaurants, bars, cafes, clubs, shops, hotels,   hospitals, and other service-orientated businesses. Listings contain   general information about the venue, such as addresses and opening   hours, plus additional information written by the editorial staff of   SmartShanghai.</p>
+          <p>After the venue listing has been posted on the website, they can be accessed by searching for the name, or by <a href="http://www.smartshanghai.com/listings/">browsing through the listings</a> by category or tag. </p>
+          <p>Venue listings are <strong>free of charge</strong>. Submissions are usually processed within 1-2 working days.</p></div>
+        <div class="cxform">
+        </div>
+        <fieldset class="cxform formlft">
+          <legend>{$lang[baseform_text]}</legend>
+          <ul>
+            <li>{$form[envenue]}</li>
+            <li>{$form[cnvenue]}</li>
+            <li>{$form[region]}</li>
+            <li>{$form[enaddress]}</li>
+            <li>{$form[cnaddress]}</li>
+            <li class="blocktips">{$form[phone]}<div class="clearfix"></div></li>
+            <li>{$form[content]}</li>
+            <li>{$form[website]}</li>
+            <li>{$form[email]}</li>
+            <li>{$form[hours]}</li>
+          </ul>
+        </fieldset><!--{else}-->
+        <div class="divtip">
+          <p>Venue listings include restaurants, bars, cafes, clubs, shops, hotels,   hospitals, and other service-orientated businesses. Listings contain   general information about the venue, such as addresses and opening   hours, plus additional information written by the editorial staff of   SmartShanghai.</p>
+          <p>After the venue listing has been posted on the website, they can be accessed by searching for the name, or by <a href="http://www.smartshanghai.com/listings/">browsing through the listings</a> by category or tag. </p>
+          <p>Venue listings are <strong>free of charge</strong>. Submissions are usually processed within 1-2 working days.</p></div>
+        <div class="cxform">
+        </div>
+        <fieldset class="cxform formlft">
+          <legend>{$lang[baseform_text]}</legend>
+          <ul>
+            <li><span class="setdate downmenu clickmenu">{$form[runtype]}</span>
+              <span class="nofloat">{$form[begindate]}{$form[enddate]}</span></li>
+            <li>{$form[venuename]}</li>
+            <li>{$form[subject]}</li>
+            <li>{$form[content]}</li>
+          </ul>
+        </fieldset>
+        <!--{/if}-->
+        <fieldset class="cxform formlft">
+          <legend>Your contact</legend>
+          <ul>
+            <li><label for="m-realname"><cite>*</cite>Your name</label><input type="text" id="m-realname" class="req-any minlength2" maxlength="50" name="m[realname]" /></li>
+            <li><label for="m-phone"><cite>*</cite>Phone/Mobile</label><input type="text" id="m-phone" class="req-cnphone minlength7" maxlength="50" name="m[phone]" /></li>
+            <li><label for="m-email"><cite>*</cite>Email</label><input type="text" id="m-email" class="req-email minlength5" maxlength="100" name="m[email]" /></li>
+            <li><button type="submit">Submit</button></li>
+          </ul>
+        </fieldset>
+        </form>
+      </article>
+    </aside>
+<!--{if !INAJAX}-->
+	<div class="clearfix"></div>
+  </article>
+  <footer class="footer">
+    <figure>
+      <p>ALL RIGHTS RESERVED. <a href="/">THAT'S {echo strtoupper($city_data[dataname])}</a> - SHANGHAI, BEIJING &amp; PEARL RIVER DELTA, CHINA</p>
+      <p>CONTACT US: {$config[site][contact_phone]} / <a href="mailto:{$config[site][contact_email]}">{$config[site][contact_email]}</a>
+      <!--{if $config[site][icp_number]}--> - <a href="http://www.miibeian.gov.cn" target="_blank">{$config[site][icp_number]}</a><!--{/if}--></p>
+    </figure>
+  </footer>
+</div>
+<script type="text/javascript" src="scripts/jquery.form.js"></script>
+<script type="text/javascript" src="scripts/arc.common.js"></script>
+<script type="text/javascript" src="scripts/jquery.calendar.js"></script>
+<script type="text/javascript">
+var CKEDITOR_BASEPATH,editor,cid='input[name=cid]',de='#ele-textarea-description';
+<!--{if 5==$module_conf[id]}-->
+jQuery.G.datetype=eval('({echo json_encode($lang[form_source][dateloop])})');
+jQuery.G.week=eval('({echo json_encode($lang[weekstr])})');
+<!--{/if}-->
+jQuery.G.mid = '{$module_conf[id]}';
+jQuery.extend($.lang, eval('({echo json_encode($lang[arcpost])})'));
+$('form').saveForm(function(json){
+	if(json.error) return json;
+	$.dialog('<h3>'+json.ok+'</h3><p>{lang next_action}</p>', {
+		title:'{lang tips.head_title}',width:400,hideclose:true,type:'confirmation',
+		buttons:{
+			'{lang button.backlist}':'{$mxurl}',
+			'{lang button.reedit}':'{echo url($MODULE."/edit/mid/".$mid)}/id/'+json.id,
+			/*<!--{if $module_conf[pic_category]}-->*/'{lang button.picmanage}':'{echo url("mod=$MODULE&ac=picture&mid=$mid")}/id/'+json.id,/*<!--{/if}-->*/
+			'{lang button.readd}':'{echo url("mod=$MODULE&ac=post&mid=$mid")}'
+		}
+	});
+	return false;
+});
+$(function(){
+	$('.mxmenu>a').mxmenu();
+	$('.textsplit').textsplit();
+	$('textarea[name=subdata_content]').css({height:150, width:520});
+	/*<!--{if 4==$module_conf[id]}-->*/
+	$('#ele-choose-region').next().bind('setcallback',
+	function(event,data){
+		$('[name$=address]').attr('disabled', data=='');
+	}).trigger('setcallback',[$('#ele-choose-region').val()]);
+	/*<!--{/if}-->*/
+	jQuery.arc.init({'findvenue':'{echo url("dir=&mod=search&mid=4&format=json")}'});
+});
+</script>
+</body>
+</html>
+<!--{/if}-->

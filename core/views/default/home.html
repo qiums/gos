@@ -1,0 +1,210 @@
+{template header} 
+    <div class="content">
+    	<div class="nav-change">
+        	<div class="left-nav">
+            	<ul>
+                <!--{loop $topnav $one}-->
+					<!--{if !$one[hide_focus]}-->
+                    <li><a class="a{$one_index}" data-index="{$one_index}" href="javascript:;">{$one[catename]}</a></li>
+					<!--{/if}-->
+                <!--{/loop}-->
+                </ul>
+            </div>
+            <div class="bigimages">
+            <!--{loop $topnav $one}-->
+				<!--{if !$one[hide_focus]}-->
+            	<div class="b{$one_index}" class="hide"><img src="{echo ct($one[coverpic],600,345,1)}" alt="{$one[catename]}"/></div>
+				<!--{/if}-->
+            <!--{/loop}-->
+            </div>
+            <div class="images-info">
+            <!--{loop $topnav $one}-->
+				<!--{if !$one[hide_focus]}-->
+            	<div class="c{$one_index}" class="hide">
+                    <h2>{$one[catename]}</h2>
+                    <p>{$one[description]}</p>
+                    <a href="{$one[link]}">read more >></a>
+                </div>
+				<!--{/if}-->
+            <!--{/loop}-->
+            </div>
+            <div style="clear:both;"></div>
+        	<script type="text/javascript">
+			$(function(){
+				$('.left-nav').on('mouseover.trigger-boxes', 'a',
+				function(){
+					var index=parseInt($(this).data('index'),10)-1;
+					$('.left-nav a.on').removeClass('on');
+					$('.bigimages div, .images-info>div').hide();
+					$('.bigimages div:eq('+index+'),.images-info>div:eq('+index+')').show();
+					$(this).addClass('on');
+				}).find('a:eq(0)').trigger('mouseover.trigger-boxes');
+			});
+			</script>
+        </div>
+        <!--nav-change end-->
+        <div class="c-down">
+        	{template widget/pleft}
+            <div class="cd-right">
+            	<div class="travel">
+                	<div class="title-nav">
+                    	<h2><a href="#"><img src="images/index/travel.gif" alt="Travel Guides" /></a></h2>
+                        <ul>
+                        	<li><a class="tnav-on" href="#">One day</a></li>
+                        	<li><a href="#">Two days</a></li>
+                        	<li><a href="#">Three days</a></li>
+                        	<li><a href="#">Outside of SH</a></li>
+                        </ul>
+                        <div class="search3">
+                            <input type="text" value="Find a..." class="so1"/><input type="button" value="" class="so2" />
+                        </div>
+                    </div>
+                    <div class="travel-info">
+                    	<div class="show-page">
+                        	<a class="seemap" href="#">See on map >></a>
+                            <div class="page-info">
+                            	<span>3</span><span>/</span><span>5</span>
+                                <a href="#" class="left-arrow"></a>
+                                <a href="#" class="right-arrow"></a>
+                            </div>
+                        </div>
+                        <div class="travel-img">
+                        	<ul>
+                            	<li>
+                                	<div class="img-info">
+                                        <div class="img-right">
+                                        	<span class="zhu">Start</span>
+                                            <h2><a href="#">The Chino ...</a></h2>
+                                            <p>A unique restaurant featuring ...</p>
+                                        </div>
+                                    	<div class="img-left">
+                                        	<a href="#"><img src="images/img2.jpg" alt="" /></a>
+                                        </div>
+                                    </div>
+                                </li>
+                            	<li>
+                                	<div class="img-info">
+                                        <div class="img-right">
+                                        	<span class="zhu">2nd station</span>
+                                            <h2><a href="#">The Chino ...</a></h2>
+                                            <p>A unique restaurant featuring ...</p>
+                                        </div>
+                                    	<div class="img-left">
+                                        	<a href="#"><img src="images/img2.jpg" alt="" /></a>
+                                        </div>
+                                    </div>
+                                </li>
+                            	<li>
+                                	<div class="img-info">
+                                        <div class="img-right">
+                                        	<span class="zhu">3rd station</span>
+                                            <h2><a href="#">The Chino ...</a></h2>
+                                            <p>A unique restaurant featuring ...</p>
+                                        </div>
+                                    	<div class="img-left">
+                                        	<a href="#"><img src="images/img2.jpg" alt="" /></a>
+                                        </div>
+                                    </div>
+                                </li>
+                            	<li>
+                                	<div class="img-info">
+                                        <div class="img-right">
+                                        	<span class="zhu">4th station</span>
+                                            <h2><a href="#">The Chino ...</a></h2>
+                                            <p>A unique restaurant featuring ...</p>
+                                        </div>
+                                    	<div class="img-left">
+                                        	<a href="#"><img src="images/img2.jpg" alt="" /></a>
+                                        </div>
+                                    </div>
+                                </li>
+                            	<li>
+                                	<div class="img-info">
+                                        <div class="img-right">
+                                        	<span class="zhu">5th station</span>
+                                            <h2><a href="#">The Chino ...</a></h2>
+                                            <p>A unique restaurant featuring ...</p>
+                                        </div>
+                                    	<div class="img-left">
+                                        	<a href="#"><img src="images/img2.jpg" alt="" /></a>
+                                        </div>
+                                    </div>
+                                </li>
+                            	<li>
+                                	<div class="img-info">
+                                        <div class="img-right">
+                                        	<span class="zhu">6th station</span>
+                                            <h2><a href="#">The Chino ...</a></h2>
+                                            <p>A unique restaurant featuring ...</p>
+                                        </div>
+                                    	<div class="img-left">
+                                        	<a href="#"><img src="images/img2.jpg" alt="" /></a>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                            <div style="clear:both"></div>
+                        </div>
+                        <div class="more2"><a href="#">Detailed info >></a></div>
+                    </div>
+
+                </div>
+                
+            	<div class="travel" style="margin-top:10px;">
+                	<div class="title-nav">
+                    	<h2><a href="venue/attrib/3"><img src="images/index/recommend.gif" alt="Recommend" /></a></h2>
+                        <ul class="tablink">
+                        <!--{list category=do/get/mid/3/id/0/use/recommend}-->
+                        	<li><a data-index="rec-{$one_index}" href="#!{echo url('search/venue/cid/'.$one[fullalias],array('attrib'=>4))}">{$one[catename]}</a></li>
+                        <!--{/list}-->
+                        </ul>
+                        <div class="search3">
+                            <input type="text" placeholder="name of restaurant, bar, hotel, etc" class="so1"/><input type="button" value="" class="so2" />
+                        </div>
+                    </div>
+                    <div class="travel-info" id="rec-{$one_index}">
+                    	<div class="show-page">
+                        	<a class="seemap" href="{echo url('venue/attrib/4#map', array('cid'=>$one[fullalias]))}">See on map >></a>
+                            <div class="page-info">
+                            	<span>3</span><span>/</span><span>5</span>
+                                <a href="#" class="left-arrow"></a>
+                                <a href="#" class="right-arrow"></a>
+                            </div>
+                        </div>
+                        <div class="travel-img">
+                        	<ul>
+                            	<!--<li>
+                                	<div class="img-info">
+                                    	<div class="img-left">
+                                        	<a href="{$row[link]}"><img src="{ct($row[coverpic],114,114,1)}" alt="{$row[subject]}" /></a>
+                                        </div>
+                                        <div class="img-right">
+                                            <h2><a href="{$row[link]}">{$row[subject]}</a></h2>
+                                            <span class="ib rate{echo $row[rate]}"></span>
+                                            <p>{csubstr($row[description],50)}</p>
+                                        </div>
+                                    </div>
+                                </li>-->
+                            </ul>
+                            <div style="clear:both"></div>
+                        </div>
+                        <div class="more2"><a href="{url venue/$one[fullalias]}">Detailed info >></a></div>
+                    </div>
+                </div>
+            </div>
+            <div style="clear:both;"></div>
+            <script type="text/javascript">
+			$(function(){
+				$('.tablink').on('mouseover', 'a',
+				function(){
+					$(this).parent().siblings('.tnav-on').removeClass('tnav-on').end().addClass('tnav-on');
+					$('#rec-'+$(this).data('index')).siblings('.travel-info:visible').hide().end().show();
+					$.post($(this).attr('href').substr(2), {limit:15}, function(res){
+						
+					});
+				}).find('a:eq(0)').trigger('mouseover');
+			});
+			</script>
+        </div>
+    </div>
+{template footer}

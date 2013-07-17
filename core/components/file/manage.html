@@ -1,0 +1,59 @@
+<!--{if !INAJAX}-->
+{template header}
+<div class="divblk" style="width:620px;margin:10px auto">
+<!--{/if}-->
+  <div class="tabnav mxtabs">
+    <ul>
+      <li class="tab-upload active"><a href="#" rel="upload"><span>{lang button.upload}</span></a></li>
+      <li class="tab-album"><a href="#" rel="album"><span>{lang button.myalbum}</span></a></li>
+    </ul>
+    <div class="clearfix"></div>
+  </div>
+  <div id="tab-album" class="tabdiv">
+  </div>
+  <div id="tab-upload" class="tabdiv" style="height:330px">
+  </div>
+  <div id="nofree-tip" style="display:none;padding:10em 0;text-align:center">
+    <h3>{echo mxlang("nofree_tip",$lang_replace)}</h3><p>{echo mxlang("nofree_link",$lang_replace)}</p>
+  </div>
+<script type="text/javascript" src="{echo WEBROOT}app/file/mxupload.js"></script>
+<script type="text/javascript">
+var opt = {options:'{echo json_encode($upload_options)}',
+lang:'{echo json_encode($lang_plupload)}'}, oversize=parseInt("{echo -1==$space?1024*1024:intval($space*1024*1024-$user[attachsize])}", 10);
+$('#tab-upload').bind('tab-function', function(){
+	if(oversize<10240) return $('#nofree-tip').appendTo(this).show();
+	if(undefined==jQuery.fn.mxupload){
+		return $.getScript(G['realroot']+'app/file/mxupload.js',
+		function(){
+			$('#tab-upload').trigger('tab-function');
+		});
+	}
+	if(!$('.plupload_wrapper',this).length) $(this).mxupload(eval('('+opt.options+')'), eval('('+opt.lang+')'));
+}).bind('upload-complete', function(e, up, files){
+	var last = $.mxupload.result.pop(),message,
+	args={hideclose:1, buttons:{
+		'我的相册': function(){
+			$('a[rel=album]').mxTabs_change('.mxtabs');
+			$.mxupload.reset();
+			return true;
+		}
+	}};
+	if(last[1]['response']['code']==104){
+		message = '<strong>由于以下原因，上传过程被中止。</strong><p> - '+(last[1]['response']['message'])+'</p>';
+		args.type = 'warning';
+	}else{
+		message = '<strong>恭喜，所有队列的文件都成功上传。</strong><p>进入“我的相册”来选中图片以“设置封面图片”或“插入图片”。</p>';
+		args.type = 'confirmation';
+		args.buttons['继续上传'] = function(){
+			$.mxupload.reset();
+			return true;
+		};
+	}
+	$.dialog(message, args);
+})/**/;
+$('.mxtabs').mxTabs();
+</script>
+<!--{if !INAJAX}-->
+</div>
+{template footer}
+<!--{/if}-->

@@ -1,0 +1,90 @@
+{template header}
+<section class="sidergt sidehack">
+  <div class="boxes">
+    <h4 class="boxes-tit">{lang form_label.channel_field}</h4>
+    <ul class="menu-list">
+      <!--{loop $channels $one}-->
+      <li><a href="{echo url('admin/channel/field?id='.$one[id])}" title="{$one[channel_name]}">{$one[channel_name]}</a></li>
+      <!--{/loop}-->
+    </ul>
+  </div>
+</section>
+<section class="sidemain sidehack">
+  <div class="boxes shadow">
+    <h4 class="boxes-tit">{$tabletit}</h4>
+    <div class="boxes-body">
+      <table class="table table-striped">
+        <thead>
+        <tr>
+          <th style="width:5%">{lang text.id}</th>
+          <th>{lang form_label.label}</th>
+          <th style="width:10%">{lang form_label.field_name}</th>
+          <th style="width:15%">{lang form_label.type}</th>
+          <th style="width:10%">{lang form_label.value}</th>
+          <th style="width:8%">{lang form_label.function}</th>
+		  <th style="width:8%">{lang form_label.sort}</th>
+          <th style="width:20%">{lang text.manage}</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!--{loop $arrdata $key $row}-->
+        <tr>
+          <td>{$row[id]}</td>
+          <td>{$row[label]}</td>
+          <td>{$row[field_name]}</td>
+          <td>{$row[type]}</td>
+          <td>{$row[value]}</td>
+          <td>{$row[function]}</td>
+		  <td>{$row[sort]}</td>
+          <td><a class="edit" href="#edit" rel="{$row[id]}">{lang button.edit}</a> |
+            <a class="disabled" href="#disabled" rel="{$row[id]}">{lang button.disabled}</a> |
+            <a class="remove" href="#remove" rel="{$row[id]}">{lang button.remove}</a></td>
+        </tr>
+        <!--{/loop}-->
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+<div class="hide">
+  <div id="supe" class="qcform">
+  <form action="{url admin/{$config[env][controller]}/field}" method="post" name="saveForm" class="ajaxForm" data-ckblur="1">
+  <!--{echo $this->form->hidden('id')}-->
+  <!--{echo $G[id] ? $this->form->hidden('mid', '', $G[id]) : ''}-->
+  <!--{echo $this->form->hidden('do', '', 'save')}-->
+    <ul>
+    <!--{loop $form $one}-->
+      <li>{$one[label]}
+        {$one[ele]}
+        {$one[tips]}</li>
+    <!--{/loop}-->
+    </ul>
+  </form>
+  </div>
+</div>
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
+<script type="text/javascript" src="0/scripts/jquery.form.js"></script>
+>>>>>>> 65f3b00cd6de68e2bd9d6d83542e33ce4e220f53
+=======
+<script type="text/javascript" src="0/scripts/jquery.form.js"></script>
+>>>>>>> 65f3b00cd6de68e2bd9d6d83542e33ce4e220f53
+<script type="text/javascript">
+$(function(){
+	$('a[href$="#add"]').bind('click.add-panel',
+	function(e){
+		e.preventDefault();
+		$(this).dialog({
+			target:'#supe', width:720, tip:'<a href="javascript:;" style="cursor:help">点击这里查看帮助内容</a>',
+			buttons: {
+				'{lang button.submit}.btn-primary': function(){
+					$('form', this.dbody).trigger('submit');
+				},
+				'{lang button.cancel}': 'close'
+			}
+		});
+	});
+});
+</script>
+{template footer}

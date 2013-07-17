@@ -1,0 +1,115 @@
+<!--{if !INAJAX}-->
+{template header}
+<div id="container">
+  <!--{if $GUSER[id]>0}-->
+  <!--{template member_menu}-->
+  <!--{/if}-->
+  <div id="sidemain">
+<!--{/if}-->
+    <form action="app/poll/save" name="postForm" method="post" class="ckForm">
+    <input type="hidden" name="id" value="$data[id]" />
+    <input type="hidden" name="event" value="" />
+    <div class="sidetitle">
+      <div class="frgt">
+        <!--{if $data[id]>0}-->
+        <a href="{echo url('app/poll/view/'.$data[id])}" target="_blank" class="icons preview"><span>{lang button>preview}</span></a><!--{/if}-->
+        <a href="app/poll" class="icons cancel"><span>{lang button>back}</span></a>
+        <button type="submit" class="icons save" autocomplete="off">Save</button>
+      </div>
+      <h3>{echo $supemenu[$currnav][0]. ' - '.$appconf[app_name]}</h3>
+    </div>
+    <div class="divsupe">
+      <div class="formdiv frgt" style="width:49%">
+        <fieldset class="formbox optionbox">
+          <legend>Poll Options</legend>
+          <table cellspacing="0" cellpadding="0" class="formtab optiontab">
+            <thead>
+            <tr>
+              <th style="width:8%"><a href="javascript:;" class="icons add"></a></th>
+              <th>Subject</th>
+              <th style="width:12%">Sort</th>
+              <th style="width:12%">Result</th>
+            </tr>
+            </thead>
+            <tbody>
+            <!--{loop $data[options] $one}-->
+            <tr>
+              <th><a href="javascript:;" class="icons delete" rel="$one[id]"></a></th>
+              <th><span class="txt QKeditor" params="input/name/update[{$one[id]}][subject]/class/txt/nowidth/1"><em>$one[subject]</em></span></th>
+              <th><span class="QKeditor" params="input/name/update[{$one[id]}][sortby]/size/2/nowidth/1"><em>$one[sortby]</em></span></th>
+              <th><span class="QKeditor" params="input/name/update[{$one[id]}][result]/size/2/nowidth/1"><em>$one[result]</em></span></th>
+            </tr>
+            <!--{/loop}-->
+            <tr>
+              <th><a href="javascript:;" class="icons delete" rel="0"></a></th>
+              <th><input type="text" class="txt" name="add[0][subject]" /></th>
+              <th><input type="text" size="2" name="add[0][sortby]" value="0" /></th>
+              <th><input type="text" size="2" name="add[0][result]" value="0" /></th>
+            </tr>
+            </tbody>
+          </table>
+        </fieldset>
+      </div>
+      <div style="width:50%" class="formdiv">
+        <fieldset class="formbox">
+          <legend>Base Information</legend>
+          <table cellspacing="0" cellpadding="0" class="formtab">
+            <tbody>
+            <!--{loop $form $name $one}-->
+            <tr>
+              <th><label for="$name">$one[label]:</label>$one[ele]</th>
+            </tr>
+            <!--{/loop}-->
+            </tbody>
+          </table>
+        </fieldset>
+      </div>
+      <div class="clearfix"></div>
+    </div>
+    </form>
+<!--{if !INAJAX}-->
+  </div>
+</div>
+<script type="text/javascript" src="scripts/jquery.calendar.js"></script>
+<script type="text/javascript">
+var C={
+lasthandle:'',
+init:function(){
+	C.lasthandle=$('.optiontab>tbody tr:last');
+	$('#coverpic').after(' <a href="archive/album/frame/cover/pagesize/10" rel="prompt/frame/width/620" class="icons cover"></a>');
+	$('.add').unbind('click').bind('click',function(){
+		var index=$('.optiontab>tbody tr').length,limit=parseInt('{echo (int)$appconf[option_limit]}');
+		if (limit>0 && index>=limit) return false;
+		//alert('<tr>'+C.lasthandle.html().replace(/\[0\]/g,'['+index+']')+'</tr>');return false;
+		$('.optiontab>tbody').append('<tr>'+C.lasthandle.html().replace(/\[0\]/g,'['+index+']')+'</tr>');
+	});
+	$('a.delete').live('click',function(){
+		var index=$('.optiontab>tbody tr').length,id=this.rel,val=jQuery.trim($(this).parent().next().find('input').val());
+		if (index<=1) return false;
+		if ((id>0 || val!='')){
+			return Prompt.confirm({element:this,position:'follow',content:'{lang confirm_delete}',width:200},
+				function(rs,op){
+					Prompt.close(op);
+					if (!rs) return ;
+					$(op.element).parent().parent().fadeOut('normal',function(){$(this).remove();});
+					if (id>0) jQuery.ajaxpost('{echo url("app/poll/remove")}',{opid:id});
+				});
+		};
+		$(this).parent().parent().fadeOut('normal',function(){$(this).remove();});
+		return false;
+	});
+	jQuery('input.dateinput').unbind().bind('click',function(event){
+		var d=new Date();jQuery.doane(event);
+		/*$(this).unbind('calendar-setvalue').bind('calendar-setvalue',function(e,value){
+			$(this).val(value+' 00:00:00');
+		});*/
+		$(this).calendar({btime:new Date(d.getFullYear(),d.getMonth()-2,1),etime:new Date(d.getFullYear()+2,11,31)});
+	});
+},
+
+};
+$(function(){C.init();});
+if ('object'==typeof CHOOSE) CHOOSE.init();
+</script>
+{template footer}
+<!--{/if}-->

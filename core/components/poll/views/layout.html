@@ -1,0 +1,56 @@
+<!--{if METHOD=='view' AND APPNAME=='poll'}-->
+<div class="divblk divvote">
+  <!--{if $data}-->
+  <div class="votetopic">
+    <h1>Question: $data[subject]</h1>
+    <span>$data[description]</span>
+  </div>
+  <div class="voteresult">
+    <ul>
+    <!--{loop $data[options] $key $one}-->
+      <li><span>{echo '<strong>'.sprintf('%01.1f',$one[result]/$data[result]*100).'%</strong>'}</span>$one[subject]</li>
+    <!--{/loop}-->
+    </ul>
+  </div>
+  <!--{/if}-->
+</div>
+<!--{else}-->
+<div class="votetopic">
+  <h1>Question: $data[subject]</h1>
+  <span>$data[description]</span>
+</div>
+<form method="post" action="app/poll/update" name="pollForm">
+<input type="hidden" name="pollid" value="$data[id]" />
+<div class="voteoption">
+  <ul>
+  <!--{eval $pollname='option'.('radio'==$data[polltype]?'':'[]');}-->
+  <!--{loop $data[options] $key $one}-->
+    <li><input type="$data[polltype]" id="voteopt{$key}" name="$pollname" value="$one[id]" /><label for="voteopt{$key}">$one[subject]</label></li>
+  <!--{/loop}-->
+  </ul>
+  <div class="clearfix"></div>
+</div>
+<!--{if $data}--><div class="votebutton"><button type="submit"><strong>Submit</strong></button> <button type="button"><strong>View</strong></button></div><!--{/if}-->
+</form>
+<script type="text/javascript">
+$(function(){
+var handle=$('.votebutton button[type=button]');
+handle.bind('click.view-result',function(){
+	$.dialog({url:'{echo url("app/poll/view/".$data[id])}',width:500,title:'Poll Result'});
+});
+$('form[name=pollForm]').submit(function(){
+	var vals=[],mx=parseInt('$data[maxcheck]'),ob=$('input[name="{$pollname}"]:checked');
+	if (!ob.length || ob.length>mx) return dialog.message('Max check '+mx, 3);
+	$.post($(this).attr('action'),$(this).serializeArray(),function(str){
+		if ('Y'!=str && 'S'!=str) return dialog.message(str, 3);
+		if ('Y'==str){
+			dialog.message('Your vote has been submitted successfully.',2);
+			return setTimeout(function(){handle.trigger('click.view-result');},2000);
+		}
+		handle.trigger('click.view-result');
+	});
+	return false;
+});
+});
+</script>
+<!--{/if}-->

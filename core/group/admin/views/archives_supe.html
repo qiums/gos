@@ -1,0 +1,64 @@
+{template header}
+<section class="sidemain sidehack">
+  <div class="boxes shadow">
+    <h4 class="boxes-tit">{$tabletit}</h4>
+    <div class="boxes-body">
+      <form action="{url admin/{$config[env][controller]}/save}" method="post" name="saveForm" class="ajaxForm" data-ckblur="1">
+      <!--{echo $this->form->hidden('id')}-->
+      <ul class="nav nav-tabs clearfix">
+      <!--{loop $form_group $group}-->
+        <li><a href="#tabs-{$group}" data-toggle="tab"><b>{echo lang('form_group.'.$group)}</b></a></li>
+      <!--{/loop}-->
+      </ul>
+      <div class="tab-content qcform">
+        <!--{loop $form_group $key $group}-->
+        <div class="tab-pane" id="tabs-{$group}">
+          <ul>
+          <!--{loop $form[$key] $one}-->
+            <li>{$one[label]}
+              {$one[ele]}
+              {$one[tips]}</li>
+          <!--{/loop}-->
+          </ul>
+        </div>
+        <!--{/loop}-->
+      </div>
+      <div class="boxes-search">
+        <button type="submit" class="btn btn-primary">{lang button.submit}</button>
+        <button type="reset" class="btn">{lang button.reset}</button></div>
+      </form>
+    </div>
+  </div>
+</section>
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
+<script type="text/javascript" src="0/js/jquery.dtpicker.js"></script>
+>>>>>>> 65f3b00cd6de68e2bd9d6d83542e33ce4e220f53
+=======
+<script type="text/javascript" src="0/js/jquery.dtpicker.js"></script>
+>>>>>>> 65f3b00cd6de68e2bd9d6d83542e33ce4e220f53
+<!--{if $this->form->htmlflag['mselect']}-->
+<script type="text/javascript" src="0/js/jquery.mselect.js"></script>
+<script type="text/javascript">$.mselect.data['qc-hidden-sd_cid'] = {mid: '{$channel[id]}'};</script><!--{/if}-->
+<!--{if $this->form->htmlflag['html-editor']}-->
+<script type="text/javascript" src="0/js/ckeditor/ckeditor.js"></script><!--{/if}-->
+<<<<<<< HEAD
+<<<<<<< HEAD
+<script type="text/javascript" src="0/js/jquery.dtpicker.js"></script>
+=======
+>>>>>>> 65f3b00cd6de68e2bd9d6d83542e33ce4e220f53
+=======
+>>>>>>> 65f3b00cd6de68e2bd9d6d83542e33ce4e220f53
+<script type="text/javascript">
+$(function(){
+	$('.nav a:first').addClass('active').trigger('click.tab.data-api');
+	/*{if $this->form->htmlflag['html-editor']}*/
+	$(document).on('click.load-editor', '.html-editor',
+	function(){
+		$(this).prev().css('display','block');
+		CKEDITOR.replace(this, {language: '{$config[site][language]}',width:'80%'});
+	});/*{/if}*/
+});
+</script>
+{template footer}

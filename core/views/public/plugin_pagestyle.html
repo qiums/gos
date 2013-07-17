@@ -1,0 +1,26 @@
+<div class="pagination clearfix">
+  <!--{if $ptotal>0}-->
+  <div class="pagination_bar">
+	<ul>
+	<!--{eval $start = ($page<intval($perpage/2)) ? 1 : $page-intval($perpage/2)+1;
+		$end = min($start+$perpage, $ptotal+1);
+		if ($end-$start<$perpage-1) $start = $end-$perpage;
+		$start = max(1, $start);}-->
+	  <!--{if $page>1}--><li class="prev"><a href="{echo url('[current]',array(page=>$page-1))}" rel="{echo $page-1}">&lt;</a></li>
+      <!--{else}--><li class="prev"><span>&lt;</span></li><!--{/if}-->
+	  <!--{if $start>2}--><li class="first"><a href="{echo url('[current]',array(page=>1))}" rel="1">1...</a></li><!--{/if}-->
+	  <!--{eval for ($i=$start; $i<$end; $i++):}-->
+		<!--{if $page==$i}--><li class="current"><span>{$i}</span></li><!--{else}-->
+        <li><a href="{echo url('[current]',array(page=>$i))}" rel="{$i}">{$i}</a></li><!--{/if}-->
+	  <!--{eval endfor;}-->
+	  <!--{if $end<$ptotal-1}--><li class="end"><a href="{echo url('[current]',array(page=>$ptotal))}" rel="{$ptotal}">...{$ptotal}</a></li><!--{/if}-->
+	  <!--{if $page<$ptotal}--><li class="next"><a href="{echo url('[current]',array(page=>$page+1))}" rel="{echo $page+1}">&gt;</a></li>
+      <!--{else}--><li class="next"><span>&gt;</span></li><!--{/if}-->
+	</ul>
+  </div>
+  <!--{/if}-->
+  <span class="pagination_info">
+	<em><!--{echo (($page-1)*$size+1). '~'. min($rows, $page*$size)}--></em><strong>{$rows}</strong>
+  </span>
+  <div class="clearfix"></div>
+</div>

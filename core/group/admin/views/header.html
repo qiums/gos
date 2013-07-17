@@ -1,0 +1,93 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="{$config[base][charset]}" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="robots" content="index, follow" />
+<title>{echo trim($tabletit.'-'.$sub_pagetit.'-'.$pagetit.'-'.$lang[site_name]. ' '.$lang[supe_panel], '-')}</title>
+<link type="text/css" href="images/layout.css" rel="stylesheet" />
+<!--[if lt IE 9]><script type="text/javascript" src="0/scripts/html5.js"></script><![endif]-->
+<script type="text/javascript" src="0/js/jquery-1.10.1.min.js"></script>
+<script type="text/javascript" src="1/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="0/js/jquery.dialog.js"></script>
+<script type="text/javascript" src="0/js/jquery.fix.js"></script>
+<!--{if property_exists($this,'form')}--><script type="text/javascript" src="0/js/jquery.form.js"></script><!--{/if}-->
+<script type="text/javascript">
+(function($){
+	jQuery.G=eval('({echo json_encode($config[env])})');
+})(jQuery);
+</script>
+</head>
+<body class="lang-{$config[site][language]} fullscreen">
+<div style="display:none">
+  <div id="popover-lang">
+    <ul class="menu-list">
+    <!--{loop $config[site][lang_package] $key $one}--><li><a href="{echo url('admin/home/lang',$key)}">{$one}</a></li><!--{/loop}-->
+    </ul>
+  </div>
+</div>
+<div id="wrapper">
+  <header class="tophead clearfix">
+    <div class="topline clearfix">
+      <h1><a href="{:url('/')}" target="_blank">{:lang('site_name')}</a></h1>
+      <p class="userbox">{:lang('welcome')} <i class="icon-white icon-user"></i> <strong>{$user_data[name]}</strong> |
+        <a href="#" data-title="" data-target="#popover-lang" data-toggle="popover" data-addclass="nopadding" id="setlang"><i class="icon-white icon-globe"></i> {echo $config[site][lang_package][$config[site][language]]}</a> |
+        <a href="admin/setting"><i class="icon-white icon-wrench"></i> {:lang('button.setting')}</a> |
+        <a href="admin/home/logout">{:lang('logout')}</a></p>
+    </div>
+    <nav class="navbar">
+      <ul>
+      <!--{loop $supe_menu $key $value}-->
+        <li class="nav-{:str_replace('/', '-', $key)}">
+        <!--{if $value[1]}-->
+        <a href="javascript:;" class="top-level" title="{$value[0]}">{$value[0]}<i></i></a>
+        <ul>
+          <!--{loop $value[1] $sub $one}-->
+          <li><a href="{echo url('admin/'. $sub)}" title="{$one}">{$one}</a></li>
+          <!--{/loop}-->
+        </ul>
+        <!--{else}--><a href="{echo url('admin/'.$key)}" title="{$value[0]}">{$value[0]}</a><!--{/if}--></li>
+      <!--{/loop}-->
+      </ul>
+    </nav>
+  </header>
+  <div class="container clearfix">
+    <div class="container-top clearfix"><h2>{$pagetit}{if $sub_pagetit}<em>{$sub_pagetit}</em>{/if}</h2></div>
+    <!--{if 'home' === $config[env][controller]}-->
+    <section class="sidelft sidehack">
+      <!--{loop $lang[side_menu] $key $value}-->
+      <div class="boxes">
+        <h4 class="boxes-tit">{$value[0]}</h4>
+        <ul class="menu-list">
+          <!--{loop $value[1] $subkey $sub}-->
+          <li><a href="{echo url('admin/'.$subkey)}" class="menulink" rel="open-tabs" title="{$sub[0]}">{echo join('', $sub)}</a></li>
+          <!--{/loop}-->
+        </ul>
+      </div>
+      <!--{/loop}-->
+    </section>
+    <!--{elseif ($sub_menu)}-->
+    <section class="sidelft sidehack">
+      <div class="leftnav">
+        <div class="boxes">
+          <h4 class="boxes-tit">{$pagetit}</h4>
+          <ul class="menu-list">
+            <!--{loop $sub_menu $subkey $sub}-->
+            <li><a href="{echo url('admin/'.$subkey)}" title="{$sub}">{$sub}</a></li>
+            <!--{/loop}-->
+          </ul>
+        </div>
+        <!--{if $supe_option}-->
+        <div class="boxes supeopt" data-spy="affix" data-offset-top="393">
+          <h4 class="boxes-tit">{lang text.supe_option}</h4>
+          <ul class="menu-list">
+            <!--{loop $supe_option $key $menu}-->
+            <li class="disabled"><a href="javascript:;" data-trigger="{$key}" title="{$menu}">{$menu}</a></li>
+            <!--{/loop}-->
+          </ul>
+        </div>
+        <!--{/if}-->
+      </div>
+    </section>
+    <!--{/if}-->

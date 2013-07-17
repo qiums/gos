@@ -1,0 +1,45 @@
+<!--{if !INAJAX}-->
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>{echo trim($page_title.'-'.$lang[site_name], '-')}</title>
+<!--[if lt IE 7]><style type="text/css">_body{behavior: url("{$public_dir}images/hover.htc")}</style><![endif]-->
+<link rel="stylesheet" type="text/css" href="{$public_dir}images/core.css" />
+<link rel="stylesheet" type="text/css" href="{$public_dir}images/dialog.css" />
+<link rel="stylesheet" type="text/css" href="{$static_dir}../member/images/layout.css" />
+<!--[if lt IE 9]><script type="text/javascript" src="scripts/html5.js"></script><![endif]-->
+<script type="text/javascript" src="scripts/jquery-1.6.min.js"></script>
+<script type="text/javascript" src="scripts/jquery.extend.js"></script>
+<script type="text/javascript">
+jQuery.G={'domain':'{echo DOMAIN}',
+'realroot':"{echo defined('REAL_WEBROOT')?REAL_WEBROOT:WEBROOT}",'webroot':'{echo WEBROOT}',
+'pubdir':'{$public_dir}','staticdir':'{$static_dir}','formhash':'{$formhash}',
+'updir':'{$UPDIR}','uid':'$user_data[id]',
+'dir':'{$DIR}','mod':'{$MODULE}','ac':'{$ACTION}',language:'{$config[base][language]}'};
+jQuery.lang={'continue':'{lang button.continue}',
+'submit':'{lang button.submit}',
+'cancel':'{lang button.cancel}',
+'auto_close':'{lang auto_close}',
+'refresh_page':'{lang refresh_page}',
+'please_wait':'{lang please_wait}'};
+var URLs={};
+</script>
+<script type="text/javascript" src="scripts/jquery.dialog.js"></script>
+</head>
+<body>
+<div id="wrapper" class="wrapper loginwrapper">
+  <article class="container"><!--{/if}-->
+    <!--{eval $iserror = (!is_array($str)||isset($str[error]));}-->
+    <div class="dmessage {echo $iserror?'message_error':'message_ok'}">
+      <h3>{echo $iserror?'Error Information':'Operation is complete'}</h3>
+      <p class="messagetxt">{echo is_scalar($str)?$str:current($str)}</p>
+      <p><a href="{echo url('[back]')}">&laquo; Jump to the previous page</a></p>
+    </div>
+<!--{if !INAJAX}-->
+	<div class="clearfix"></div>
+  </article>
+</div>
+</body>
+</html>
+<!--{/if}-->

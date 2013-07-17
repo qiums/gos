@@ -1,0 +1,30 @@
+<!--{if !INAJAX}-->
+{template header}
+<aside class="sidemain sidehack">
+<!--{/if}-->
+  <div class="downmenu listmenu">
+    <ul class="frgt" style="margin-top:10px">
+      <li><a class="downlink" href="javascript:;">+ ADD<span><em></em></span></a>
+        <ul class="downul rgtul">
+          <!--{loop $menu $key $one}-->
+          <!--{if $item AND FALSE!==strpos($key,$item)}--><!--{echo '<li class="active">';$head_title=$one;}-->
+          <!--{else}--><li><!--{/if}--><a href="{echo url($key,'','')}">{$one}</a></li>
+          <!--{/loop}-->
+        </ul>
+      </li>
+    </ul>
+    <h3 class="sampletitle">{$app_conf[app_name]}</h3>
+  </div>
+  <div class="datalist">
+    <!--{loop $loopdata $one}-->
+    <dl><dt>{echo $lang['report_item'][$one[itemname]]}</dt>
+      <dd><small>{echo D::cdate($one[createtime],'H:i, d M Y')}</small>
+      <!--{if $one[link]}--><a href="{$one[link]}" target="_blank" class="preview">{$one[subject]}</a><!--{else}-->
+        <strong>{$one[subject]}</strong><a href="javascript:;" class="more">Detail&raquo;</a><!--{/if}-->
+        <br /><em class="s{$one[status]}">{echo $lang[report_status][$one[status]]}</em></dd>
+    </dl><!--{/loop}-->
+  </div>
+<!--{if !INAJAX}-->
+</aside>
+{template footer}
+<!--{/if}-->

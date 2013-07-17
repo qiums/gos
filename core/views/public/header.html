@@ -1,0 +1,55 @@
+<!DOCTYPE HTML>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" />
+<meta http-equiv="X-UA-Compatible"  content="IE=7" /> 
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Guide of Shanghai</title>
+<meta name="keywords" content="{$seokeywords}" />
+<meta name="description" content="{$seodesc}" />
+<meta name="author" content="{lang site_name}" />
+<meta name="Copyright" content="{lang site_name}" />
+<link rel="stylesheet" type="text/css" href="css/layout.css" />
+<!--[if lt IE 9]><script type="text/javascript" src="0/scripts/html5.js"></script><![endif]-->
+<script type="text/javascript" src="0/js/jquery-1.10.1.min.js"></script>
+<script type="text/javascript" src="1/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="0/js/jquery.dialog.js"></script>
+<script type="text/javascript" src="0/js/jquery.fix.js"></script>
+<!--{if property_exists($this,'form')}--><script type="text/javascript" src="0/js/jquery.form.js"></script><!--{/if}-->
+<script type="text/javascript">
+(function($){
+	jQuery.G=eval('({echo json_encode($config[env])})');
+})(jQuery);
+</script>
+</head>
+
+<body>
+    <!--top-->
+	<div class="top">
+    	<div class="welcome-bg">
+            <div class="welcome">
+                <div class="login">
+                    <!--{if !$user_data[id]}--><a href="user/home/login">Login</a>|<a href="user/home/login">Sign up</a>
+                    <!--{else}--><!--{if isset($user_perm[admin])}--><a href="admin">Admin</a>|<!--{/if}--><a href="user/home/logout">Logout</a><!--{/if}-->
+                </div>
+                <p class="w1">Welcome to SH! <!--{if $user_data}--><b>{$user_data[name]}</b><!--{/if}--></p>
+            </div>
+        </div>
+        <div class="logo-bg">
+        	<a href="{$config[env][baseurl]}" class="logo"><img src="images/topfoot/logo2.jpg" alt="Guide of SH"/></a>
+            <div class="search">
+                <input type="text" placeholder="name of attractions, restaurants, hotels, etc" class="s1" /><input type="button" value="" class="s2" />
+            </div>
+        </div>
+        <div class="navs">
+        	<ul>
+            	<li><a class="nav-on" href="{$config[env][baseurl]}">Home</a></li>
+                <!--{loop $topnav $one}-->
+				<!--{if !$one[hide_nav]}-->
+            	<li><a href="{$one[link]}">{$one[catename]}</a></li>
+				<!--{/if}-->
+                <!--{/loop}-->
+            </ul>
+        </div>
+    </div>
+    <!--top-->
+    <!--content-->

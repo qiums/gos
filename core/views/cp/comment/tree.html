@@ -1,0 +1,51 @@
+<!--{if $data}-->
+<!--{if !$data[pid]}-->
+<p class="avatar"><img src="{echo user_avatar($one[avatar],'mid')}" alt="$data[nickname]" /></p>
+  <span class="posttime">{echo D::string($data[createtime],'\s Second ago|H:i|m-d H:i|Y-m-d H:i')}</span>
+<!--{else}-->
+<p class="avatar"><img src="{echo user_avatar($one[avatar],'small')}" alt="$data[nickname]" /></p>
+<!--{/if}-->
+  <p class="context"><!--{if $data[uid]}--><a href="{echo url('member/'.$data[uid])}" target="_blank" title="$data[nickname]" class="username">$data[nickname]</a>
+  <!--{else}--><span class="disabled">{echo substr($data[email],0,strpos($one[email], '@'))}@*****</span><!--{/if}-->
+  <strong class="quoteleft">&#8220;</strong>{echo htmlentities($data[context],ENT_COMPAT,'utf-8')}<strong class="quoteright">&#8221;</strong></p>
+  <p class="infoline"><!--{if $data[pid]}-->
+    <span class="posttime">{echo D::string($data[createtime],'\s Second ago|H:i|m-d H:i|Y-m-d H:i')}</span><!--{/if}-->
+    <!--{if $data[depth]<$cmt_conf[reply_depth]}--><a href="javascript:;" rel="$data[id]" class="reply">Reply</a><!--{/if}-->
+    <a href="javascript:;" rel="$data[id]" class="report">Report</a></p>
+  <p class="clearfix"></p>
+<!--{else}-->
+<div class="cmtdata">
+  <ul>
+    <!--{if !$loopdata}-->
+    <li class="nodata">There are currently no comments.</li>
+    <!--{/if}-->
+    <!--{loop $loopdata $index $one}-->
+    <!--{eval $lastcount=$loopdata[$index-1][depth];
+    $count=$one[depth];
+    $nextcount=isset($loopdata[$index+1])? $loop[$index+1][depth]:0;}-->
+    <!--{if !$one[pid]}-->
+    <!--{if $index>0}--><!--{echo ($lastcount>0?str_repeat('</li></ul>',$lastcount-1):'').'</li>'}--><!--{/if}-->
+    <li class="rootli"><p class="avatar"><img src="{echo user_avatar($one[avatar],'mid')}" alt="$one[nickname]" /></p>
+    <!--{else}-->
+      <!--{echo ($lastcount-$count>0)?(str_repeat('</li></ul>',$lastcount-$count)):''}-->
+      <!--{echo ($lastcount<$count)?'<ul>':'</li>'}-->
+        <li class="subli"><p class="avatar"><img src="{echo user_avatar($one[avatar],'small')}" alt="$one[nickname]" /></p>
+    <!--{/if}-->
+          <p class="context"><!--{if $one[uid]}--><a href="{echo url('member/'.$one[uid],'','')}" target="_blank" title="$one[nickname]" class="username">$one[nickname]</a>
+          <!--{else}--><span class="disabled">{echo substr($one[email],0,strpos($one[email], '@'))}@*****</span><!--{/if}-->
+          <strong class="quoteleft">&#8220;</strong>
+          {echo $one[published]?htmlentities($one[context],ENT_COMPAT,'utf-8'):'This content has been removed or hidden'}
+          <strong class="quoteright">&#8221;</strong></p>
+          <p class="infoline">
+            <span class="posttime">{echo D::string($one[createtime],'\s Second ago|H:i|m-d H:i|Y-m-d H:i')}</span>
+            <!--{if $user_perm[admin][supe]}--><a href="javascript:;" rel="$one[id]" class="delete">[CLOSE]</a> <!--{/if}-->
+            <!--{if $one[depth]<$cmt_conf[reply_depth]}--><a href="javascript:;" rel="$one[id]" class="reply">Reply</a><!--{/if}-->
+            <a href="javascript:;" rel="$one[id]" class="report">Report</a></p>
+          <p class="clearfix"></p>
+    <!--{/loop}-->
+    <!--{echo $count>1?str_repeat('</li></ul>',$count-1):''}-->
+    <!--{if !empty($loopdata)}--></li><!--{/if}-->
+  </ul>
+</div>
+{widget:page}
+<!--{/if}-->

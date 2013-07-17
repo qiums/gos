@@ -1,0 +1,32 @@
+{template header}
+    <section class="sidergt sidehack">
+      <div class="boxes">
+        <h4 class="boxes-tit">日历和时间</h4>
+        <div class="boxes-body">
+        </div>
+      </div>
+    </section>
+    <section class="sidemain sidehack">
+      <div class="boxes shadow">
+        <h4 class="boxes-tit">{:lang('server_info')}</h4>
+        <div class="boxes-body">
+          <table class="table table-striped">
+            <thead>
+            <tr>
+              <th>名称</th>
+              <th>值</th>
+            </tr>
+            </thead>
+            <tbody>
+            <!--{loop $info $key $val}-->
+            <tr>
+              <td>{echo $lang[$key]}:</td>
+              <td>{$val}</td>
+            </tr>
+            <!--{/loop}-->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+{template footer}

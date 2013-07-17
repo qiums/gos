@@ -1,0 +1,31 @@
+<div class="cmtinput">
+  <form action="components/comment/save" method="post" name="postForm">
+  <!--{if $mc[id]}--><input type="hidden" id="arc_mid" name="mid" value="{$mc[id]}" /><!--{/if}-->
+  <input type="hidden" id="arc_aid" name="aid" value="{$G[aid]}" />
+  <textarea name="context" id="cmt-context" class="req-any minlength2" maxlength="{$conf[max_length]}"></textarea>
+  <!--{if $user_data[id]}--><div class="frgt">{echo $G[user][base][verification]?'<strong class="red">Please check your email account first.</strong>':'<button>SUBMIT</button>'}</div>
+  <span class="cmtuserinfo">
+    <img src="{:user_avatar($G[user][id],'small')}" />
+    <a href="{:url('user/'.$G[user][id])}">{$user_data[name]}</a><br />
+    <em>{$user_data[email]}</em>
+  </span><!--{else}-->
+  <span class="cmtuserlogin"><a href="#login">LOGIN</a> or <a href="#signup">SIGNUP</a></span>
+  <!--{/if}--></form>
+</div>
+<!--{if 'qreply'==$config[env][method]}-->
+<div class="cmtlist"></div>
+<div class="hide">
+  <div class="reply-comment-div" id="reply-comment-div">
+  <form action="app/comment/save" method="post" name="replyForm" class="replyForm">
+    <input type="hidden" name="pid" value="0" />
+    <p class="qinput txt"><textarea rows="1" id="rp-context" name="context" style="width:99%" class="req-any minlength2" maxlength="{$conf[max_length]}"></textarea><br />
+      <!--{if !$G[user][id]}--><input type="text" name="email" class="txt req-email" style="width:99%" minlength="2" placeholder="Hi! Guest, Please input your email address." />
+      <br /><!--{/if}-->
+      <!--<span class="setlen frgt"><strong>0</strong>/<em>{$conf[max_length]}</em></span>-->
+      <button class="postbutton" type="submit">Submit</button>
+      <a href="javascript:;" class="ccqinput">[Cancel]</a><cite></cite>
+    </p>
+  </form>
+  </div>
+</div>
+<!--{/if}-->

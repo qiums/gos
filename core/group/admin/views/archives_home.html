@@ -1,0 +1,160 @@
+{template header}
+<section class="sidemain sidehack">
+  <div class="boxes shadow">
+    <h4 class="boxes-tit">{$tabletit}</h4>
+    <div class="boxes-body">
+      <div class="boxes-search">
+      <form action="admin/archives/search" method="post" name="searchForm">
+      <!--{echo $this->form->hidden('mid','',$channel[prefix])}-->
+      <!--{loop $form $one}-->
+        <span>{$one[ele]}</span>
+      <!--{/loop}-->
+      <button type="submit" class="btn btn-primary">{lang button.search}</button>
+      </form>
+      </div>
+      <form action="admin/archives/update" method="post" name="dataForm">
+      <input type="hidden" name="mid" value="{$channel[prefix]}" />
+      <input type="hidden" name="upkey" id="upkey" />
+      <input type="hidden" name="updata" id="updata" />
+      <table class="table table-striped">
+        <thead>
+        <tr>
+          <th style="width:5%"><input type="checkbox" id="check-all" /></th>
+          <th style="width:5%">{lang text.id}</th>
+          <th class="sort_field subject">{lang form_label.subject}</th>
+          <th style="width:10%">{lang form_label.username}</th>
+          <th style="width:5%">{lang form_label.published}</th>
+          <th style="width:5%">{lang form_label.attrib}</th>
+          <th style="width:10%">{lang text.sortby}</th>
+          <th style="width:15%">{lang form_label.createtime}</th>
+          <th style="width:15%">{lang text.manage}</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!--{loop $arrdata $key $row}-->
+        <tr>
+          <td><input type="checkbox" value="{$row[id]}" name="ids[]" data-item="check" /></td>
+          <td>{$row[id]}</td>
+          <td><a href="{:url('admin/channel/'.$channel[prefix],array('edit'=>$row[id]))}" title="{$row[subject]}">{$row[subject]}</a>
+            <!--{if $row[subtitle]}--><em>{$row[subtitle]}</em><!--{/if}--></td>
+          <td><a href="{:url('admin/archives/'.$channel[prefix],array('fk'=>2,'k'=>$row[username]))}">{$row[username]}</a>
+            <!--{if $row[author]}--><em>{$row[author]}</em><!--{/if}--></td>
+          <td><a href="#" data-trigger="published" data-id="{$row[id]}" class="icon-pub{$row[published]}"></a></td>
+          <td><!--{if !$row[attrib]}-->N/A<!--{else}--><i class="icons attrib-{$row[attrib]}">{$row[attrib]}</i><!--{/if}--></td>
+          <td><input type="text" name="sortby[{$row[id]}]" value="{$row[sortby]}" style="width:40px" /></td>
+          <td>{echo D::cdate($row[createtime],'y/m/d H:i')}</td>
+          <td><a class="edit" href="{:url('admin/archives/preview',array('mid'=>$row[mid],'id'=>$row[id]))}" title="{lang form_label.preview}"><i class="icon-screenshot"></i>{lang button.preview}</a>
+            <a class="copy" href="{:url('admin/archives/'.$channel[prefix],array('edit'=>$row[id]))}" title="{lang form_label.edit}"><i class="icon-edit"></i>{lang button.edit}</a></td>
+        </tr>
+        <!--{/loop}-->
+        </tbody>
+      </table>
+      </form>
+    </div>
+  </div>
+  <div class="pagination">
+    {widget:page}
+  </div>
+</section>
+<div class="hide">
+  <div id="published-panel">
+    <ul class="menu-list">
+      <!--{loop $lang[form_source][published] $key $one}-->
+      <li><a href="#$key" data-trigger="published"><i class="icon-pub{$key}"></i>{$one}</a></li><!--{/loop}-->
+    </ul>
+  </div>
+  <div id="attrib-panel">
+    <ul class="menu-list">
+    <!--{loop $lang[form_source][attrib] $key $one}--><li><a href="#$key" data-trigger="attrib" class="attrib-{$key}">{$one}</a></li><!--{/loop}-->
+    </ul>
+  </div>
+</div>
+<!--{if $this->form->htmlflag['mselect']}-->
+<script type="text/javascript" src="0/js/jquery.mselect.js"></script>
+<script type="text/javascript">$.mselect.data['qc-hidden-cid'] = {mid: '{$channel[id]}'};</script><!--{/if}-->
+<script type="text/javascript">
+var app={
+	init: function(){
+		$('form[name=dataForm]').saveForm(app.callback);
+		$('#check-all').check('[data-item="check"]',
+		function(len){
+			if ($(this).attr('id')!=='check-all'){
+				$(this).closest('tr').swapClass('info','');
+			}
+			if (len>0) return $('.supeopt li.disabled').removeClass('disabled');
+			$('.supeopt li').addClass('disabled');
+		});
+		$('input[name=tid]').dropmenu({
+			url:'{url cp/tree/json/tid/venue}', data:{ac:'all'}
+		});
+		$('input[name=area]').dropmenu({
+			url:'{url cp/tree/json/tid/region}', data:{ac:'all'}
+		});
+	},
+	trigger: function(fn){
+		if ($.isFunction(fn)) return fn.call(this);
+		if ($.isFunction(app[fn])) return app[fn].call(this);
+	},
+	remove: function(){
+		$.dialog('确定删除选中的记录吗？',
+		{width: 360, title:'操作确认', buttons: {'{lang button.submit}.btn-primary':app.doremove, '{lang button.cancel}':'close'}});
+	},
+	doremove: function(){
+		app.upform('remove', 0);
+	},
+	published: function(){
+		var me=this, id=$(this).data('id');
+		if (id>0){
+			var val = $(me).hasClass('icon-pub0') ? 1 : 0
+			, data = {
+				id: $(me).data('id'), mid: '{$channel[id]}',
+				updata: {published: val}
+			}, fn = function(res){
+				$(me).swapClass('icon-pub0', 'icon-pub1');
+			};
+			return app.update(data, fn);
+		}
+		app.run(this, 'published');
+	},
+	attrib: function(){
+		app.run(this, 'attrib');
+	},
+	run: function(ele, ac){
+		var id, href = $(ele).attr('href')
+			, index = href.lastIndexOf('#');
+		if (-1===index){
+			return $(ele).dialog({width:100, addclass:'nopadding', type:'popover', target:'#'+ac+'-panel', position:'right'});
+		}
+		app.upform(ac, href.substr(index+1));
+	},
+	upform: function(key, val){
+		$('#upkey').val(key);
+		$('#updata').val(val);
+		$('form[name=dataForm]').trigger('submit');
+	},
+	update: function(data, fn){
+		$.ajaxPost($('form[name=dataForm]').attr('action'),
+			data,
+			fn);
+	},
+	callback: function(res){
+		return $.dialog(res.message, {
+			appendClass:'ui-dialog-ok', timeout:3, width:300,
+			buttons:{
+				'{lang button.close}':'close'
+			},
+			onClose: function(){window.location.reload();}
+		});
+	}
+};
+$(function(){
+	app.init();
+	$(document).delegate('a[data-trigger]', 'click.trigger',
+	function(e){
+		e.preventDefault();
+		if ($(this).closest('.disabled').length>0) return ;
+		app.trigger.call(this, $(this).data('trigger'));
+	});
+});
+</script>
+{template footer}

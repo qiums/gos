@@ -1,0 +1,19 @@
+{template header}
+<section class="sidemain">
+  <div class="divblk pr">
+    <div class="blkhead"><h3>{$head_title}</h3></div>
+    <div>
+      <ul class="rowdata">
+      <!--{loop $APPDATA $app $one}-->
+        <li>
+          <span class="frgt">
+            <a class="bgicon disabled" href="#" rel="{$app}"><small></small></a>
+          </span>
+          <a href="{echo url('dir=admin&app='.$app)}"><strong>{$one[app_name]}</strong></a>
+          <small>($one[directory])</small></li>
+      <!--{/loop}-->
+      </ul>
+    </div>
+  </div>
+</section>
+{template footer}

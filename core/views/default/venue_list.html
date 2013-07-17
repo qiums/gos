@@ -1,0 +1,156 @@
+{template header} 
+    <div class="content">
+        <div class="c-down">
+        	{template widget/pleft}
+            <div class="c-mid view-mode-a{$G[mode]}">
+            	<!--{if $position}-->
+            	<div class="weizhi">
+                	{echo join(' <span>&raquo;</span> ', $position)} <span>&raquo;</span> Result
+                </div>
+                <!--{/if}-->
+                <form action="search/redirect" method="post">
+                <input type="hidden" name="mid" value="{$channel[prefix]}" />
+                <!--{if $G[mode]}--><input type="hidden" name="mode" value="{$G[mode]}" /><!--{/if}-->
+            	<div class="quyu">
+                	<div class="quyu1">
+                    	<div class="cuisine">CUISINE</div>
+                        <div class="all-list">
+                        	<input type="hidden" name="tid" value="{$G[tid]}" data-kname="dataname" data-alt="SELECT CUISINE" />
+                        	<a class="moren-left dropmenu-handle" id="sel-cuisine" href="javascript:;" data-target="dropmenu-tid">All<b></b></a>
+                        </div>
+                    </div>
+                	<div class="quyu2">
+                    	<div class="cuisine">AREA</div>
+                        <div class="all-list">
+                        	<input type="hidden" name="area" value="{$G[area]}" data-kname="dataname" data-alt="SELECT AREA" />
+                        	<a class="moren-left dropmenu-handle" id="sel-region" href="javascript:;" data-target="dropmenu-area">All<b></b></a>
+                        </div>
+                        <div class="queding"><button type="submit">Search</button></div>
+                    </div>
+                </div>
+                <div class="stardiv">
+                	<label>Price:</label><input type="hidden" name="price" value="{$G[price]}" />
+                    <span id="star_price"></span>
+                    <a href="#clear" id="clear-star">[Clear]</a>
+                    <div style="clear:both;"></div>
+                </div>
+                </form>
+                <div class="title-nav">
+                    <ul>
+                        <li><a href="{echo url('search/venue', $_GET)}">Results</a></li>
+                        <li><a href="{echo url('search/map', $_GET)}">See on map</a></li>
+                    </ul>
+                </div>
+                <!--{if $G[mode]=='map'}-->
+                <div class="hide">
+                  <!--{loop $arrdata $one}-->
+                  <div class="mapinfowin" data-point="{$one[maplat]},{$one[maplng]}">
+                    <a href="{$one[link]}" target="_blank"><!--{if $one[coverpic]}-->
+                    <img src="{echo ct($one[coverpic],114,114,1)}" alt="{$one[fulltitle]}" /><!--{/if}-->
+                    <span>{$one[fulltitle]}</span></a><br />
+                    <em>{$one[enaddr]}<br />{make_phone $one[phone]}</em><br />
+                    <span class="ib rate{$one[rate]}"></span></div>
+                  <!--{/loop}-->
+                </div>
+                <div id="ggmap" style="height:500px;margin:10px 0;border:5px solid #AAA"></div>
+                <!--{else}-->
+                <ul class="lis-info">
+                <!--{loop $arrdata $one}-->
+                	<li><div class="liss">
+                        <!--{if $one[coverpic]}-->
+                        <a class="liss-img" href="{$one[link]}"><img src="{echo ct($one[coverpic],114,114,1)}" alt="{$one[fulltitle]}" /></a><!--{/if}-->
+                        <div class="liss-right">
+                        	<div class="r-title">
+                            	<h2><a href="{$one[link]}">{$one[fulltitle]}</a></h2>
+                                <span class="ib rate{$one[rate]}"></span>
+                            </div>
+                            <div class="add">
+                            	<div class="adds">
+                                	<label>Add</label>
+                                    <p>{$one[enaddr]}
+                                    <br />
+                                    {$one[cnaddr]}</p>
+                                </div>
+                                <!--{if $one[phone]}--><div class="adds">
+                                	<label>Tel</label><p>{make_phone $one[phone]}</p>
+                                </div><!--{/if}-->
+                            </div>
+                            <p class="jieshao">{echo csubstr($one[description],100)}<a href="{$one[link]}">More&raquo;</a></p>
+                        </div>
+                    </div></li><!--{/loop}-->
+                </ul>
+                <!--{/if}-->
+                <div class="page">{widget:page}</div>
+            </div>
+            <!--{if $G[mode]!='map'}-->
+            <div class="c-right">
+                <div class="banner">
+                	<a href="#"><img src="../images/banner1.jpg" /></a>
+                	<a href="#"><img src="../images/banner2.jpg" /></a>
+                </div>
+            </div><!--{/if}-->
+            <div style="clear:both;"></div>
+        </div>
+    </div>
+<div id="follow-category"></div>
+<div id="follow-region"></div>
+<script type="text/javascript">
+/*{if $G[mode]=='map'}*/
+var markers=[];
+function googlemap(){
+	if('undefined'==typeof google)
+		return jQuery.getScript('http://maps.google.com/maps/api/js?sensor=false&callback=googlemap&hl=en');
+	var map = new google.maps.Map(document.getElementById('ggmap'),
+	{zoom:12,center: new google.maps.LatLng(31.227996,121.473557),mapTypeId: google.maps.MapTypeId.ROADMAP}),
+	bounds = new google.maps.LatLngBounds(), place=[],infowindow= new google.maps.InfoWindow({});
+	$('.mapinfowin').each(function(){
+		var me=this, point=$(me).data('point').split(','),subject=$('h3', me).text();
+		if (''==point || '0,0'==point) return true;
+		var markmap = new google.maps.LatLng(point[0], point[1]);
+		var marker = new google.maps.Marker({
+			position: markmap,
+			map: map, 
+			animation: google.maps.Animation.DROP,
+			title: subject
+		});
+		google.maps.event.addListener(marker,'click',function(){
+			infowindow.setOptions({
+				title: subject,
+				content:'<div class="mapinfowin">'+$(me).html()+'</div>',
+				size:new google.maps.Size(50,50),
+				position:markmap
+			});
+			infowindow.open(map);
+		});
+		bounds.extend(marker.getPosition());
+	});
+	map.fitBounds(bounds);
+	return false;
+}
+googlemap();
+/*{/if}*/
+$(function(){
+	$('input[name=tid]').dropmenu({
+		url:'{url cp/tree/json/tid/venue}', data:{ac:'all'}
+	});
+	$('input[name=area]').dropmenu({
+		url:'{url cp/tree/json/tid/region}', data:{ac:'all'}
+	});
+	$('.stardiv span').each(function(){
+		$(this).rate({
+			rated: $(this).prev().val()/10,
+			callback: function(i, op, el){
+				el.prev().val((i+1)*10);
+			}
+		});
+	});
+	$('#clear-star').on('click', function(){
+		$('.stardiv span a').attr('class', 'star');
+		$('.stardiv input[type=hidden]').val('');
+		return false;
+	});
+	$('.title-nav li:eq({echo $G[mode]=="map"?1:0})').addClass('tnav-on');
+	
+});
+</script>
+{template footer}
