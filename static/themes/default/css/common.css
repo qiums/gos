@@ -26,7 +26,7 @@ input,textarea,button{border:none;outline-color:none;font-family:Arial, Helvetic
 .navs ul li a{float:left;height:35px;padding:0 10px;line-height:35px;color:#fff;font-weight:600;}
 .navs ul li .nav-on, .navs ul li a:hover{background-color:#683c11;color:#fff;}
 
-.footer{clear:both;border-top:3px solide #666;margin:10px auto 0;color:#333;padding:10px;background-color:#EFEFEF;}
+.footer{clear:both;border-top:3px solid #666;margin:10px auto 0;color:#333;padding:10px;background-color:#EFEFEF;}
 .footer .cr{text-align:center;}
 .footer .cr a{color:#999;}
 .footer .cr a:hover{color:#333;}
