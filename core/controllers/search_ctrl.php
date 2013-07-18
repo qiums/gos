@@ -4,6 +4,13 @@ class search_controller extends core_search_controller{
 
 	public function venue(){
 		$this->archives->config = $this->channel->get('venue');
+		if ($this->gp('lat')){
+			$map = near_latlng($this->gp('lat'), $this->gp('lng'), $this->gp('dist', 3));
+			$this->append_cond = array(
+				'maplat' => "BETWEEN {$map['x'][0]} AND {$map['y'][0]}",
+				'maplng' => "BETWEEN {$map['x'][1]} AND {$map['y'][1]}",
+			);
+		}
 		parent::index();
 		$this->view("venue_list");
 	}
@@ -14,7 +21,8 @@ class search_controller extends core_search_controller{
 	// 地图模式
 	public function map(){
 		$this->qdata['mode'] = 'map';
-		$this->venue();
+		$this->assign('channel', $this->channel->get('venue'));
+		$this->view("venue_list");
 	}
 	// 根据坐标查询附近商家
 	public function near(){

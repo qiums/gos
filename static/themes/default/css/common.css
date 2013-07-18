@@ -299,6 +299,8 @@ input,textarea,button{border:none;outline-color:none;font-family:Arial, Helvetic
 .weizhi span{float:left;color:#999;}*/
 .quyu{height:42px;background:url(../images/commom/quyu.gif) repeat-x 0 -42px;overflow:hidden;}
 .quyu1{float:left;background:url(../images/commom/quyu.gif) no-repeat 0 0;overflow:hidden;}
+.quyu1 b{display:inline-block;vertical-align:-12px;margin:0 10px;}
+.quyu1 b em{color:#D33; text-transform:uppercase;padding:2px 4px;background-color:#FFF;border-radius:3px;}
 .quyu2{float:left;overflow:hidden;}
 .quyu3{float:right;background:url(../images/commom/quyu.gif) no-repeat right bottom;overflow:hidden;padding-right:10px;}
 .queding{float:left;padding:7px 0 0 4px;}

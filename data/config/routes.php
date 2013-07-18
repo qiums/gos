@@ -11,7 +11,7 @@ $routes['gosupe/(login|logout)'] = 'admin/home/$1';
 $routes['user/(:num)'] = 'user/home/home/uid/$1';
 $routes['user/resetpwd'] = 'user?do=reset';
 $routes['user/(home|signup|login|logout|ckfield|reset)'] = 'user/home/$1';
-$routes['search/(article|events|venue|album|blog|download|family)'] = 'search/index/mid/$1';
+//$routes['search/(article|events|venue|album|blog|download|family)'] = 'search/index/mid/$1';
 $routes['plug/(:any)'] = '?plug=$1';
 $routes['add/(venue|events)'] = 'member/app/summary/add/item/$1';
 $routes['listings'] = 'archives/index/mid/venue';

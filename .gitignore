@@ -6,7 +6,6 @@ index.php
 core/components/file/plupload/
 core/components/uc/
 data/cache/
-data/config/default.php
 data/config/database.php
 static/common/filetype/
 

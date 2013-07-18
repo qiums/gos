@@ -12,16 +12,11 @@ return array(
 			'系统',
 			array(
 				'setting' => '全局设置',
-				'channel' => '频道管理'
+				'channel' => '频道管理',
+				'category' => '栏目管理',
 			)
 		),
 		'archives' => array('内容'),
-    	'category' => array(
-			'类别',
-			array(
-				'category/nav' => '导航管理',
-			),
-		),
 		'cp' => array('应用',array()),
         'user' => array(
 			'用户',

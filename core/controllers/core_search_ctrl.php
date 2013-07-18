@@ -1,6 +1,7 @@
 <?php if ( ! defined('ROOT')) exit('No direct script access allowed');
 
 class core_search_controller extends common_controller{
+	protected $append_cond = array();
 
 	public function __call($name, $args){
 		$this->archives->config = $this->channel->get($name);
@@ -36,10 +37,11 @@ class core_search_controller extends common_controller{
 		//$fields = $this->form->data(gc('env.controller'),gc('env.action'))->form_data;
 		$fields = $this->channel->get_fields($channel['id'], 4);
 		$list = array_keys($this->channel->get_fields($channel['id'], 5));
-		$cond = $this->archives->apply_cond($fields);
+		$cond = $this->append_cond + $this->archives->apply_cond($fields);
 		$data = $this->archives->attr('fields', join(',', $list))
 			->page($this->gp('page'), $this->gp('limit'))->order()
-			->callback()->where($cond)->findAll();//print_r($list);die;
+			->callback()->where($cond)->findAll();
+		$this->append_cond = array();
 		$this->qdata['pagedata'] = $this->archives->pagedata;
 		if ($_ENV['ajaxreq']) return $this->output(1, '', array('data'=>$data, 'page'=>$this->qdata['pagedata']));
 		$this->apply_category();

@@ -22,8 +22,10 @@
         </ul>
     </div>
     <div class="search2">
-        <input type="text" placeholder="Where am I now..." class="so1"/><input type="button" value="" class="so2" />
+    <form action="search/map" method="get">
+        <input type="text" name="local" placeholder="Where am I now..." value="{$G[local]}" class="so1"/><input type="submit" value="" class="so2" />
         <p class="zhushi">Check your current location by typing street names, hotel names, attraction names, etc.</p>
+    </form>
     </div>
     <div class="model1">
         <div class="mtitle"><h3><a class="biaoti" href="#">My favorites</a></h3><a class="smap" href="#">See on map></a></div>

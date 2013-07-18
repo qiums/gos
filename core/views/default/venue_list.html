@@ -8,23 +8,23 @@
                 	{echo join(' <span>&raquo;</span> ', $position)} <span>&raquo;</span> Result
                 </div>
                 <!--{/if}-->
-                <form action="search/redirect" method="post">
+                <form action="search/redirect" method="post" name="searchForm">
                 <input type="hidden" name="mid" value="{$channel[prefix]}" />
-                <!--{if $G[mode]}--><input type="hidden" name="mode" value="{$G[mode]}" /><!--{/if}-->
             	<div class="quyu">
                 	<div class="quyu1">
-                    	<div class="cuisine">CUISINE</div>
+                    	<label class="cuisine">CUISINE</label>
                         <div class="all-list">
                         	<input type="hidden" name="tid" value="{$G[tid]}" data-kname="dataname" data-alt="SELECT CUISINE" />
                         	<a class="moren-left dropmenu-handle" id="sel-cuisine" href="javascript:;" data-target="dropmenu-tid">All<b></b></a>
                         </div>
+                        <!--{if $G[local]}--><b>Find nearby in <em>{$G[local]}</em></b><!--{/if}-->
                     </div>
                 	<div class="quyu2">
-                    	<div class="cuisine">AREA</div>
+                    	<!--{if !$G[local]}--><label class="cuisine">AREA</label>
                         <div class="all-list">
                         	<input type="hidden" name="area" value="{$G[area]}" data-kname="dataname" data-alt="SELECT AREA" />
                         	<a class="moren-left dropmenu-handle" id="sel-region" href="javascript:;" data-target="dropmenu-area">All<b></b></a>
-                        </div>
+                        </div><!--{/if}-->
                         <div class="queding"><button type="submit">Search</button></div>
                     </div>
                 </div>
@@ -37,28 +37,25 @@
                 </form>
                 <div class="title-nav">
                     <ul>
-                        <li><a href="{echo url('search/venue', $_GET)}">Results</a></li>
+                        <li class="view-normal"><a href="{echo url('search/venue', $_GET)}">Results</a></li>
                         <li><a href="{echo url('search/map', $_GET)}">See on map</a></li>
                     </ul>
                 </div>
                 <!--{if $G[mode]=='map'}-->
+                <div id="ggmap" style="height:500px;margin:10px 0;border:5px solid #AAA"><p>Loading map...</p></div>
                 <div class="hide">
-                  <!--{loop $arrdata $one}-->
-                  <div class="mapinfowin" data-point="{$one[maplat]},{$one[maplng]}">
-                    <a href="{$one[link]}" target="_blank"><!--{if $one[coverpic]}-->
-                    <img src="{echo ct($one[coverpic],114,114,1)}" alt="{$one[fulltitle]}" /><!--{/if}-->
-                    <span>{$one[fulltitle]}</span></a><br />
-                    <em>{$one[enaddr]}<br />{make_phone $one[phone]}</em><br />
-                    <span class="ib rate{$one[rate]}"></span></div>
-                  <!--{/loop}-->
+                  <ul class="pager">
+                    <li class="previous"><a href="#">&larr; Prev</a></li>
+                    <li class="pageinfo"></li>
+                    <li class="next"><a href="#">Next &rarr;</a></li>
+                  </ul>
                 </div>
-                <div id="ggmap" style="height:500px;margin:10px 0;border:5px solid #AAA"></div>
                 <!--{else}-->
                 <ul class="lis-info">
                 <!--{loop $arrdata $one}-->
                 	<li><div class="liss">
                         <!--{if $one[coverpic]}-->
-                        <a class="liss-img" href="{$one[link]}"><img src="{echo ct($one[coverpic],114,114,1)}" alt="{$one[fulltitle]}" /></a><!--{/if}-->
+                        <a class="liss-img" href="{$one[link]}"><img src="{echo ct($one[coverpic],120,120,1)}" alt="{$one[fulltitle]}" /></a><!--{/if}-->
                         <div class="liss-right">
                         	<div class="r-title">
                             	<h2><a href="{$one[link]}">{$one[fulltitle]}</a></h2>
@@ -79,56 +76,163 @@
                         </div>
                     </div></li><!--{/loop}-->
                 </ul>
-                <!--{/if}-->
                 <div class="page">{widget:page}</div>
+                <!--{/if}-->
             </div>
             <!--{if $G[mode]!='map'}-->
             <div class="c-right">
-                <div class="banner">
-                	<a href="#"><img src="../images/banner1.jpg" /></a>
-                	<a href="#"><img src="../images/banner2.jpg" /></a>
-                </div>
+                <div class="ad right"></div>
             </div><!--{/if}-->
             <div style="clear:both;"></div>
         </div>
     </div>
-<div id="follow-category"></div>
-<div id="follow-region"></div>
+<!--{if $G[mode]=='map'}-->
+<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false&callback=ginit&hl=en"></script>
 <script type="text/javascript">
-/*{if $G[mode]=='map'}*/
-var markers=[];
-function googlemap(){
-	if('undefined'==typeof google)
-		return jQuery.getScript('http://maps.google.com/maps/api/js?sensor=false&callback=googlemap&hl=en');
-	var map = new google.maps.Map(document.getElementById('ggmap'),
-	{zoom:12,center: new google.maps.LatLng(31.227996,121.473557),mapTypeId: google.maps.MapTypeId.ROADMAP}),
-	bounds = new google.maps.LatLngBounds(), place=[],infowindow= new google.maps.InfoWindow({});
-	$('.mapinfowin').each(function(){
-		var me=this, point=$(me).data('point').split(','),subject=$('h3', me).text();
-		if (''==point || '0,0'==point) return true;
-		var markmap = new google.maps.LatLng(point[0], point[1]);
-		var marker = new google.maps.Marker({
-			position: markmap,
-			map: map, 
-			animation: google.maps.Animation.DROP,
-			title: subject
+var app = {
+	markers: [],
+	source: {}, page: {},
+	cache: {url: null, data: {}},
+	init: function(){
+		/*{if $G[local]}*/
+		this.geocode('{$G[local]}');
+		$('.view-normal>a').hide();
+		/*{else}*/
+		this.getsource();/*{/if}*/
+		$('.pager').delegate('a', 'click.change-page',
+		function(){
+			if (!$(this).parent().hasClass('disabled')){
+				app.getsource($(this).parent().hasClass('next'))
+			}
+			;return false;
 		});
-		google.maps.event.addListener(marker,'click',function(){
-			infowindow.setOptions({
-				title: subject,
-				content:'<div class="mapinfowin">'+$(me).html()+'</div>',
-				size:new google.maps.Size(50,50),
-				position:markmap
+		$('form[name=searchForm]').submit(function(){
+			$.each(['tid','area','price'], function(i, n){
+				var v = $('[name='+n+']').val();
+				if (!v || '' == v) return true;
+				app.cache.data[n] = v;
 			});
-			infowindow.open(map);
+			return app.getsource();
 		});
-		bounds.extend(marker.getPosition());
-	});
-	map.fitBounds(bounds);
-	return false;
-}
-googlemap();
-/*{/if}*/
+	}, 
+	getsource: function(p){
+		var url = (null === this.cache.url) ? '{echo url("#current#", array("page"=>max(1, (int)$G[page])))}' : this.cache.url
+			, data = this.cache.data;
+		if ('boolean'===$.type(p)) p = p ? this.page.cur+1 : this.page.cur-1;
+		if (p && /page([\/=]?)/i.test(url)){
+			url = url.replace(/page[\/=]?\d+/i, 'page'+RegExp.$1+p);
+		}
+		if (this.markers.length >0){
+			for (p in this.markers) {
+				this.markers[p].setMap(null);
+			}
+			this.markers.length = 0;
+		}
+		$.each(data, function(p, n){
+			var re = new RegExp(p + '([\/=]?)', 'i');
+			if (re.test(url)){
+				url = url.replace(new RegExp(p + '([\/=]?)(.[^\/&]+?)', 'i'), p+RegExp.$1+n);
+				delete data[p];
+			}
+		});
+		this.cache.url = url;
+		this.cache.data = data;
+		url = url.replace('/map/', '/venue/');
+		//$('.view-normal>a').attr('href', url + ($.isEmptyObject(data) ? '' : '?'+$.param(data)));
+		$.getJSON(url, jQuery.extend({}, {thumb: 'small'}, data || {}),
+		function(res){
+			if (res.code === 0) return $('#ggmap p').text("Colud not find any item.");
+			app.source = res.body.data;
+			app.pages(res.body.page);
+			app.googlemap();
+		});
+		return false;
+	},
+	pages: function(page){
+		if ('object' !== $.type(page) || page['rows']<1) return ;
+		page.total = Math.ceil(page['rows']/page['size']);
+		page.cur = Math.min(page.total, Math.max(1, parseInt(page.cur, 10)));
+		this.page = page;
+		$('.pageinfo').html('<b>'+ page.cur + '</b>/' + page.total);
+		$('.pager').parent().removeClass('hide')
+			.end().find('li.previous')[1===page.cur ? 'addClass' : 'remove']('disabled')
+			.end().find('li.next')[page.total===page.cur ? 'addClass' : 'remove']('disabled');
+	},
+	geocode: function(addr){
+		var geocoder = new google.maps.Geocoder();
+		geocoder.geocode( { 'address': 'China Shanghai ' + addr}, function(results, status){
+			if (status == google.maps.GeocoderStatus.OK){
+				return app.local(results[0].geometry.location);
+			}
+			return $('#ggmap p').text("Colud not find this place ("+ addr +") in google map.");
+		});
+	},
+	local: function(location){
+		this.cache = {
+			url: '{echo url("search/venue", array("page"=>NULL))}',
+			data: {lat: location.lat(), lng: location.lng(), dist: 1},
+			local: location
+		};
+		return this.getsource();
+	},
+	googlemap: function(){
+		var styles = [ 
+			{ stylers: [ { hue: "#ff0900" }, { saturation: -20 } ] },
+			{ elementType: "labels", stylers: [ { visibility: "off" } ] },
+			{ featureType: "road.local", stylers: [ { visibility: "on" } ] },
+			{ } ]
+		, myOptions = {
+			zoom:12,
+			//center: new google.maps.LatLng(31.227996,121.473557),
+			mapTypeId: google.maps.MapTypeId.ROADMAP,
+			mapTypeControl: false,
+			styles: styles
+		}
+		, map = new google.maps.Map(document.getElementById('ggmap'), myOptions)
+		, bounds = new google.maps.LatLngBounds(), infowindow= new google.maps.InfoWindow({});
+		if (this.cache.local){
+			var a = new google.maps.Marker({
+				position: this.cache.local,
+				map: map, 
+				animation: google.maps.Animation.DROP,
+				icon: '{$config[env][static_path]}common/imhere.png',
+				title: "I'm here."
+			});
+			infowindow.setOptions({content: 'Hi, You\'re here. :)'});
+			infowindow.open(map, a);
+			delete a;
+		}
+		$.each(app.source, function(i, res){
+			if (res.maplat=='0' || res.maplng=='0') return true;
+			var pos = new google.maps.LatLng(res.maplat, res.maplng);
+			var marker = new google.maps.Marker({
+				position: pos,
+				map: map, 
+				animation: google.maps.Animation.DROP,
+				title: res.fulltitle
+			});
+			google.maps.event.addListener(marker, 'click', function(){
+				infowindow.setOptions({
+					title: res.fulltitle,
+					content:'<div class="mapinfowin"><a href="'+res.link+'" target="_blank"><img src="'+res.thumb+'" alt="'+res.fulltitle+'" /><span>'+res.fulltitle+'</span></a>'
+						+ '<br /><em>'+res.enaddr+'<br />'+res.phone+'</em><br /><span class="ib rate'+res.rate+'"></span></div>',
+					size: new google.maps.Size(50,50),
+					position: pos
+				});
+				infowindow.open(map);
+			});
+			bounds.extend(marker.getPosition());
+			app.markers.push(marker);
+		});
+		map.fitBounds(bounds);
+		return false;
+	}
+}, ginit = function(){app.init();};
+var markers = []
+	, source = {}
+</script>
+<!--{/if}-->
+<script type="text/javascript">
 $(function(){
 	$('input[name=tid]').dropmenu({
 		url:'{url cp/tree/json/tid/venue}', data:{ac:'all'}
@@ -150,7 +254,6 @@ $(function(){
 		return false;
 	});
 	$('.title-nav li:eq({echo $G[mode]=="map"?1:0})').addClass('tnav-on');
-	
 });
 </script>
 {template footer}

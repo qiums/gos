@@ -38,14 +38,18 @@ class archives_model extends model{
 		}
 		$thumb = Base::getInstance()->gp('thumb');
 		if (is_scalar($thumb) AND function_exists('ct')){
-			$thumb = explode('x', $thumb);
-			array_unshift($thumb, $data['coverpic']);
-			if ($data['catedata']){
-				$rootalias=current(explode('/', $data['catedata']['fullalias']));
-				$thumb[] = "{$this->conf['prefix']}-{$rootalias}";
-				unset($rootalias);
+			$thumb_size = gc('image.thumb_size');
+			$thumb = $thumb_size[$thumb];
+			if ($thumb){
+				$thumb = explode('x', $thumb);
+				array_unshift($thumb, $data['coverpic']);
+				if ($data['catedata']){
+					$rootalias=current(explode('/', $data['catedata']['fullalias']));
+					$thumb[] = "{$this->conf['prefix']}-{$rootalias}";
+					unset($rootalias);
+				}
+				$data['thumb'] = call_user_func_array('ct', $thumb);
 			}
-			$data['thumb'] = call_user_func_array('ct', $thumb);
 		}
 		unset($strlen, $thumb);
 	}
@@ -174,12 +178,6 @@ class archives_model extends model{
 				),
 			),
 		);
-	}
-	private function apply_latlng(&$cond, $latlng, $distance){
-		$this->get_latlng = $get_latlng = explode('x', $latlng);
-		$latlng = near_latlng($get_latlng[0], $get_latlng[1], $distance);
-		$cond['maplat'] = "BETWEEN {$latlng['x'][0]} AND {$latlng['y'][0]}";
-		$cond['maplng'] = "BETWEEN {$latlng['x'][1]} AND {$latlng['y'][1]}";
 	}
 	public function block($ac='', $a=''){
 		$a = str2array($a);
