@@ -47,9 +47,10 @@ class channel_controller extends common_controller{
 			array_unshift($cond, 'or');
 			if ($this->channel->where($cond)->count()>0) return $this->output(0, 'data_exists');
 			$id = $this->channel->insert($this->post);
-		}else{
+		}elseif ($id>0){
 			$this->channel->where('id', $id)->update($this->post);
 		}
+		$this->channel->get(TRUE);
 		return $this->output(1, 'supe_success');
 	}
 	public function get(){

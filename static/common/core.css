@@ -85,7 +85,7 @@ table{max-width:100%;background-color:transparent;border-collapse:collapse;borde
 .qcform ul{list-style:none;margin:0;padding:0;}
 .formdiv div.formline,.qcform li{padding:5px 5px;border-bottom:1px dotted #ececec;clear:both;/*line-height:22px;*/}
 .formdiv div.formline:nth-child(even),.qcform li:nth-child(even){background-color:#FAFAE9;}
-.formdiv div.last,.formdiv div:last-child,.qcform li.last.qcform li:last-child{border-bottom:none;}
+.formdiv div.last,.formdiv div:last-child,.qcform li.last,.qcform li:last-child{border-bottom:none;}
 .formdiv div.formline label,.qcform li label{display:inline-block;*float:left;width:80px;line-height:250%;font-weight:bold;padding:0 5px;}
 .formdiv div.formline label cite,.qcform li label cite{font-style:normal;color:#F00;margin-right:3px;}
 .formdiv div.formline label.checkbox,.qcform li label.checkbox{width:auto;}

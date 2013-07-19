@@ -139,7 +139,7 @@ function cut_thumb($path,$width=120,$height=120,$fixed=0,$df="nopic"){
 	$base->load->libs('image');
     if(!$base->image) return fileurl($path);
 	$realpath = filepath($path);
-	$di = $config['env']['webroot']."static/images/{$df}.{$width}x{$height}.png";
+	$di = $config['env']['static_path']."common/{$df}-{$width}x{$height}.png";
 	if (empty($realpath) || !file_exists($realpath) || !is_file($realpath)) return $di;
 	$thumb_path = rtrim($config['upload']['thumbdir']?($config['upload']['thumbdir'].date('Ym'.DS,filectime($realpath))):dirname($realpath),DS).DS;
 	if(!is_dir($thumb_path)) io::mkdir($thumb_path);

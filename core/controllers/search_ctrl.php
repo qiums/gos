@@ -11,8 +11,11 @@ class search_controller extends core_search_controller{
 				'maplng' => "BETWEEN {$map['x'][1]} AND {$map['y'][1]}",
 			);
 		}
-		parent::index();
-		$this->view("venue_list");
+		if ($_ENV['ajaxreq']) return parent::index();
+		$this->assign(array(
+			'pagetit' => $this->archives->config['channel_name'],
+		)
+		)->view("venue_list");
 	}
 	public function index(){
 		parent::index();
@@ -21,35 +24,11 @@ class search_controller extends core_search_controller{
 	// 地图模式
 	public function map(){
 		$this->qdata['mode'] = 'map';
-		$this->assign('channel', $this->channel->get('venue'));
-		$this->view("venue_list");
-	}
-	// 根据坐标查询附近商家
-	public function near(){
-		$channel = $this->archives->config;
-		$latlng = $this->gp('latlng');
-		if ($latlng){
-			$latlng = explode('x', $latlng);
-			$latlng = near_latlng($latlng[0], $latlng[1], $this->gp('distance', 3));
-			$fields = $this->channel->get_fields($channel['id'], 4);
-			$cond = $this->archives->apply_cond($fields);
-			$cond['maplat'] = "BETWEEN {$latlng['x'][0]} AND {$latlng['y'][0]}";
-			$cond['maplng'] = "BETWEEN {$latlng['x'][1]} AND {$latlng['y'][1]}";
-			$data = $this->archives
-				->page($this->gp('page'), $this->gp('limit'))->order()
-				->where($cond)->findAll();
-			$this->qdata['pagedata'] = $this->archives->pagedata;
-			if ($_ENV['ajaxreq']) return $this->output(1, '', array('data'=>$data, 'page'=>$this->qdata['pagedata']));
-			$this->assign('arrdata', $data);
-		}
+		$channel = $this->channel->get('venue');
+		$this->assign('channel', $channel);
 		$this->assign(array(
-			'seokeywords' => $channel['keywords'],
-			'seodesc' => $channel['description'],
-			'pagetitle' => trim("Search / {$channel['module_name']}",'/ '),
-			))
-			->view(array(
-				"{$channel[prefix]}_list",
-				'archives_list'
-			));
+			'pagetit' => (isset($this->qdata['local']) ? "Near by {$this->qdata['local']}-" : ''). $channel['channel_name'],
+		)
+		)->view("venue_list");
 	}
 }

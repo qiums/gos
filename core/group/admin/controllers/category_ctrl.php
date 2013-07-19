@@ -3,8 +3,8 @@ class channel_controller extends common_controller{
 
 	public function index(){
 		$this->assign('form', $this->form->render());
-		$this->assign('arrdata', $this->channel->get());
-		$this->view('channel');
+		//$this->assign('arrdata', $this->channel->get());
+		$this->view('category');
 	}
 	public function edit(){
 		$id = $this->qdata['id'];

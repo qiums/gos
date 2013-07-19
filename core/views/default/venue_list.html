@@ -54,8 +54,7 @@
                 <ul class="lis-info">
                 <!--{loop $arrdata $one}-->
                 	<li><div class="liss">
-                        <!--{if $one[coverpic]}-->
-                        <a class="liss-img" href="{$one[link]}"><img src="{echo ct($one[coverpic],120,120,1)}" alt="{$one[fulltitle]}" /></a><!--{/if}-->
+                        <a class="liss-img" href="{$one[link]}"><img src="{echo ct($one[coverpic],120,120,1,'type-'.qstrstr($one[tid],',',TRUE))}" alt="{$one[fulltitle]}" /></a>
                         <div class="liss-right">
                         	<div class="r-title">
                             	<h2><a href="{$one[link]}">{$one[fulltitle]}</a></h2>
@@ -169,7 +168,7 @@ var app = {
 	},
 	local: function(location){
 		this.cache = {
-			url: '{echo url("search/venue", array("page"=>NULL))}',
+			url: '{echo url("search/venue", array("page"=>1))}',
 			data: {lat: location.lat(), lng: location.lng(), dist: 1},
 			local: location
 		};
@@ -198,9 +197,9 @@ var app = {
 				icon: '{$config[env][static_path]}common/imhere.png',
 				title: "I'm here."
 			});
-			infowindow.setOptions({content: 'Hi, You\'re here. :)'});
+			/*infowindow.setOptions({content: 'Hi, You\'re here. :)'});
 			infowindow.open(map, a);
-			delete a;
+			delete a;*/
 		}
 		$.each(app.source, function(i, res){
 			if (res.maplat=='0' || res.maplng=='0') return true;
@@ -209,6 +208,7 @@ var app = {
 				position: pos,
 				map: map, 
 				animation: google.maps.Animation.DROP,
+				icon: '{$config[env][static_path]}common/marker-'+app.strstr(res.tid)+'.png',
 				title: res.fulltitle
 			});
 			google.maps.event.addListener(marker, 'click', function(){
@@ -226,6 +226,12 @@ var app = {
 		});
 		map.fitBounds(bounds);
 		return false;
+	},
+	strstr: function(string, needle){
+		needle = needle || ',';
+		needle = string.indexOf(needle)
+		if (-1 === needle) return string;
+		return string.substr(0, needle);
 	}
 }, ginit = function(){app.init();};
 var markers = []
@@ -235,10 +241,16 @@ var markers = []
 <script type="text/javascript">
 $(function(){
 	$('input[name=tid]').dropmenu({
-		url:'{url cp/tree/json/tid/venue}', data:{ac:'all'}
+		url:'{url cp/tree/json/tid/venue}', data:{ac:'all'},
+		onRender: function(){
+			document.title = $(this).next().text() + '-' + document.title;
+		}
 	});
 	$('input[name=area]').dropmenu({
-		url:'{url cp/tree/json/tid/region}', data:{ac:'all'}
+		url:'{url cp/tree/json/tid/region}', data:{ac:'all'},
+		onRender: function(){
+			document.title = $(this).next().text() + '-' + document.title;
+		}
 	});
 	$('.stardiv span').each(function(){
 		$(this).rate({

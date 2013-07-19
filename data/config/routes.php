@@ -14,8 +14,8 @@ $routes['user/(home|signup|login|logout|ckfield|reset)'] = 'user/home/$1';
 //$routes['search/(article|events|venue|album|blog|download|family)'] = 'search/index/mid/$1';
 $routes['plug/(:any)'] = '?plug=$1';
 $routes['add/(venue|events)'] = 'member/app/summary/add/item/$1';
-$routes['listings'] = 'archives/index/mid/venue';
-/*$routes['venue/view/(:num)'] = 'venue/detail/id/$1';
+/*$routes['listings'] = 'archives/index/mid/venue';
+$routes['venue/view/(:num)'] = 'venue/detail/id/$1';
 $routes['(venue)/(:any)'] = 'venue/index?cid=$2';*/
 $routes['(venue|events|album|download|family)'] = 'archives/index/mid/$1';
 $routes['(article|venue|events|album|blog|download|family)/view/(:num)'] = 'archives/detail/mid/$1/id/$2';

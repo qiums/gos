@@ -49,14 +49,6 @@
   </form>
   </div>
 </div>
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-<script type="text/javascript" src="0/scripts/jquery.form.js"></script>
->>>>>>> 65f3b00cd6de68e2bd9d6d83542e33ce4e220f53
-=======
-<script type="text/javascript" src="0/scripts/jquery.form.js"></script>
->>>>>>> 65f3b00cd6de68e2bd9d6d83542e33ce4e220f53
 <script type="text/javascript">
 var app = {
 	cache: {ele:'', id:'', data:{}},
@@ -92,8 +84,7 @@ var app = {
 		$(this).dialog(arg);
 	},
 	save: function(){
-		var ck = true
-			, form = $('form', this.dbody);
+		var form = $('form', this.dbody);
 		if (!$(this.ele).hasClass('edit')){
 			if (app.check(form, '.prefix_text', '[name=prefix]:input', '唯一标识已经存在')){
 				if (!app.check(form, '.channel_text', '[name=channel_name]:input', '频道名称已经存在')) return ;
@@ -101,7 +92,7 @@ var app = {
 				return ;
 			}
 		}
-		form.trigger('submit');
+		form.saveForm().trigger('submit');
 	},
 	data: function(){
 		var ele = this.cache.ele
@@ -116,7 +107,7 @@ var app = {
 	check: function(form, handle, ele, text){
 		var ck = true;
 		$(handle).each(function(){
-			if ($(this).text() == $.trim($(ele).val())){
+			if ($(this).text() === $.trim($(ele).val())){
 				ck = false; return false;
 			}
 		});
@@ -134,5 +125,6 @@ $(function(){
 				app.get.call(this);
 			});
 	});
+	$('.saveForm').ckForm();
 });
 </script>{template footer}

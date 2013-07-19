@@ -13,8 +13,8 @@ class archives_model extends model{
 		$url = "{$this->config['prefix']}/view/{$data['id']}";
 		$data['link'] = !empty($data['extlink']) ? $data['extlink']
 			: (gc('env.domain') .url($url));
-		$data['fulltitle'] = $data['subject']. $data['subtitle'];
-		if ($data['enbranch']) $data['fulltitle'] .= " ({$data['enbranch']})";
+		$data['fulltitle'] = $data['subject'];
+		if ($data['subtitle']) $data['fulltitle'] .= " ({$data['subtitle']})";
 		if ($data['filesize']) $data['filesize_text'] = formatSize($data['filesize']);
 		/*if ($data['cid']){
 			$this->load->model('category')->block(array('mid'=>$this->config['id']));
@@ -43,11 +43,6 @@ class archives_model extends model{
 			if ($thumb){
 				$thumb = explode('x', $thumb);
 				array_unshift($thumb, $data['coverpic']);
-				if ($data['catedata']){
-					$rootalias=current(explode('/', $data['catedata']['fullalias']));
-					$thumb[] = "{$this->conf['prefix']}-{$rootalias}";
-					unset($rootalias);
-				}
 				$data['thumb'] = call_user_func_array('ct', $thumb);
 			}
 		}

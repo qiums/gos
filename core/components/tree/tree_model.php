@@ -194,7 +194,7 @@ class com_tree_model extends model{
 		}
 		return $rs;
 	}
-	function parent($id,$self=FALSE){
+	function parents($id,$self=FALSE){
 		$data = $this->get($id);
 		if ($data['node']==$data['id']) return array($data);
 		$tree = $this->qfind();
@@ -212,12 +212,22 @@ class com_tree_model extends model{
 		Db::delete($table,$cond);
 		$this->qfind(TRUE);
 	}
+	function title($id,$sort='desc'){
+		$rs = $this->parents($id,TRUE);
+		//$count = count($rs);
+		$title=array();
+		$sort=='desc' ? arsort($rs) : asort($rs);
+		foreach ($rs as $one){
+			$title[] = $one['dataname'];
+		}/**/
+		return $title;
+	}
 	/* 当前位置 */
 	function position($url,$id=0,$all=FALSE){
 		$pos = array();
 		if (FALSE!==strpos($id,',')) $id = substr(strrchr($id,','), 1);
 		if (!$id) return $pos;
-		$result = $this->parent($id, TRUE);//
+		$result = $this->parents($id, TRUE);//
 		if (!empty($result)){
 			if (is_array($url)){
 				$key = explode('=', $url[1]);

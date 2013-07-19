@@ -13,21 +13,19 @@ class channel_model extends model{
 		return parent::model();
 	}
 	public function get($channel_name=''){
-		$channel = $this->cache_data['channels.data'];
+		$key = 'channels.data';
+		$channel = $this->cache_data[$key];
 		if (TRUE === $channel_name OR !$channel){
-			$key = 'channels.data';
-			if (FALSE===($channel = cache::q($key))){
+			if (TRUE === $channel_name OR FALSE===($channel = cache::q($key))){
 				$data = $this->findAll();
+				$channel = array();
 				foreach ($data as $i=>$one){
 					if (!empty($one['other_setting']))
 						$one = array_merge($one, parse_ini_string($one['other_setting'],TRUE));
-					/*if ($one['sort_fields'])
-						$one['sort_fields'] = $this->parse_sort($one['sort_fields']);*/
-					unset($data[$i], $one['other_setting'],$one['data_fields'],$one['form_html']);
-					$data[$one['prefix']] = $one;
+					unset($one['other_setting']);
+					$channel[$one['prefix']] = $one;
 				}
-				cache::q($key,$data);
-                $channel = $data;
+				cache::q($key, $channel);
 				unset($data);
 			}
 			$this->cache_data['channels.data'] = $channel;

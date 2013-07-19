@@ -26,7 +26,7 @@ class archives_controller extends common_controller{
 			'lc' => $lc + (array)$data,
 			'seokeywords' => $lc['keywords']. ','. $this->mc['keywords'],
 			'seodesc' => $lc['description']. $this->mc['description'],
-			'pagetitle' => trim(join(' / ', $this->category->title($lc['id'])). " / {$this->mc['channel_name']}",'/ '),
+			'pagetit' => join('-', $this->category->title($lc['id'])),
 		));
 	}
 	// Archives category Home
@@ -39,7 +39,6 @@ class archives_controller extends common_controller{
 		$this->assign(array(
 			'seokeywords' => $lc['keywords'],
 			'seodesc' => $lc['description'],
-			'pagetitle' => $lc['catename'],
 			))
 			->view(array("{$this->mc[prefix]}_index", 'archives_index'));
 	}
@@ -58,7 +57,6 @@ class archives_controller extends common_controller{
 			->callback()->where($cond)->findAll();
 		$this->qdata['pagedata'] = $this->archives->pagedata;
 		$this->assign(array(
-			'pagetitle' => trim(join(' / ', $this->category->title($lc['id'])). " / {$mc['channel_name']}",'/ '),
 			'position' => $position,
 			'arrdata' => $data,
 			))
@@ -105,7 +103,7 @@ class archives_controller extends common_controller{
 		$this->assign(array(
 			'seokeywords' => trim($data['keywords']. ','. $this->vars['lc']['keywords']. ','. $mc['keywords'], ','),
 			'seodesc' => $data['description']. $mc['description'],
-			'pagetitle' => trim(join(' / ', $this->category->title($this->vars['lc']['id'])). " / {$mc['module_name']}",'/ '),
+			'pagetit' => $data['fulltitle']. "-{$mc['module_name']}",
 			'position' => $position,
 			'data' => $data,
 			))

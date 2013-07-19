@@ -171,7 +171,7 @@ input,textarea,button{border:none;outline-color:none;font-family:Arial, Helvetic
 
 /* about ,dining(comom) */
 .c-mid h1{width:498px;text-align:center;font-size:18px;line-height:24px;padding-bottom:10px;}
-.c-mid .liss img{/*width:498px;*/text-align:center;height:auto;margin:10px 0;}
+.c-mid .liss img{/*width:498px;margin:10px 0;*/text-align:center;height:auto;}
 .c-mid p{width:498px;height:auto;}
 /* about ,dining(comom) */
 

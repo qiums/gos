@@ -5,7 +5,7 @@ return array(
 		'channel_name' => array('type'=>'input:text', 'attr'=>'class="req-any minlength2" maxlength="40"'),
 		'data_table' => array('type'=>'input:text', 'attr'=>'class="req-any minlength2" maxlength="40"', 'value'=>'archives'),
 		//'addon_table' => array('type'=>'input:text', 'attr'=>'class="req-any" maxlength="20"'),
-		'category_table' => array('type'=>'input:text', 'attr' => 'class="req-any minlength2" maxlength="40"'),
+		//'category_table' => array('type'=>'input:text', 'attr' => 'class="req-any minlength2" maxlength="40"'),
 		'data_pk' => array('type' => 'input:text', 'attr' =>'class="req-any minlength2" maxlength="20"', 'value'=>'id'),
 		'other_setting' => array('type'=>'textarea', 'attr'=>' rows="5"'),
 	),
