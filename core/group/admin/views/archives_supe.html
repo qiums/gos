@@ -30,28 +30,15 @@
     </div>
   </div>
 </section>
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 <script type="text/javascript" src="0/js/jquery.dtpicker.js"></script>
->>>>>>> 65f3b00cd6de68e2bd9d6d83542e33ce4e220f53
-=======
-<script type="text/javascript" src="0/js/jquery.dtpicker.js"></script>
->>>>>>> 65f3b00cd6de68e2bd9d6d83542e33ce4e220f53
 <!--{if $this->form->htmlflag['mselect']}-->
 <script type="text/javascript" src="0/js/jquery.mselect.js"></script>
 <script type="text/javascript">$.mselect.data['qc-hidden-sd_cid'] = {mid: '{$channel[id]}'};</script><!--{/if}-->
 <!--{if $this->form->htmlflag['html-editor']}-->
 <script type="text/javascript" src="0/js/ckeditor/ckeditor.js"></script><!--{/if}-->
-<<<<<<< HEAD
-<<<<<<< HEAD
-<script type="text/javascript" src="0/js/jquery.dtpicker.js"></script>
-=======
->>>>>>> 65f3b00cd6de68e2bd9d6d83542e33ce4e220f53
-=======
->>>>>>> 65f3b00cd6de68e2bd9d6d83542e33ce4e220f53
 <script type="text/javascript">
 $(function(){
+	$.mselect.data['cid'] = {mid: '{$channel[id]}'};
 	$('.nav a:first').addClass('active').trigger('click.tab.data-api');
 	/*{if $this->form->htmlflag['html-editor']}*/
 	$(document).on('click.load-editor', '.html-editor',

@@ -1,0 +1,86 @@
+{template header}
+<section class="sidergt sidehack" style="width:600px">
+  <div class="boxes shadow">
+    <h4 class="boxes-tit">{lang button.add}</h4>
+    <div class="boxes-body">
+      <ul class="nav nav-tabs clearfix">
+      <!--{loop $form_group $group}-->
+        <li><a href="#tabs-{$group}" data-toggle="tab"><b>{echo lang('form_group.'.$group)}</b></a></li>
+      <!--{/loop}-->
+      </ul>
+      <form action="" method="post">
+      <div class="tab-content qcform">
+        <!--{loop $form_group $key $group}-->
+        <div class="tab-pane" id="tabs-{$group}">
+          <ul>
+          <!--{loop $form[$key] $one}-->
+            <li>{$one[label]}
+              {$one[ele]}
+              {$one[tips]}</li>
+          <!--{/loop}-->
+          </ul>
+        </div>
+        <!--{/loop}-->
+      </div>
+      <div class="boxes-search">
+        <button type="submit" class="btn btn-primary">{lang button.submit}</button>
+        <button type="reset" class="btn">{lang button.reset}</button></div>
+      </form>
+    </div>
+  </div>
+</section>
+<section class="sidemain sidehack">
+  <div class="boxes shadow">
+    <h4 class="boxes-tit">{$tabletit}</h4>
+    <div class="boxes-body tree">
+      <ul>
+        <!--<li><em></em><label>${{catename}}</label><span><a href="#">Add</a><a href="#">Edit</a><a href="#">Delete</a></span></li>-->
+      </ul>
+    </div>
+  </div>
+</section>
+<script type="text/x-jquery-tmpl" id="tree-tmpl">
+
+</script>
+<script type="text/javascript" src="0/jquery-tmpl-master/jquery.tmpl.min.js"></script>
+<!--{if $this->form->htmlflag['html-editor']}-->
+<script type="text/javascript" src="0/js/ckeditor/ckeditor.js"></script><!--{/if}-->
+<script type="text/javascript">
+$.datacache.cat = {};
+var app = {
+	id: 0,
+	wrap: $('.tree>ul'),
+	html: '',
+	init: function(){
+		this.html = $.trim(this.wrap.html()).replace(/^(<!\-\-)|((\/\/)*\-\->)$/g, '');
+		this.get(0);
+	},
+	get: function(id){
+		this.id = id;
+		if ($.datacache['cat'][id]) return this.build();
+		return $.getJSON('{:url category/json}', {id: id, 'do': 'child'},
+		function(res){
+			if (0===res.code) return ;
+			$.datacache.cat[id] = res.body;
+			app.build();
+		});
+	},
+	build: function(){
+		var data = $.datacache.cat[this.id];
+		if (!data) return ;
+		$.tmpl(this.html, data).appendTo(this.wrap.empty());
+		//$('#tree-tmpl').tmpl(data).appendTo(this.wrap.empty());
+	}
+};
+$(function(){
+	app.init();
+	$('.nav a:first').addClass('active').trigger('click.tab.data-api');
+	/*{if $this->form->htmlflag['html-editor']}*/
+	$(document).on('click.load-editor', '.html-editor',
+	function(){
+		$(this).prev().css('display','block');
+		CKEDITOR.replace(this, {language: '{$config[site][language]}',width:'98%'});
+	});/*{/if}*/
+});
+</script>
+{template footer}

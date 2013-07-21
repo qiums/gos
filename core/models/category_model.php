@@ -26,7 +26,8 @@ class category_model extends Model{
 		if ($ac) return parent::block($ac, $a);
 		return $this;
 	}
-	public function category_model(){
+	public function __construct(){
+		parent::__construct();
 		$this->config['data_table'] = 'category';
 	}
 	public function build(&$data){
@@ -41,17 +42,20 @@ class category_model extends Model{
 		$this->fields = $field;
 		return $this;
 	}
-	function find($cache=FALSE, $a=array()){
+	function find($cond=array()){
 		if (!$this->gc('data_table')) return array();
-		if ($this->catdata) return $this->catdata;
+		$cache = is_bool($cond) AND TRUE===$cond;
 		$cachename = 'category';
-		if ($cache OR FALSE===($data = cache::q($cachename))){
+		if (!$cache AND $this->catdata){
+			$data = $this->catdata;
+		}elseif ($cache OR FALSE===($data = cache::q($cachename))){
 			$data = $this->callback()
 				->order('depth,asc,orderby,asc,id,asc')
 				->attr('datatype', 3)
 				->findAll();
 			cache::q($cachename, $data);
 		}
+		if (!$this->catdata) $this->catdata = $data;
 		if ($this->fields){
 			$in = array_flip(explode(',', $this->fields));
 			foreach ($data as $key=>$one){
@@ -59,7 +63,16 @@ class category_model extends Model{
 			}
 			$this->fields = NULL;
 		}/**/
-		$this->catdata = $data;
+		if (is_array($cond)){
+			foreach ($data as $key=>$one){
+				foreach ($cond as $k=>$val){
+					if (!isset($one[$k]) OR $one[$k] !== $val){
+						unset($data[$key]);
+						break;
+					}
+				}
+			}
+		}
 		if (!$data) return array();
 		return $data;
 	}

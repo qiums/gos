@@ -11,7 +11,8 @@ class search_controller extends core_search_controller{
 				'maplng' => "BETWEEN {$map['x'][1]} AND {$map['y'][1]}",
 			);
 		}
-		if ($_ENV['ajaxreq']) return parent::index();
+		parent::index();
+		if ($_ENV['ajaxreq']) return ;
 		$this->assign(array(
 			'pagetit' => $this->archives->config['channel_name'],
 		)

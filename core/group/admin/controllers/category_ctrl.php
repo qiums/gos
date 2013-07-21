@@ -1,8 +1,14 @@
 <?php if ( ! defined('ROOT')) exit('No direct script access allowed');
-class channel_controller extends common_controller{
+class category_controller extends common_controller{
 
 	public function index(){
-		$this->assign('form', $this->form->render());
+		$group = array('common', 'extend', 'catetxt');
+		$form = array();
+		foreach ($group as $k=>$one){
+			$form[$k] = $this->form->group($k)->render();
+		}
+		$this->assign('form_group', $group);
+		$this->assign('form', $form);
 		//$this->assign('arrdata', $this->channel->get());
 		$this->view('category');
 	}

@@ -41,6 +41,14 @@ class channel_model extends model{
 		}
 		return $channel;
 	}
+	public function sget(){
+		$data = $this->get();
+		$res = array();
+		foreach ($data as $one){
+			$res[$one['id']] = $one['channel_name'];
+		}
+		return $res;
+	}
 	/*
 	 * $mode - 0 获取自定义字段 1 获取搜索字段 2 获取列表字段 3 添加/修改内容时的字段(含channel.common的字段)
 	 * 4 1+3的组合 5 2+3的组合 大于5相当于0+3的组合
