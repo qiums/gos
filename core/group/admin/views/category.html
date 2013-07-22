@@ -32,24 +32,26 @@
 <section class="sidemain sidehack">
   <div class="boxes shadow">
     <h4 class="boxes-tit">{$tabletit}</h4>
-    <div class="boxes-body tree">
+    <div class="boxes-body treedata">
       <ul>
-        <!--<li><em></em><label>${{catename}}</label><span><a href="#">Add</a><a href="#">Edit</a><a href="#">Delete</a></span></li>-->
+        <!--<li class="collaps"><span><em class="hitarea"></em><label>${id}. ${catename}</label>
+          <a href="#" title="Add"><i class="icon-plus"></i></a><a href="#" title="Edit"><i class="icon-edit"></i></a><a href="#" title="Delete"><i class="icon-remove"></i></a></span>{{if childs>0}}<ul></ul>{{/if}}</li>-->
       </ul>
     </div>
   </div>
 </section>
-<script type="text/x-jquery-tmpl" id="tree-tmpl">
-
-</script>
-<script type="text/javascript" src="0/jquery-tmpl-master/jquery.tmpl.min.js"></script>
+<script type="text/javascript" src="0/js/jquery.tmpl.min.js"></script>
 <!--{if $this->form->htmlflag['html-editor']}-->
 <script type="text/javascript" src="0/js/ckeditor/ckeditor.js"></script><!--{/if}-->
+<!--{if $this->form->htmlflag['file']}-->
+<script type="text/javascript">$('.form-file').data('url', '{:url category/upload}');</script>
+<script type="text/javascript" src="0/js/plupload/plupload.js"></script>
+<script type="text/javascript" src="0/js/plupload/plupload.plus.js"></script><!--{/if}-->
 <script type="text/javascript">
 $.datacache.cat = {};
 var app = {
 	id: 0,
-	wrap: $('.tree>ul'),
+	wrap: $('.treedata>ul'),
 	html: '',
 	init: function(){
 		this.html = $.trim(this.wrap.html()).replace(/^(<!\-\-)|((\/\/)*\-\->)$/g, '');
@@ -69,7 +71,34 @@ var app = {
 		var data = $.datacache.cat[this.id];
 		if (!data) return ;
 		$.tmpl(this.html, data).appendTo(this.wrap.empty());
+		this.tree();
 		//$('#tree-tmpl').tmpl(data).appendTo(this.wrap.empty());
+	},
+	tree: function(wrap){
+		wrap = wrap || this.wrap;
+		$('small.disabled', wrap).removeClass('disabled');
+		wrap.find('>li')
+			.removeClass('last lastExpand lastCollaps')
+			.filter(":last-child")
+				.addClass('last')
+			.end()
+			.filter(':has(>ul:hidden)')
+				.replaceClass('collaps','expand')
+				.replaceClass('last','lastExpand')
+			.end()
+			.not(':has(>ul:hidden)')
+				.replaceClass('expand','collaps')
+				.replaceClass('last', 'lastCollaps')
+			.end()
+			.filter(':not(>ul):last-child')
+				.addClass('last')
+			.end()
+			.find('.hitarea').remove()
+			.end()
+			.filter(':has(>ul)')
+			.prepend('<em class="hitarea" />');
+		$('li:first',wrap).find('.arrow_up>small').addClass('disabled');
+		$('li:last',wrap).find('.arrow_down>small').addClass('disabled');
 	}
 };
 $(function(){

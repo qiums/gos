@@ -171,3 +171,28 @@ body.login-page{background:url(bg-login.jpg) repeat-x center;margin:0;padding:0;
 span.captcha-boxes {background-color:#FFF;border:1px solid #999;left:70px;padding:2px;position:absolute;top:30px;}
 .lang-en span.captcha-boxes{left:90px;}
 span.captcha-boxes a {display:block;text-align:center;text-transform:uppercase;}
+
+.treedata{overflow:hidden;}
+.treedata ul{margin:0;padding:0;list-style:none;}
+.treedata li {background-image:url(tv-item.gif);background-repeat:no-repeat;background-position:0 -5px;padding:0 0 0 18px;margin:0;*border-bottom:1px solid #E8E7E1;*padding:4px 2px 4px 18px;*clear:both;}
+  .treedata li span{border-bottom:1px solid #E8E7E1;padding:5px 2px;height:16px;text-align:right;display:block;}
+  .treedata li span em, .treedata li span label{float:left;}
+  .treedata li span a{margin-left:5px;}
+.treedata li.collaps{background-image: url(tv-collapsable.gif);}
+.treedata li.expand{background-image: url(tv-expandable.gif);}
+  * html li.collaps div,* html li.expand div{display:inline;border:none;}
+  .treedata li em.hitarea{height:15px;width:15px;margin-left:-18px;float:left;cursor:pointer;}
+  /* fix for IE6 */
+  * html em.hitarea {background:#FFF;filter:alpha(opacity=0);display:inline;float:none;}
+.treedata li.last {background-image: url(tv-item-last.gif);border:none;}
+.treedata li.lastCollaps { background-image: url(tv-collapsable-last.gif);}
+.treedata li.lastExpand { background-image: url(tv-expandable-last.gif);}
+.treedata li.loading{background:url(../../common/loading.gif) no-repeat 0 5px;}
+.treedata .arrow{display:block;width:8px;height:16px;float:left;margin:-2px 5px 0;}
+.treedata .arrow a{display:block;width:8px;height:8px;margin-bottom:6px;}
+.treedata .arrow small{border-style:solid;border-width:4px;width:1px;height:1px;display:inline-block;}
+.arrow .arrow_down small{border-color:#000 transparent transparent;}
+.arrow .arrow_up small{border-color:transparent transparent #000;}
+.arrow .disabled{cursor:default;}
+.arrow .arrow_down small.disabled{border-color:#CCC transparent transparent;}
+.arrow .arrow_up small.disabled{border-color:transparent transparent #CCC;}
