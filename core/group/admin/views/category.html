@@ -8,7 +8,8 @@
         <li><a href="#tabs-{$group}" data-toggle="tab"><b>{echo lang('form_group.'.$group)}</b></a></li>
       <!--{/loop}-->
       </ul>
-      <form action="" method="post">
+      <form action="admin/category/save" method="post" name="supeForm">
+      <input type="hidden" name="id" value="0" />
       <div class="tab-content qcform">
         <!--{loop $form_group $key $group}-->
         <div class="tab-pane" id="tabs-{$group}">
@@ -24,7 +25,8 @@
       </div>
       <div class="boxes-search">
         <button type="submit" class="btn btn-primary">{lang button.submit}</button>
-        <button type="reset" class="btn">{lang button.reset}</button></div>
+        <button type="reset" class="btn">{lang button.reset}</button>
+        <span class="ajax-tips">{lang saving}</span></div>
       </form>
     </div>
   </div>
@@ -34,41 +36,98 @@
     <h4 class="boxes-tit">{$tabletit}</h4>
     <div class="boxes-body treedata">
       <ul>
-        <!--<li class="collaps"><span><em class="hitarea"></em><label>${id}. ${catename}</label>
-          <a href="#" title="Add"><i class="icon-plus"></i></a><a href="#" title="Edit"><i class="icon-edit"></i></a><a href="#" title="Delete"><i class="icon-remove"></i></a></span>{{if childs>0}}<ul></ul>{{/if}}</li>-->
+        <!--<li class="collaps"><span id="id-${id}"><em class="hitarea"></em><label>${id}. ${catename}</label>
+          <a href="#add" title="Add"><i class="icon-plus"></i></a>
+          <a href="#edit" title="Edit"><i class="icon-edit"></i></a>
+          <a href="#del" title="Delete"><i class="icon-remove"></i></a></span>{{if childs>0}}<ul></ul>{{/if}}</li>-->
       </ul>
     </div>
   </div>
 </section>
-<script type="text/javascript" src="0/js/jquery.tmpl.min.js"></script>
+<script type="text/javascript" src="0/jslib/jquery.tmpl.min.js"></script>
 <!--{if $this->form->htmlflag['html-editor']}-->
-<script type="text/javascript" src="0/js/ckeditor/ckeditor.js"></script><!--{/if}-->
+<script type="text/javascript" src="0/jslib/ckeditor/ckeditor.js"></script><!--{/if}-->
 <!--{if $this->form->htmlflag['file']}-->
 <script type="text/javascript">$('.form-file').data('url', '{:url category/upload}');</script>
-<script type="text/javascript" src="0/js/plupload/plupload.js"></script>
-<script type="text/javascript" src="0/js/plupload/plupload.plus.js"></script><!--{/if}-->
+<script type="text/javascript" src="0/jslib/plupload/plupload.js"></script>
+<script type="text/javascript" src="0/jslib/plupload/plupload.plus.js"></script><!--{/if}-->
 <script type="text/javascript">
-$.datacache.cat = {};
+$.datacache = jQuery.extend({}, {cate:{}, catedata:{}, content:{}});
 var app = {
-	id: 0,
-	wrap: $('.treedata>ul'),
+	id: 0, task: 'add', target: '',
+	root: $('.treedata > ul'),
+	wrap: '',
 	html: '',
 	init: function(){
+		this.wrap = this.root;
+		$.pluploader.callback(this.uploader);
 		this.html = $.trim(this.wrap.html()).replace(/^(<!\-\-)|((\/\/)*\-\->)$/g, '');
 		this.get(0);
+		$('.treedata').delegate('a', 'click', this.run);
+		$('.supeForm').saveForm(this.save);
+	},
+	run: function(){
+		var href = $(this).attr('href');
+		app.task = href.substr(href.lastIndexOf('#')+1);
+		app.target = this;
+		app.id = parseInt($(this).parent().attr('id').substr(3));
+		if ('undefined' !== app[app.task]){
+			app[app.task].call(this);
+		}
+		return false;
+	},
+	edit: function(){
+		var data = $.datacache['catedata'][app.id];
+		if (!data){
+			return $.getJSON('{:url category/get}', {id:app.id},
+			function(res){
+				$.datacache['catedata'][app.id] = res.body;
+				app.edit();
+			});
+		}
+		$('input[name=id]:hidden').val(app.id);
+		$('.sidergt .boxes-tit').html('{lang button.edit} / '+ data.catename);
+		$.each(data, function(k, val){
+			$('.qcform [name="' + k + '"]').val(val);
+		});
+	},
+	save: function(res){
+		var ff = $('.supeForm .form-file');
+		if (!res.id || !ff.length) return app.dialog(res);
+		ff.next().each(function(){
+			var uploader = $(this).pluploader();
+			if (!uploader) return true;
+			uploader.bind('BeforeUpload', function(up, files){
+				up.settings.multipart_params.id = res.id;
+			}).bind('UploadComplete', function(up, files){
+				app.dialog(res);
+			}).start();
+		});
+	},
+	dialog: function(res){
+		if (this.task === 'add'){
+			var se = this.id > 0 ? $(this.target).parent().next('ul') : this.root;
+			if (!se.length) se = $('<ul />').insertAfter($(this.target).parent());
+			$.tmpl(this.html, res.body).appendTo(se);
+			if (!$.datacache.cate[this.id]) $.datacache.cate[this.id] = {};
+			$.datacache.cate[this.id][res.id] = res.body;
+		}else if ('edit' === this.task){
+			$(this.target).parent().replaceWith($.tmpl(this.html, res.body).find('span'));
+		}
+		$.ckSuccess(res);
 	},
 	get: function(id){
 		this.id = id;
-		if ($.datacache['cat'][id]) return this.build();
-		return $.getJSON('{:url category/json}', {id: id, 'do': 'child'},
+		if ($.datacache.cate[id]) return this.build();
+		return $.getJSON('{:url category/json}', {id:id, 'do':'child', res:'array'},
 		function(res){
 			if (0===res.code) return ;
-			$.datacache.cat[id] = res.body;
+			$.datacache.cate[id] = res.body;
 			app.build();
 		});
 	},
 	build: function(){
-		var data = $.datacache.cat[this.id];
+		var data = $.datacache.cate[this.id];
 		if (!data) return ;
 		$.tmpl(this.html, data).appendTo(this.wrap.empty());
 		this.tree();
@@ -99,12 +158,43 @@ var app = {
 			.prepend('<em class="hitarea" />');
 		$('li:first',wrap).find('.arrow_up>small').addClass('disabled');
 		$('li:last',wrap).find('.arrow_down>small').addClass('disabled');
+	},
+	uploader: function(){
+		var op = {
+			'FileUploaded': function(e, up, file, res){
+				$(this).prev(':text').val(res.filepath);
+			}
+		};
+		$('.form-file').plupload_plus(op);
+	},
+	content: function(){
+		var id = 'qc-textarea-sd_content'
+			, jid = '#' + id
+			, html = $.datacache.content[this.id];
+		if (!this.id || this.task === 'add'){
+			$(jid).val('');
+			if ($(jid).is(':hidden')) CKEDITOR.instances[id].setData('');
+			return ;
+		}
+		if (!html){
+			return $.post('{:url category/content}', {id:app.id, ajaxget:'html'},
+				function(res){
+					$.datacache.content[app.id] = res;
+					app.content();
+				}, 'html');
+		}
+		if ($(jid).is(':visible')){
+			$(jid).val(html);
+		}else{
+			CKEDITOR.instances[id].setData(html);
+		}
 	}
 };
 $(function(){
 	app.init();
 	$('.nav a:first').addClass('active').trigger('click.tab.data-api');
 	/*{if $this->form->htmlflag['html-editor']}*/
+	$('.nav a:last').on('click.tab.data-api', $.proxy(app.content, app));
 	$(document).on('click.load-editor', '.html-editor',
 	function(){
 		$(this).prev().css('display','block');

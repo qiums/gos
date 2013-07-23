@@ -59,6 +59,7 @@ return array(
 	'press_esc'=>'请按[ESC]键取消',
 	'data_error'=>'数据错误',
 	'follow_success'=>'关注完成',
+	'saving' => '正在保存数据..',
 	'text' => array(
 		'all'=>'所有',
 		'allowed' => '允许',

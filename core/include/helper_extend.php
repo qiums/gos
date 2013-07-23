@@ -65,9 +65,9 @@ function replace_alias($alias){
 function formhash($specialadd = '') {
 	$hashadd = defined('IN_ADMINCP') ? 'Only For Admin Control Panel' : '';
 	return substr(md5(substr(NOW, 0, -5).
-		$GLOBALS['userdata']['username'].
-		$GLOBALS['userdata']['id'].
-		$GLOBALS['config']['base']['encryption_key'].$hashadd.$specialadd), 8, 8);
+		(string)Base::getInstance()->vars['user_data']['name'].
+		(string)Base::getInstance()->vars['user_data']['id'].
+		gc('base.encryption_key'). $hashadd. $specialadd), 8, 8);
 }
 function submitcheck($var='formhash', $allowget = 0) {
 	if (!req($var)){
