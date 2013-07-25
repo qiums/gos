@@ -35,16 +35,45 @@
 <script type="text/javascript" src="0/jslib/jquery.mselect.js"></script>
 <script type="text/javascript">$.mselect.data['qc-hidden-sd_cid'] = {mid: '{$channel[id]}'};</script><!--{/if}-->
 <!--{if $this->form->htmlflag['html-editor']}-->
-<script type="text/javascript" src="0/jslib/ckeditor/ckeditor.js"></script><!--{/if}-->
+<script type="text/javascript" src="0/jslib/ckeditor/ckeditor.js"></script>
+<script type="text/javascript" src="0/jslib/jquery.ubbcode.js"></script><!--{/if}-->
+<!--{if $this->form->htmlflag['file']}-->
+<script type="text/javascript" src="0/jslib/plupload/plupload.js"></script>
+<script type="text/javascript" src="0/jslib/plupload/plupload.plus.js"></script><!--{/if}-->
 <script type="text/javascript">
+var app = {
+	init: function(){
+		/*{if $this->form->htmlflag['file']}*/
+		$('[name=sd_coverpic]').data('url','{:url cp/file/upload}').data('browse','{:url cp/file/browse}');
+		$.pluploader.callback(this.uploader);/*{/if}*/
+		$.mselect.data['cid'] = {mid: '{$channel[id]}'};
+		$('.nav a:first').addClass('active').trigger('click.tab.data-api');
+	},
+	uploader: function(ac){
+		if (!$.pluploader) return ;
+		if ('reset' === ac) return $.pluploader.reset();
+		var op = {
+			panelname: 'file-panel'
+		};
+		$('.form-file').plupload_plus(op);
+	}
+}
 $(function(){
-	$.mselect.data['cid'] = {mid: '{$channel[id]}'};
-	$('.nav a:first').addClass('active').trigger('click.tab.data-api');
+	app.init();
 	/*{if $this->form->htmlflag['html-editor']}*/
 	$(document).on('click.load-editor', '.html-editor',
 	function(){
 		$(this).prev().css('display','block');
 		CKEDITOR.replace(this, {language: '{$config[site][language]}',width:'80%'});
+	}).bind('setdata', function(){
+		if (CKEDITOR.instances[this.id]){
+			if ($.trim($('[name=description]').val())===''){
+				$('[name=description]').val(CKEDITOR.instances[this.id].document.getBody().getText().csubstr(200));
+			}
+			$(this).val(UBB.html2ubb(CKEDITOR.instances[this.id].getData()));
+		}else if (app.task==='edit'){
+			$(this).attr('disabled', 'disabled');
+		}
 	});/*{/if}*/
 });
 </script>

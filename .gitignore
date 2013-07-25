@@ -8,6 +8,7 @@ core/components/uc/
 data/cache/
 data/config/database.php
 static/common/filetype/
+uploads/
 
 *.pydevproject
 .project
@@ -17,6 +18,8 @@ tmp/
 *.tmp
 *.bak
 *.swp
+*.psd
+*.log
 *~.nib
 local.properties
 .classpath

@@ -1,7 +1,7 @@
 {template header}
 <section class="sidergt sidehack" style="width:600px">
   <div class="boxes shadow">
-    <h4 class="boxes-tit">{lang button.add}</h4>
+    <h4 class="boxes-tit">{lang button.add_category}</h4>
     <div class="boxes-body">
       <ul class="nav nav-tabs clearfix">
       <!--{loop $form_group $group}-->
@@ -10,6 +10,8 @@
       </ul>
       <form action="admin/category/save" method="post" name="supeForm">
       <input type="hidden" name="id" value="0" />
+	  <input type="hidden" name="pid" value="0" />
+	  <input type="hidden" name="uptxt" value="0" />
       <div class="tab-content qcform">
         <!--{loop $form_group $key $group}-->
         <div class="tab-pane" id="tabs-{$group}">
@@ -33,10 +35,13 @@
 </section>
 <section class="sidemain sidehack">
   <div class="boxes shadow">
+	<span class="titrgt"><a class="btn addroot" href="#add"><i class="icon-plus"></i>{lang button.add_category}</a></span>
     <h4 class="boxes-tit">{$tabletit}</h4>
     <div class="boxes-body treedata">
       <ul>
-        <!--<li class="collaps"><span id="id-${id}"><em class="hitarea"></em><label>${id}. ${catename}</label>
+        <!--<li class="collaps"><span id="id-${id}">
+		  <em class="arrow" data-order="${orderby}"><a href="javascript:;" class="arrow_up"><small></small></a><a href="javascript:;" class="arrow_down"><small></small></a></em>
+		  <label>${id}. <cite>${catename}</cite></label>
           <a href="#add" title="Add"><i class="icon-plus"></i></a>
           <a href="#edit" title="Edit"><i class="icon-edit"></i></a>
           <a href="#del" title="Delete"><i class="icon-remove"></i></a></span>{{if childs>0}}<ul></ul>{{/if}}</li>-->
@@ -46,62 +51,87 @@
 </section>
 <script type="text/javascript" src="0/jslib/jquery.tmpl.min.js"></script>
 <!--{if $this->form->htmlflag['html-editor']}-->
-<script type="text/javascript" src="0/jslib/ckeditor/ckeditor.js"></script><!--{/if}-->
+<script type="text/javascript" src="0/jslib/ckeditor/ckeditor.js"></script>
+<script type="text/javascript" src="0/jslib/jquery.ubbcode.js"></script><!--{/if}-->
 <!--{if $this->form->htmlflag['file']}-->
-<script type="text/javascript">$('.form-file').data('url', '{:url category/upload}');</script>
+<script type="text/javascript">$('.form-file').data('url', '{:url admin/category/upload}');</script>
 <script type="text/javascript" src="0/jslib/plupload/plupload.js"></script>
 <script type="text/javascript" src="0/jslib/plupload/plupload.plus.js"></script><!--{/if}-->
 <script type="text/javascript">
 $.datacache = jQuery.extend({}, {cate:{}, catedata:{}, content:{}});
 var app = {
-	id: 0, task: 'add', target: '',
+	id: 0, task: 'add', target: '', form: '',
 	root: $('.treedata > ul'),
 	wrap: '',
 	html: '',
 	init: function(){
 		this.wrap = this.root;
-		$.pluploader.callback(this.uploader);
+		/*{if $this->form->htmlflag['file']}*/$.pluploader.callback(this.uploader);/*{/if}*/
 		this.html = $.trim(this.wrap.html()).replace(/^(<!\-\-)|((\/\/)*\-\->)$/g, '');
 		this.get(0);
-		$('.treedata').delegate('a', 'click', this.run);
-		$('.supeForm').saveForm(this.save);
+		this.form = $('form[name=supeForm]');
+		this.root.delegate('a', 'click', this.run);
+		this.form.bind('form-pre-serialize', function(e, form, op, veto){
+			$('.html-editor').trigger('setdata');
+		}).saveForm(this.save);
+		$('button[type=reset]').on('click.reset.form', this.reset);
+		$('.addroot').on('click.addroot', this.run);
+	},
+	reset: function(){
+		app.form[0].reset();
+		if ('undefined' !== typeof app[app.task]) app[app.task]();
+		app.uploader('reset');
+		app.content('reset');
+		return false;
 	},
 	run: function(){
 		var href = $(this).attr('href');
 		app.task = href.substr(href.lastIndexOf('#')+1);
 		app.target = this;
-		app.id = parseInt($(this).parent().attr('id').substr(3));
-		if ('undefined' !== app[app.task]){
-			app[app.task].call(this);
+		app.id = $(this).parent().hasClass('titrgt') ? 0 : parseInt($(this).parent().attr('id').substr(3));
+		app.wrap = !app.id ? app.root : $(this).closest('ul');
+		if ('undefined' !== typeof app[app.task]){
+			app[app.task](this);
 		}
 		return false;
 	},
-	edit: function(){
-		var data = $.datacache['catedata'][app.id];
+	add: function(el){
+		this.form[0].reset();
+		this.uploader('reset');
+		this.content('reset');
+		$('input[name=pid]:hidden').val(this.id);
+		$('.sidergt .boxes-tit').html('{lang button.add_category}' + (this.id > 0 ? ' / ' + $(el).prev('label').text() : ''));
+	},
+	edit: function(el){
+		var data = $.datacache.catedata[this.id];
 		if (!data){
-			return $.getJSON('{:url category/get}', {id:app.id},
+			return $.getJSON('{:url admin/category/get}', {id:this.id},
 			function(res){
-				$.datacache['catedata'][app.id] = res.body;
+				$.datacache.catedata[app.id] = res.body;
 				app.edit();
 			});
 		}
-		$('input[name=id]:hidden').val(app.id);
-		$('.sidergt .boxes-tit').html('{lang button.edit} / '+ data.catename);
+		$('input[name=id]:hidden').val(this.id);
+		$('.sidergt .boxes-tit').html('{lang button.edit_category} / '+ data.catename);
 		$.each(data, function(k, val){
 			$('.qcform [name="' + k + '"]').val(val);
 		});
+		this.uploader('reset');
 	},
 	save: function(res){
-		var ff = $('.supeForm .form-file');
-		if (!res.id || !ff.length) return app.dialog(res);
+		var ff = $('.form-file','form[name=supeForm]');
+		if (!res.body.id || !ff.length || ff.data('autoupload')>0) return app.dialog(res);
 		ff.next().each(function(){
-			var uploader = $(this).pluploader();
-			if (!uploader) return true;
+			var me=this, uploader = $(me).pluploader();
+			if (!uploader || !uploader.files.length) return true;
 			uploader.bind('BeforeUpload', function(up, files){
-				up.settings.multipart_params.id = res.id;
-			}).bind('UploadComplete', function(up, files){
+				up.settings.multipart_params.id = res.body.id;
+			});
+			uploader.bind('UploadComplete', function(up, files){
+				delete up.settings.multipart_params.oldfile;
 				app.dialog(res);
-			}).start();
+			});
+			uploader.start();
 		});
 	},
 	dialog: function(res){
@@ -110,10 +140,13 @@ var app = {
 			if (!se.length) se = $('<ul />').insertAfter($(this.target).parent());
 			$.tmpl(this.html, res.body).appendTo(se);
 			if (!$.datacache.cate[this.id]) $.datacache.cate[this.id] = {};
-			$.datacache.cate[this.id][res.id] = res.body;
+			$.datacache.cate[this.id][res.body.id] = res.body;
+			this.tree();
+			$(this.target).siblings('em.hitarea').trigger('click.subcate');
 		}else if ('edit' === this.task){
 			$(this.target).parent().replaceWith($.tmpl(this.html, res.body).find('span'));
 		}
+		$.datacache.catedata[res.body.id] = res.body;
 		$.ckSuccess(res);
 	},
 	get: function(id){
@@ -131,7 +164,6 @@ var app = {
 		if (!data) return ;
 		$.tmpl(this.html, data).appendTo(this.wrap.empty());
 		this.tree();
-		//$('#tree-tmpl').tmpl(data).appendTo(this.wrap.empty());
 	},
 	tree: function(wrap){
 		wrap = wrap || this.wrap;
@@ -159,35 +191,35 @@ var app = {
 		$('li:first',wrap).find('.arrow_up>small').addClass('disabled');
 		$('li:last',wrap).find('.arrow_down>small').addClass('disabled');
 	},
-	uploader: function(){
+	uploader: function(ac){
+		if (!$.pluploader) return ;
+		if ('reset' === ac) return $.pluploader.reset();
 		var op = {
 			'FileUploaded': function(e, up, file, res){
-				$(this).prev(':text').val(res.filepath);
+				$(this).prev(':text').val(res.code === 0 ? '' : res.body.filepath);
 			}
 		};
 		$('.form-file').plupload_plus(op);
 	},
-	content: function(){
+	content: function(ac){
 		var id = 'qc-textarea-sd_content'
 			, jid = '#' + id
 			, html = $.datacache.content[this.id];
-		if (!this.id || this.task === 'add'){
-			$(jid).val('');
-			if ($(jid).is(':hidden')) CKEDITOR.instances[id].setData('');
-			return ;
+		if ('reset' === ac){
+			if (undefined === html) return ;
+		}else if (!this.id || this.task === 'add'){
+			html = '';
 		}
-		if (!html){
-			return $.post('{:url category/content}', {id:app.id, ajaxget:'html'},
+		if (undefined === html){
+			return $.post('{:url admin/category/content}', {id:app.id, ajax:'html'},
 				function(res){
 					$.datacache.content[app.id] = res;
 					app.content();
 				}, 'html');
 		}
-		if ($(jid).is(':visible')){
-			$(jid).val(html);
-		}else{
-			CKEDITOR.instances[id].setData(html);
-		}
+		$(jid).val(html);
+		/*{if $this->form->htmlflag['html-editor']}*/
+		if (CKEDITOR.instances[id]) CKEDITOR.instances[id].setData(html);/*{/if}*/
 	}
 };
 $(function(){
@@ -195,10 +227,20 @@ $(function(){
 	$('.nav a:first').addClass('active').trigger('click.tab.data-api');
 	/*{if $this->form->htmlflag['html-editor']}*/
 	$('.nav a:last').on('click.tab.data-api', $.proxy(app.content, app));
-	$(document).on('click.load-editor', '.html-editor',
+	$('.html-editor').on('click.load-editor',
 	function(){
 		$(this).prev().css('display','block');
+		$('input[name=uptxt]:hidden').val('1');
 		CKEDITOR.replace(this, {language: '{$config[site][language]}',width:'98%'});
+	}).bind('setdata', function(){
+		if (CKEDITOR.instances[this.id]){
+			if ($.trim($('[name=description]').val())===''){
+				$('[name=description]').val(CKEDITOR.instances[this.id].document.getBody().getText().csubstr(200));
+			}
+			$(this).val(UBB.html2ubb(CKEDITOR.instances[this.id].getData()));
+		}else if (app.task==='edit'){
+			$(this).attr('disabled', 'disabled');
+		}
 	});/*{/if}*/
 });
 </script>

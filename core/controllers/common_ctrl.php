@@ -15,6 +15,9 @@ class common_controller extends controller{
 		$this->assign('user_perm', $us['perm']);
 		unset($us['perm']);
 		$this->assign('user_data', $us);
+		if ($this->post){
+			unset($this->post['token']);
+		}
 		// 导航
 		$this->assign('topnav', $this->category->callback()->root());
 	}

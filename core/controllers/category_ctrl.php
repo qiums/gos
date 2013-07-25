@@ -22,20 +22,4 @@ class category_controller extends common_controller{
 		}
 		return $this->output(0, 'method_not_exists');
 	}
-	public function get(){
-		if (!($id = $this->gp('id'))) return $this->output(0, 'not_request_data');
-		return $this->output(1, '', $this->category->get($id));
-	}
-	public function content(){
-		$id = $this->gp('id');
-		if (!$id) return $this->output(0, 'not_request_data');
-		$data = $this->category->db()
-			->where(array('mid'=>'0', 'aid'=>'0', 'cid'=>$id))
-			->attr('fields', 'content')
-			->find('contents');
-		if ($data['content']){
-			$data['content'] = $this->ubb->replace(htmlspecialchars($data['content']));
-		}
-		if ($_ENV['ajaxreq'] AND 'html'===$_ENV['datatype']) exit($data['content']);
-	}
 }

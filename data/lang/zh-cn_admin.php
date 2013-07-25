@@ -72,9 +72,9 @@ return array(
 		'select:union' => '无限级联列表',
 	),
 	'button' => array(
-		'add_category' => '新分类',
+		'add_category' => '新栏目',
 		'newcid'=>'新分类',
-		'edit_category'=>'修改分类',
+		'edit_category'=>'修改栏目',
 		'new_module' => '新模块',
 		'add_group' => '增加组',
 		'new_member' => '新用户',
@@ -141,6 +141,9 @@ return array(
 	'form_alt'=>array(
 		'set_begindate'=>'请设置开始时间',
 		'set_enddate'=>'请设置结束时间',
+	),
+	'placeholder'=>array(
+		'catename' => '填写分类名称',
 	),
 	'form_source'=>array(
 		'position'=>array(

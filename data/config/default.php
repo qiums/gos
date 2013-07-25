@@ -30,7 +30,7 @@ $config['image']['avatar_size'] = array('small'=>'30x30','mid'=>'80x80','big'=>'
 $config['image']['thumb_size'] = array('small'=>'120x120x1');
 $config['image']['thumb_extension'] = 'jpg';
 // Upload
-$config['upload']['savepath'] = UPLOAD_PATH;
+$config['upload']['tmpdir'] = TMP_PATH. 'uploads'. DS;
 $config['upload']['subpath'] = '[ext]'.DS.'[Y][m]'. DS;
 $config['upload']['savepath'] = UPLOAD_PATH;
 $config['upload']['thumbdir'] = UPLOAD_PATH. 'thumb'.DS;

@@ -38,6 +38,7 @@ ol{margin:0 0 0 20px;}
 .star_on{ background: url(star.gif) no-repeat 0 -16px !important;} 
 .star_yes{ background: url(star.gif) no-repeat 0 -32px;}
 .ajax-tips{background-color:#D00;border-radius:3px;color:#FFF;padding:3px 5px;display:none;}
+.caret{border-left: 4px solid transparent;border-right: 4px solid transparent;border-top: 4px solid #000000;content: "";display: inline-block;height: 0;vertical-align: top;width: 0;}
 /********************
 	From Bootcss
 ********************/

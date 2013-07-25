@@ -16,11 +16,12 @@ body.lang-en select,
 body.lang-en textarea,
 body.lang-en button
 {font-family:Tahoma, Consolas, Arial;}
-body{background:url("bg-body.gif") repeat-x #E8E8DD;}
+body{background:url("default-bg-body.png") repeat-x #E8E8DD;}
 body.lang-zh-cn{font:12px "Microsoft YaHei", Consolas;}
 body.lang-en{font:10px Tahoma, Consolas, Arial;}
 
 .nopadding{padding:0;}
+.titrgt{float:right;margin:4px 4px 0 0;}
 .shadow{-webkit-box-shadow:0 0 5px rgba(0,0,0,0.2);
 	-moz-box-shadow: 0 0 5px rgba(0,0,0,0.2);
 	box-shadow: 0 0 5px rgba(0,0,0,0.2);margin:0 5px;}
@@ -55,7 +56,6 @@ a.dropmenu-handle{display:inline-block;height:20px;padding:4px 6px;font-size:14p
     position: relative;
 }
 .navbar ul li a {
-    background: url("bg-topnav-mask.gif") no-repeat;
     color: #E0E0E0;
     display: inline-block;
     font-weight: bold;
@@ -66,7 +66,7 @@ a.dropmenu-handle{display:inline-block;height:20px;padding:4px 6px;font-size:14p
     text-decoration: none;
     text-transform: uppercase;
 }
-.navbar ul li.active>a {background:#6c7275; color:#fff;}
+.navbar ul li.active>a {background-color:#2f6c1f; color:#fff;}
 .navbar ul li:hover a,.navbar ul li.active:hover a {color:#508db8; background:#fff; background:url(bg-topnav-mask.gif) no-repeat 0 -40px;}
 .navbar ul li:hover ul li a,.navbar ul li.active:hover ul li a{background:none;}
 .navbar ul li a.top-level i{border-style: solid;
@@ -83,7 +83,7 @@ border:2px solid #ccc; border-left:none; border-top:none; border-right-width:1px
 .navbar ul li ul li:last-child{border-bottom:none;}
 .navbar ul li ul li a {padding:6px 3px 6px 20px; display:block !important;color:#5c6467;background:none;
 text-decoration:none; text-align:left; text-transform:capitalize; height:auto;font-weight:normal;}
-.navbar ul li ul li a:hover,.navbar ul li.active ul li a:hover{color:#fff;background-color:#5C6467;}
+.navbar ul li ul li a:hover,.navbar ul li.active ul li a:hover{color:#fff;background-color:#508e3c;}
 
 .container{margin-top:10px;padding-bottom:113px;overflow:hidden;}
 .container-top {
@@ -110,7 +110,7 @@ text-decoration:none; text-align:left; text-transform:capitalize; height:auto;fo
 
 .boxes{margin-bottom:15px;background-color:#FFF;border-radius:5px 5px 0 0;}
 .boxes .boxes-tit {
-    background:#3A4043;color:#E8E4A2;
+    background-color:#4f8d3c;color:#E8E4A2;
     font-weight: bold;border-radius:5px 5px 0 0;
     padding: 10px;display:block;
     text-transform: uppercase;
@@ -137,7 +137,7 @@ ul.menu-list li a i{margin-right:5px;}
 .lang-zh-cn .qcform .formbtn{padding:10px 0 0 110px;}
 .lang-en .qcform .formbtn{padding:10px 0 0 130px;}
 
-.footer-wrapper{background: url("bg-footer.gif") repeat-x;
+.footer-wrapper{background: url("default-bg-footer.png") repeat-x;
     height: 113px;margin-top:10px;
     position: relative;}
 .footer{width:980px;margin:0 auto;}
@@ -150,6 +150,13 @@ ul.menu-list li a i{margin-right:5px;}
 .footer small{color: #FFF;
     float: right;
     margin: 25px 0 0;}
+
+body.theme-coffee{background-image:url("coffee-bg-body.png");}
+body.theme-coffee .navbar ul li.active>a {background-color:#633b23;}
+body.theme-coffee .navbar ul li ul li a:hover,
+body.theme-coffee .navbar ul li.active ul li a:hover{color:#fff;background-color:#835b3f;}
+body.theme-coffee .footer-wrapper{background-image:url('coffee-bg-footer.png');}
+body.theme-coffee .boxes .boxes-tit {background-color:#835b3f;}
 
 .fullscreen #wrapper, .fullscreen .footer{width:98%;}
 .supeopt.affix{top:10px;}.supeopt{width:193px;}
@@ -175,8 +182,9 @@ span.captcha-boxes a {display:block;text-align:center;text-transform:uppercase;}
 .treedata{overflow:hidden;}
 .treedata ul{margin:0;padding:0;list-style:none;}
 .treedata li {background-image:url(tv-item.gif);background-repeat:no-repeat;background-position:0 -5px;padding:0 0 0 18px;margin:0;*border-bottom:1px solid #E8E7E1;*padding:4px 2px 4px 18px;*clear:both;}
+  .treedata li em{cursor:pointer;float:left;height:15px;margin-left:-18px;width:15px;}
   .treedata li span{border-bottom:1px solid #E8E7E1;padding:5px 2px;height:16px;text-align:right;display:block;}
-  .treedata li span em, .treedata li span label{float:left;}
+  .treedata li span label{float:left;}
   .treedata li span a{margin-left:5px;}
 .treedata li.collaps{background-image: url(tv-collapsable.gif);}
 .treedata li.expand{background-image: url(tv-expandable.gif);}
@@ -189,7 +197,7 @@ span.captcha-boxes a {display:block;text-align:center;text-transform:uppercase;}
 .treedata li.lastExpand { background-image: url(tv-expandable-last.gif);}
 .treedata li.loading{background:url(../../common/loading.gif) no-repeat 0 5px;}
 .treedata .arrow{display:block;width:8px;height:16px;float:left;margin:-2px 5px 0;}
-.treedata .arrow a{display:block;width:8px;height:8px;margin-bottom:6px;}
+.treedata .arrow a{display:block;width:8px;height:8px;margin:-4px 0 8px -4px;}
 .treedata .arrow small{border-style:solid;border-width:4px;width:1px;height:1px;display:inline-block;}
 .arrow .arrow_down small{border-color:#000 transparent transparent;}
 .arrow .arrow_up small{border-color:transparent transparent #000;}

@@ -3,6 +3,12 @@
 * create by EditPlus v3.01
 * author by Sam <wuyou192@163.com>.
 */
+class com_file_controller extends common_controller{
+	public function browse(){
+		$user = Base::getInstance()->vars['user_data'];
+		if (!$user) return $this->output(0, 'need_login');
+	}
+}
 $file_types = array(
 	'media' => array('title'=>'Media Files', 'extensions'=>'flv,mp3,mp4,swf'),
 	'image' => array('title'=>'Image Files', 'extensions'=>'jpg,jpeg,gif,png'),

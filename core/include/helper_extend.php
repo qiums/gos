@@ -63,7 +63,7 @@ function replace_alias($alias){
 	return trim(preg_replace('/\-+/s','-', $alias), '-');
 }
 function formhash($specialadd = '') {
-	$hashadd = defined('IN_ADMINCP') ? 'Only For Admin Control Panel' : '';
+	$hashadd = 'admin'===gc('env.groupdir') ? 'Only For Admin Control Panel' : '';
 	return substr(md5(substr(NOW, 0, -5).
 		(string)Base::getInstance()->vars['user_data']['name'].
 		(string)Base::getInstance()->vars['user_data']['id'].
@@ -116,7 +116,7 @@ function upwebroot($domain=TRUE){
 	if (defined('UPLOAD_FILE_URL')) return UPLOAD_FILE_URL;
 	$uc = gc('upload');
 	return ($domain AND isset($uc['domain'])) ? trim($uc['domain'],'/')
-		: gc('env.webroot'). (str_replace(DS, '/', str_replace(array(THISPATH, ROOT), '', $uc['savepath'])));
+		: gc('env.webroot'). (str_replace(DS, '/', str_replace(array(THIS_PATH, ROOT), '', $uc['savepath'])));
 }
 function fileurl($file){
 	$file = str_replace(DS, '/', str_replace(gc('upload.savepath'), '', $file));
@@ -155,7 +155,8 @@ function cut_thumb($path,$width=120,$height=120,$fixed=0,$df="nopic"){
 function del_file($path){
 	global $config;
 	$savepath = $config['upload']['savepath'];
-	$path = $savepath. str_replace(array($savepath,'/'), array('',DS), $path);
+	$path = $savepath. str_replace(array($savepath,'/'), array('', DS), $path);
+	if (!$path OR !file_exists($path)) return 0;
 	$info = pathinfo($path);
 	$size = filesize($path);
 	if (preg_match('/(jpg|jpeg|gif|png)$/is',$path)){
@@ -167,7 +168,7 @@ function del_file($path){
 			@unlink($one);
 		}
 	}
-	if (is_file($path)) @unlink($path);
+	if (!@unlink($path)) return 0;
 	return $size;
 }
 function ct($path,$width=120,$height=120,$fixed=0,$df='nopic'){

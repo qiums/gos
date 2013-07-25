@@ -20,6 +20,13 @@ class common_controller extends controller{
 			}
 			redirect('admin/home/login');
 		}
+		if ($this->post){
+			if ($this->post['token'] !== formhash()){
+				$this->output(0, 'token_fail');
+				exit;
+			}
+			unset($this->post['token']);
+		}
 		$this->load->model('user/group');
 		$this->build_menu();
 		unset($us, $lang);
