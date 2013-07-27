@@ -84,7 +84,7 @@ function captcha(){
 function login(res){
 	if (1 !== res.code) return false;
 	$.dialog('<strong>'+('{lang login_success}'.replace('[username]',$('#qc-text-username').val()))+'</strong>',
-		{width:350, buttons:{'{:lang("button.continue")}': $('#qc-input-hidden-url').val()?$('#qc-input-hidden-url').val():'{echo url("user")}'}});
+		{width:350, buttons:{'{:lang("button.continue")}': $('#qc-hidden-qcurl').val()?$('#qc-hidden-qcurl').val():'{echo url("user")}'}});
 	return '';
 };
 function signup(s){

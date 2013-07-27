@@ -31,17 +31,17 @@
     </div>
 <!--{if !$_ENV[ajaxreq]}-->
 </div>
-<link rel="stylesheet" type="text/css" href="0/js/fancybox/jquery.fancybox-1.3.4.css" />
-<script type="text/javascript" src="0/js/jquery.tmpl.js"></script>
-<script type="text/javascript" src="0/js/jquery.ubbcode.js"></script>
-<script type="text/javascript" src="0/js/fancybox/jquery.fancybox-1.3.4.pack.js"></script>
+<link rel="stylesheet" type="text/css" href="0/jslib/fancybox/jquery.fancybox-1.3.4.css" />
+<script type="text/javascript" src="0/jslib/jquery.tmpl.min.js"></script>
+<script type="text/javascript" src="0/jslib/jquery.ubbcode.js"></script>
+<script type="text/javascript" src="0/jslib/fancybox/jquery.fancybox-1.3.4.pack.js"></script>
 <script type="text/javascript">
 $(function(){
 	$('.dynamicload a').iscroll(300,
 	function(){
 		$(this).parent().removeClass('dynamicload');
 	});
-	$('a[rel=gallery]').fancybox();
+	//$('a[rel=gallery]').fancybox();
 });
 </script>
 {template footer}

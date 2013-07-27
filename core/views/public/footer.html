@@ -14,6 +14,7 @@
 <script type="text/javascript">
 $(function(){
 	Ads.get();
+	/*{if $rc}*/$('#nav-c{$rc[id]}').siblings('.nav-on').removeClass('nav-on').end().addClass('nav-on');/*{/if}*/
 });
 </script>
 </body>

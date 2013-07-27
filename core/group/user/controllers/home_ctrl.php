@@ -31,6 +31,10 @@ class home_controller extends common_controller{
 		$this->assign('loginform', $this->form->render($form));
 		$this->view('login');
 	}
+	public function logout(){
+		$this->user->del_cookie();
+		redirect('#back#');
+	}
 	public function register(){
 		// Register Form
 		$form = array(

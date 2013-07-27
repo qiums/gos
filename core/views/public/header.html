@@ -42,10 +42,10 @@
         </div>
         <div class="navs">
         	<ul>
-            	<li><a class="nav-on" href="{$config[env][baseurl]}">Home</a></li>
+            	<li class="nav-on"><a href="{$config[env][baseurl]}">Home</a></li>
                 <!--{loop $topnav $one}-->
 				<!--{if !$one[hide_nav]}-->
-            	<li><a href="{$one[link]}">{$one[catename]}</a></li>
+            	<li id="nav-c{$one[id]}"><a href="{$one[link]}">{$one[catename]}</a></li>
 				<!--{/if}-->
                 <!--{/loop}-->
             </ul>
