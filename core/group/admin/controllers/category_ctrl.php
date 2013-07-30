@@ -34,6 +34,7 @@ class category_controller extends common_controller{
 		}
 		$ac = $id ? 'edit' : 'add';
 		unset($this->post['coverpic']);
+		$this->post['alias'] = replace_alias($this->post['catename']);
 		if (!$id){
 			$pid = (int)$this->post['pid'];
 			if (!$pid){

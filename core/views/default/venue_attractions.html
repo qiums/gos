@@ -1,0 +1,34 @@
+{template header} 
+    <div class="content">
+        <div class="c-down">
+        	{template widget/pleft}
+            <div class="c-mid cmid1">
+            	<!--{if isset($lc[typeid])}-->
+                <div class="title-nav">
+                    <ul>
+                    	<li class="tnav-on" id="titnav-{$lc[typeid]}"><a href="{echo url('attractions')}">All</a></li>
+                    	<!--{list cp.tree=do/child/id/#lc[typeid]# property=tid/venue}-->
+                        <li id="titnav-{$one[id]}"><a href="{echo url('#pathinfo#', 'tid/'.$one[alias])}">{$one[dataname]}</a></li>
+                    	<!--{/list}-->
+                    </ul>
+                </div><!--{/if}-->
+                <div class="image-all" style="display:;">
+                	<ul>
+                    <!--{loop $arrdata $one}-->
+                    	<li>
+                        	<a class="imgss" href="{$one[link]}"><img src="{echo ct($one[coverpic],120,120,1,'type-'.qstrstr($one[tid],',',TRUE))}" alt="{$one[fulltitle]}" /></a>
+                            <a href="{$one[link]}" class="img-name">{$one[fulltitle]}</a>
+                            <p>{echo csubstr($one[description],100)}</p>
+                            <span class="ib rate45"></span>
+                        </li><!--{/loop}-->
+                    </ul>
+                </div>
+                <div style="clear:both;" class="page">{widget:page/run='url/#pathinfo#'}</div>
+            </div>
+            <div class="c-right cright4">
+                {template widget/hot-spots}
+            </div>
+            <div style="clear:both;"></div>
+        </div>
+    </div><!--{if $G[tid]}-->/<script type="text/javascript">$(function(){$('#titnav-{$G[tid]}').siblings('.tnav-on').removeClass('tnav-on').end().addClass('tnav-on');});</script><!--{/if}-->
+{template footer}

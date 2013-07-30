@@ -11,6 +11,20 @@ class QC_Lib_ubb extends Lib_ubb{
 		if ($matches[1]=='p' AND !empty($this->custom_tags) AND preg_match('/\[('.$this->custom_tags.').[^\]]*?\]/is',$str)) return $str;
 		return call_user_func(array('QC_UbbTags',"parse"),$matches[1],$str,$matches[$key-1],$this->edit);
 	}
+	public function page($content, $p=1){
+		$content = preg_split('/\[page(.+?)\[\/page\]/is', $content, 20, PREG_SPLIT_DELIM_CAPTURE);
+		$res = array();
+		foreach ($content as $k=>$line){
+			if (!$line) continue;
+			if ('=' === $line{0}){
+				list($res[$k]['pagetit'], $res[$k]['pagedesc']) = explode(']', ltrim($line, '='));
+				$res[$k] += array('content'=>trim($content[$k+1]));
+			}
+		}
+		$res = array_values($res);
+		$p--;
+		return isset($res[$p]) ? ($res[$p]+array('pagetotal'=>count($res))) : array('content'=>$content[0]);
+	}
 }
 class QC_UbbTags extends UbbTags{
 	static public function parse($tag,$str,$args,$edit){
@@ -36,7 +50,7 @@ class QC_UbbTags extends UbbTags{
 		return '<span class="'.$class.'"><a href="'.$src.'" rel="gallery" title="'.$str.'" '.$style.'></a>'.
 			(empty($str)?'':"<strong>{$str}</strong>").'</span>';
 	}
-	function parse_img($str,$args){
+	function parse_img($str, $args){
 		$args=explode('|',$args);
 		$style = (isset($args[1])?'width:'.$args[1].'px;':'')
 			.(isset($args[2])?'height:'.$args[2].'px;':'');
@@ -47,8 +61,5 @@ class QC_UbbTags extends UbbTags{
 		}
 		if ($style) $style = "style=\"{$style}\"";
 		return '<a href="'.$args[0].'" class="'.$class.'" rel="gallery" title="'.$str.'"'.$style.'></a>';
-	}
-	function parse_download($str, $args){
-		//if (
 	}
 }

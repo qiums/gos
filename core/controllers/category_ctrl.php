@@ -7,8 +7,22 @@ class category_controller extends common_controller{
 		$data = $this->category
 				->fields("id,mid,pid,node,catename,childs,alias")
 				->find($this->post);
+		$ids = '';
 		foreach ($data as $key=>$one){
 			if ($one['redirect']) unset($data[$key]);
+			$ids .= ",{$one['id']}";
+		}
+		if ($this->post){
+			$res = array();
+			foreach ($data as $one){
+				$res[$one['id']] = $one;
+				$node = explode(',', $one['node']);
+				foreach ($node as $i){
+					if (!cstrpos($ids, $i)) $data[$i] = $this->category->get($i);
+				}
+			}
+			$data = $res;
+			unset($res);
 		}
 		//$data = qcsort($data);
 		return $this->output(1, '', qcsort($data));

@@ -1,0 +1,11 @@
+<div class="model1"> 
+	<!--{data cp.tree=do/get/id/118 property=tid/venue}-->
+    <div class="mtitle"><h3><a class="biaoti" href="{$one[link]}">{$one[dataname]}</a></h3>
+    	<a class="smap" href="{echo url('search/map', array('tid'=>$one[id]))}">See on map&raquo;</a></div>
+    <ul class="lis1">
+    	<!--{list archives=mid/venue/tid/#one[id]#/limit/5/attrib/3 as=row}-->
+        <li><a href="{$row[link]}">{$row_index}. {$row[fulltitle]}</a></li>
+        <!--{/list}-->
+    </ul>
+    <a class="more" href="attractions/tid/hot-spots">Show all >></a>
+</div>

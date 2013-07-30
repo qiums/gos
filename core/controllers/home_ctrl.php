@@ -4,7 +4,9 @@ class home_controller extends common_controller{
 		parent::__construct();
 	}
 	function index(){
-		//return dump($this->category->block("list", "do/get/mid/3/id/0/use/recommend/1"));
+		/*print_r($this->ubb->page('fsfs
+			fsdfs
+			rwrw'));return ;*/
 		$this->view('home');
 	}
     function history(){

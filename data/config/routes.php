@@ -18,7 +18,8 @@ $routes['add/(venue|events)'] = 'member/app/summary/add/item/$1';
 $routes['venue/view/(:num)'] = 'venue/detail/id/$1';
 $routes['(venue)/(:any)'] = 'venue/index?cid=$2';
 $routes['(venue|events|album|download|family)'] = 'archives/index/mid/$1';*/
-$routes['(article|venue|events|album|blog|download|family)/view/(:num)'] = 'archives/detail/mid/$1/id/$2';
+$routes['(article|venue|events|album|blog|download)/view/(:num)'] = 'archives/detail/mid/$1/id/$2';
+$routes['(article|venue|events|album|blog|download)/view/(:num)/page/(:num)'] = 'archives/detail/mid/$1/id/$2/page/$3';
 $routes['(events|venue|album|blog|download|family)/(:any)'] = 'archives/index/mid/$1?cid=$2';
 $routes['(?!archives|gosupe|admin|member|user|components|cp|category|search|home|views|plug|forum)(:any)'] = 'archives/index?cid=$1';
 

@@ -22,7 +22,7 @@
                 	<div class="quyu2">
                     	<!--{if !$G[local]}--><label class="cuisine">AREA</label>
                         <div class="all-list">
-                        	<input type="hidden" name="area" value="{$G[area]}" data-kname="dataname" data-alt="SELECT AREA" />
+                        	<input type="hidden" name="region" value="{$G[region]}" data-kname="dataname" data-alt="SELECT AREA" />
                         	<a class="moren-left dropmenu-handle" id="sel-region" href="javascript:;" data-target="dropmenu-area">All<b></b></a>
                         </div><!--{/if}-->
                         <div class="queding"><button type="submit">Search</button></div>
@@ -75,7 +75,7 @@
                         </div>
                     </div></li><!--{/loop}-->
                 </ul>
-                <div class="page">{widget:page}</div>
+                <div class="page">{widget:page/run}</div>
                 <!--{/if}-->
             </div>
             <!--{if $G[mode]!='map'}-->
@@ -106,7 +106,7 @@ var app = {
 			;return false;
 		});
 		$('form[name=searchForm]').submit(function(){
-			$.each(['tid','area','price'], function(i, n){
+			$.each(['tid','region','price'], function(i, n){
 				var v = $('[name='+n+']').val();
 				if (!v || '' == v) return true;
 				app.cache.data[n] = v;
@@ -241,16 +241,16 @@ var markers = []
 <script type="text/javascript">
 $(function(){
 	$('input[name=tid]').dropmenu({
-		url:'{url cp/tree/json/tid/venue}', data:{ac:'all'},
+		url:'{url cp/tree/json/tid/venue}', data:{ac:'all'}/*,
 		onRender: function(){
 			document.title = $(this).next().text() + '-' + document.title;
-		}
+		}*/
 	});
-	$('input[name=area]').dropmenu({
-		url:'{url cp/tree/json/tid/region}', data:{ac:'all'},
+	$('input[name=region]').dropmenu({
+		url:'{url cp/tree/json/tid/region}', data:{ac:'all'}/*,
 		onRender: function(){
 			document.title = $(this).next().text() + '-' + document.title;
-		}
+		}*/
 	});
 	$('.stardiv span').each(function(){
 		$(this).rate({
@@ -266,6 +266,7 @@ $(function(){
 		return false;
 	});
 	$('.title-nav li:eq({echo $G[mode]=="map"?1:0})').addClass('tnav-on');
+	/*{if $G[k]}*/$('.r-title h2 a').highlight_word('{addslashes $G[k]}');/*{/if}*/
 });
 </script>
 {template footer}

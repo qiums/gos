@@ -60,7 +60,7 @@
 <script type="text/javascript">
 $.datacache = jQuery.extend({}, {cate:{}, catedata:{}, content:{}});
 var app = {
-	id: 0, task: 'add', target: '', form: '',
+	id: 0, task: 'add', target: $('.addroot')[0], form: '',
 	root: $('.treedata > ul'),
 	wrap: '',
 	html: '',
@@ -121,26 +121,22 @@ var app = {
 	save: function(res){
 		var ff = $('.form-file','form[name=supeForm]');
 		if (!res.body.id || !ff.length || ff.data('autoupload')>0) return app.dialog(res);
+		var i = 0;
 		ff.next().each(function(){
-			/*var me=this, uploader = $(me).pluploader();
-			if (!uploader || !uploader.files.length) return true;
-			uploader.bind('BeforeUpload', function(up, files){
-				up.settings.multipart_params.id = res.body.id;
-			});
-			uploader.bind('UploadComplete', function(up, files){
-				delete up.settings.multipart_params.oldfile;
-				app.dialog(res);
-			});
-			uploader.start();*/
-			$(this).bind('plupload-BeforeUpload',
+			var uploader = $(this).bind('plupload-BeforeUpload',
 			function(e, up, files){
 				up.settings.multipart_params.id = res.body.id;
 			}).bind('plupload-UploadComplete',
 			function(e, up, files){
 				delete up.settings.multipart_params.oldfile;
 				app.dialog(res);
-			}).pluploader().start();
+			}).pluploader();
+			if (uploader.files.length>0){
+				i++;
+				uploader.start();
+			}
 		});
+		if (0===i) return app.dialog(res);
 	},
 	dialog: function(res){
 		res.body.coverpic = $('input[name=coverpic]').val();
@@ -150,6 +146,7 @@ var app = {
 			$.tmpl(this.html, res.body).appendTo(se);
 			if (!$.datacache.cate[this.id]) $.datacache.cate[this.id] = {};
 			$.datacache.cate[this.id][res.body.id] = res.body;
+			this.reset();
 			this.tree();
 			$(this.target).siblings('em.hitarea').trigger('click.subcate');
 		}else if ('edit' === this.task){

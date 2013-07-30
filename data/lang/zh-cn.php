@@ -222,7 +222,7 @@ return array(
 		'choose_category' => '选择分类',
 		'region' => '选择地区',
 		'cid' => '选择分类',
-		'category'=>'选择分类',
+		'catetag'=>'选择分类',
 		'scid'=>'选择次分类',
 		'aids' => '行政/商业区域',
 		'alias' => '别名',
@@ -300,6 +300,7 @@ return array(
 		'pubtime' => '发布时间',
 		'typetag' => '信息类型',
 		'areatag' => '选择地区',
+		'region' => '选择地区',
 	),
 	'placeholder' => array(
 		'keywords' => '不超过30个字符',

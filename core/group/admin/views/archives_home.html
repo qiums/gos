@@ -53,7 +53,7 @@
     </div>
   </div>
   <div class="pagination">
-    {widget:page}
+    {widget:page/run}
   </div>
 </section>
 <div class="hide">
@@ -71,7 +71,7 @@
 </div>
 <!--{if $this->form->htmlflag['mselect']}-->
 <script type="text/javascript" src="0/jslib/jquery.mselect.js"></script>
-<script type="text/javascript">$.mselect.data['qc-hidden-cid'] = {mid: '{$channel[id]}'};</script><!--{/if}-->
+<script type="text/javascript">$.mselect.data['qc-hidden-cid'] = {mid: '{$channel[id]}', tpltype:'list'};</script><!--{/if}-->
 <script type="text/javascript">
 var app={
 	init: function(){
@@ -87,7 +87,7 @@ var app={
 		$('input[name=tid]').dropmenu({
 			url:'{url cp/tree/json/tid/venue}', data:{ac:'all'}
 		});
-		$('input[name=area]').dropmenu({
+		$('input[name=region]').dropmenu({
 			url:'{url cp/tree/json/tid/region}', data:{ac:'all'}
 		});
 	},

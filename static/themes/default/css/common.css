@@ -92,7 +92,7 @@ input,textarea,button{border:none;outline-color:none;font-family:Arial, Helvetic
 .page-info .left-arrow{background-position:0 0;margin-left:6px;}
 .page-info .right-arrow{background-position:right 0;}
 .travel-img{overflow:hidden;padding:10px 6px;border-bottom:1px dotted #d7d7d7;}
-.travel-img ul li{float:left;width:220px;padding:8px;}
+.travel-img ul li{float:left;width:225px;padding:8px;}
 .travel-img ul li .img-info{float:left;width:220px;overflow:hidden;}
 .img-info .img-left{float:left;}
 .img-info .img-left a{float:left;width:114px;height:114px;padding:3px;background:#fff;overflow:hidden;}

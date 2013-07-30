@@ -20,6 +20,9 @@ body{background:url("default-bg-body.png") repeat-x #E8E8DD;}
 body.lang-zh-cn{font:12px "Microsoft YaHei", Consolas;}
 body.lang-en{font:10px Tahoma, Consolas, Arial;}
 
+.pagination ul > li > a.active, .pagination ul > li > span.active{padding:0 12px 0 0;background-color:#ECECEC;}
+.pagination ul > li > a.active b, .pagination ul > li > span.active b{background-color:#FFF;display:inline-block;margin-right:10px;padding:4px 8px;}
+
 .nopadding{padding:0;}
 .titrgt{float:right;margin:4px 4px 0 0;}
 .shadow{-webkit-box-shadow:0 0 5px rgba(0,0,0,0.2);

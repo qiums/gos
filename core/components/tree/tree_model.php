@@ -7,6 +7,7 @@ class com_tree_model extends model{
 	public $treeinfo;
 	public $tid = 0;
 	private $fields = NULL;
+	private $cachedata = array();
 
 	function get_tree($id=0,$cache=FALSE){
 		if (is_null($id)) return array();
@@ -16,7 +17,7 @@ class com_tree_model extends model{
 		}
 		$this->tid = $id;
 		$cachename = 'com.tree_info';
-		if ($cache OR !$tree = cache::q($cachename)){
+		if ($cache OR FALSE===($tree = cache::q($cachename))){
 			$tree = $this->attr('datatype', 3)->findAll();
 			cache::q($cachename, $tree);
 		}
@@ -46,8 +47,20 @@ class com_tree_model extends model{
 	}
 	function build(&$data){
 		if (!$data['rootid']) $data['rootid'] = $data['id'];
+		if (!$data['alias']) $data['alias'] = replace_alias($data['dataname']);
 		$data['fullnode'] = ($data['node']==$data['id']) ? $data['id'] : ("{$data['node']},{$data['id']}");
+		$data['fullalias'] = $this->full_alias($data);
 		if ($data['options']) $data += parse_ini_string($data['options'],TRUE);
+	}
+	function full_alias($data){
+		static $cache = array();
+		$cache[$data['id']] = $data;
+		$node = explode(',', $data['fullnode']);
+		$alias = array();
+		foreach ($node as $id){
+			$alias[] = !$cache[$id]['alias'] ? replace_alias($cache[$id]['dataname']) : $cache[$id]['alias'];
+		}
+		return join('/', $alias);
 	}
 	public function all(){
 		return $this->qfind();
@@ -60,10 +73,10 @@ class com_tree_model extends model{
 			$tree = $this->treeinfo;
 		}
 		if (!$tree) return array();
-		static $treedata = array();
-		if (!$cache AND isset($treedata[$tree['alias']])) return $treedata[$tree['alias']];
 		$cachename = 'com.tree_'.$tree['alias'];
-		if ($cache OR FALSE===($data = cache::q($cachename))){
+		if (!$cache AND isset($this->cachedata[$tree['alias']])){
+			$data = $this->cachedata[$tree['alias']];
+		}elseif ($cache OR FALSE===($data = cache::q($cachename))){
 			if ($tree['treetable']==$this->gc('treedata_table')) $cond['tid'] = $tree['id'];
 			$this->callback()
 				->order()
@@ -72,6 +85,7 @@ class com_tree_model extends model{
 			$data = $this->db()->findAll($tree['treetable']);
 			cache::q($cachename, $data);
 		}
+		if (!isset($this->cachedata[$tree['alias']])) $this->cachedata[$tree['alias']] = $data;
 		if ($this->fields){
 			$in = array_flip(explode(',', $this->fields));
 			foreach ($data as $key=>$one){
@@ -79,20 +93,19 @@ class com_tree_model extends model{
 			}
 			$this->fields = NULL;
 		}
-		$treedata[$tree['alias']] = $data;
 		return $data;
 	}
 	function get($id, $use=''){
 		$tree = $this->qfind();
 		if (!is_array($id)){
-			if (preg_match('/^\d+$/s', $id)){
+			if (is_numeric($id)){
 				$rs = isset($tree[$id]) ? $tree[$id] : array();
-				if ($key AND isset($rs[$key])) return $rs[$key];
+				if ($use AND isset($rs[$use])) return $rs[$use];
 				return $rs;
 			}
 			$id = explode(',',$id);
 		}
-		if (!$use) $use = preg_match('/^\d+$/s', join('', $id)) ? 'id' : 'alias';
+		if (!$use) $use = is_numeric($id) ? 'id' : 'alias';
 		$rs = array();
 		foreach ($tree as $tid=>$one){
 			if (!isset($one[$use])) continue;//return array();
@@ -101,7 +114,7 @@ class com_tree_model extends model{
 		if (count($rs)==1) return current($rs);
 		return $rs;
 	}
-	function dget($id=0, $key='hot'){
+	function dget($id=0, $key='hot', $rstype=0){
 		$cat = $this->qfind();
 		$rs = array();
 		if ($id>0) $rs[$id] = array();
@@ -109,9 +122,15 @@ class com_tree_model extends model{
 			if (!$id AND !$one['pid'] AND !isset($rs[$one['id']]))
 				$rs[$one['id']] = array();
 			if (!$one[$key] OR ($id>0 AND cstrpos($one['node'],$id)===FALSE)) continue;
-			$rs[($id?$id:$one['rootid'])][] = $one;
+			$rs[($id>0?$id:$one['rootid'])][] = $one;
 		}
-		return current($rs);
+		if (!$id AND !$rstype){
+			foreach ($rs as $one){
+				$tmp = array_merge((array)$tmp, $one);
+			}
+			return $tmp;
+		}
+		return $id>0 ? current($rs) : $rs;
 	}
 	function root($by='byid'){
 		$tree = $this->qfind();

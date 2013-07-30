@@ -174,14 +174,13 @@ class archives_model extends model{
 			),
 		);
 	}
-	public function block($ac='', $a=''){
+	public function block($ac='', $a='', $fields=array()){
 		$a = str2array($a);
 		if (!isset($a['mid'])) return array();
 		$this->config = $this->channel->get($a['mid']);
 		$fields = $this->channel->get_fields($this->config['id'], 4);
-		if ($this->config['addon_table']){
-			$this->join("{$this->config['addon_table']}.aid");
-		}
-		return parent::block($ac, $this->apply_cond($fields, $a));
+		$list = array_keys($this->channel->get_fields($mc['id'], 5));
+		$this->callback()->attr('fields', join(',', $list));
+		return parent::block($ac, $a, $this->apply_cond($fields, $a));
 	}
 }

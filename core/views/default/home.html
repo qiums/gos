@@ -150,23 +150,24 @@
 
                 </div>
                 
-            	<div class="travel" style="margin-top:10px;">
+            	<div class="travel" style="margin-top:10px;height:290px">
                 	<div class="title-nav">
                     	<h2><a href="venue/attrib/3"><img src="images/index/recommend.gif" alt="Recommend" /></a></h2>
                         <ul class="tablink">
-                        <!--{list category=do/get/mid/3/id/0/use/recommend}-->
-                        	<li><a data-index="rec-{$one_index}" href="#!{echo url('search/venue/cid/'.$one[fullalias],array('attrib'=>4))}">{$one[catename]}</a></li>
+                        <!--{list cp.tree=do/dget/id/0/key/recommend property=tid/venue}-->
+                        	<li><a data-index="{$one_index}" href="#!{echo url('search/venue/tid/'.$one[id],array('attrib'=>3))}">{$one[dataname]}</a></li>
                         <!--{/list}-->
                         </ul>
                         <div class="search3">
                             <input type="text" placeholder="name of restaurant, bar, hotel, etc" class="so1"/><input type="button" value="" class="so2" />
                         </div>
                     </div>
+					<!--{loop $blockv $one}-->
                     <div class="travel-info" id="rec-{$one_index}">
                     	<div class="show-page">
-                        	<a class="seemap" href="{echo url('venue/attrib/4#map', array('cid'=>$one[fullalias]))}">See on map >></a>
+                        	<a class="seemap" href="{echo url('search/map/attrib/3', array('tid'=>$one[id]))}">See on map >></a>
                             <div class="page-info">
-                            	<span>3</span><span>/</span><span>5</span>
+                            	<span>1</span><span>/</span><span>-</span>
                                 <a href="#" class="left-arrow"></a>
                                 <a href="#" class="right-arrow"></a>
                             </div>
@@ -176,31 +177,63 @@
                             	<!--<li>
                                 	<div class="img-info">
                                     	<div class="img-left">
-                                        	<a href="{$row[link]}"><img src="{ct($row[coverpic],114,114,1)}" alt="{$row[subject]}" /></a>
+                                        	<a href="${link}"><img src="${thumb}" alt="${fulltitle}" /></a>
                                         </div>
                                         <div class="img-right">
-                                            <h2><a href="{$row[link]}">{$row[subject]}</a></h2>
-                                            <span class="ib rate{echo $row[rate]}"></span>
-                                            <p>{csubstr($row[description],50)}</p>
+                                            <h2><a href="${link}">${fulltitle}</a></h2>
+                                            <span class="ib rate${rate}"></span>
+                                            <p>${description}</p>
                                         </div>
                                     </div>
                                 </li>-->
                             </ul>
                             <div style="clear:both"></div>
                         </div>
-                        <div class="more2"><a href="{url venue/$one[fullalias]}">Detailed info >></a></div>
-                    </div>
+                        <div class="more2"><a href="{echo url('search/venue/attrib/3', array('tid'=>$one[id]))}">Detailed info >></a></div>
+                    </div><!--{/loop}-->
                 </div>
             </div>
             <div style="clear:both;"></div>
+			<script type="text/javascript" src="0/jslib/jquery.tmpl.min.js"></script>
             <script type="text/javascript">
 			$(function(){
+				var tmpl = $.trim($('#rec-1 .travel-img > ul').html()).replace(/^(<!\-\-)|((\/\/)*\-\->)$/g, '')
+				, build = function(wrap){
+					var li = $('li', wrap);
+					if (!li.length) return ;
+					var w = li.first().outerWidth(true)
+						, parent = wrap.parent()
+						, pi = parent.siblings('.show-page').find('.page-info');
+					pi.data('index', '1');
+					wrap.width(w*li.length);
+					$('span', pi).filter(':first').text('1')
+						.end().filter(':last').text(Math.ceil(w*li.length/parent.width()));
+				}, nav = function(){
+					var d = $(this).hasClass('left-arrow')
+						, pi = $(this).parent()
+						, p = parseInt(pi.data('index'), 10)
+						, total = parseInt($(this).siblings('span:last').text())
+						, wrap = pi.parent().next(), w=wrap.width();
+					if (d && p===1 || !d && p===total) return false;
+					d ? p-- : p++;
+					wrap.scrollLeft((p-1)*w);
+					$(this).siblings('span:first').text(p);
+					pi.data('index', p);
+					$('.left-arrow', pi)[p===1 ? 'addClass' : 'removeClass']('disabled');
+					$('.right-arrow', pi)[p===total ? 'addClass' : 'removeClass']('disabled');
+					return false;
+				};
+				$(document).delegate('a.left-arrow, a.right-arrow', 'click.block-nav', nav);
 				$('.tablink').on('mouseover', 'a',
 				function(){
+					var i = $(this).data('index'), wrap=$('#rec-'+i+' .travel-img > ul');
 					$(this).parent().siblings('.tnav-on').removeClass('tnav-on').end().addClass('tnav-on');
-					$('#rec-'+$(this).data('index')).siblings('.travel-info:visible').hide().end().show();
-					$.post($(this).attr('href').substr(2), {limit:15}, function(res){
-						
+					$('#rec-'+i).siblings('.travel-info:visible').hide().end().show();
+					if (wrap.data('loaddata')=='1') return ;
+					$.post($(this).attr('href').substr(2), {thumb:'small', limit:15}, function(res){
+						if (0===res.code || res.body.page.rows===0) return ;
+						$.tmpl(tmpl, res.body.data).appendTo(wrap.data('loaddata', '1').empty());
+						build(wrap);
 					});
 				}).find('a:eq(0)').trigger('mouseover');
 			});

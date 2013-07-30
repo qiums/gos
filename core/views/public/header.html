@@ -11,7 +11,7 @@
 <link rel="stylesheet" type="text/css" href="css/layout.css" />
 <!--[if lt IE 9]><script type="text/javascript" src="0/jslib/html5.js"></script><![endif]-->
 <script type="text/javascript" src="0/jslib/jquery-1.10.1.min.js"></script>
-<script type="text/javascript" src="1/jslib/bootstrap.min.js"></script>
+<script type="text/javascript" src="1/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="0/jslib/jquery.dialog.js"></script>
 <script type="text/javascript" src="0/jslib/jquery.fix.js"></script>
 <!--{if property_exists($this,'form')}--><script type="text/javascript" src="0/jslib/jquery.form.js"></script><!--{/if}-->
@@ -37,7 +37,10 @@
         <div class="logo-bg">
         	<a href="{$config[env][baseurl]}" class="logo"><img src="images/topfoot/logo2.jpg" alt="Guide of SH"/></a>
             <div class="search">
-                <input type="text" placeholder="name of attractions, restaurants, hotels, etc" class="s1" /><input type="button" value="" class="s2" />
+            <form action="search/redirect" method="post">
+            	<input type="hidden" name="mid" value="venue" /><input type="hidden" name="fk" value="1" />
+                <input type="text" name="k" placeholder="name of attractions, restaurants, hotels, etc" class="s1" /><input type="submit" value="" class="s2" />
+            </form>
             </div>
         </div>
         <div class="navs">

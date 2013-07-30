@@ -11,7 +11,7 @@ class category_model extends Model{
 	public $map = FALSE;
 	public $cache_conf=array();
 
-	public function block($ac='', $a=''){
+	public function block($ac='', $a='', $fields=array()){
 		if (is_array($ac)){
 			$a = $ac; $ac = '';
 		}
@@ -56,14 +56,7 @@ class category_model extends Model{
 			cache::q($cachename, $data);
 		}
 		if (!$this->catdata) $this->catdata = $data;
-		if ($this->fields){
-			$in = array_flip(explode(',', $this->fields));
-			foreach ($data as $key=>$one){
-				$data[$key] = array_intersect_key($one, $in);
-			}
-			$this->fields = NULL;
-		}/**/
-		if (is_array($cond)){
+		if ($cond AND is_array($cond)){
 			foreach ($data as $key=>$one){
 				foreach ($cond as $k=>$val){
 					if (!isset($one[$k]) OR $one[$k] !== $val){
@@ -73,15 +66,23 @@ class category_model extends Model{
 				}
 			}
 		}
+		if ($this->fields){
+			$in = array_flip(explode(',', $this->fields));
+			foreach ($data as $key=>$one){
+				$data[$key] = array_intersect_key($one, $in);
+			}
+			$this->fields = NULL;
+		}/**/
 		if (!$data) return array();
 		return $data;
 	}
 	function full_alias($data){
+		static $cache = array();
+		$cache[$data['id']] = $data;
 		$node = explode(',', $data['fullnode']);
 		$alias = array();
-		$data = (array)$this->catdata[$this->gc('prefix')]+array($data['id']=>$data);
 		foreach ($node as $id){
-			$alias[] = !$data[$id]['alias'] ? replace_alias($data[$id]['catename']) : $data[$id]['alias'];
+			$alias[] = !$cache[$id]['alias'] ? replace_alias($cache[$id]['catename']) : $cache[$id]['alias'];
 		}
 		return join('/', $alias);
 	}
@@ -111,7 +112,7 @@ class category_model extends Model{
 		if (count($rs)==1) return current($rs);
 		return $rs;
     }
-	function dget($id=0,$key='hot'){
+	function dget($id=0,$key='hot', $rstype=0){
 		$cat = $this->find();
 		$rs = array();
 		if ($id>0) $rs[$id] = array();
@@ -121,7 +122,13 @@ class category_model extends Model{
 			if (!$one[$key] OR ($id>0 AND cstrpos($one['node'],$id)===FALSE)) continue;
 			$rs[($id?$id:$one['rootid'])][] = $one;
 		}
-		return current($rs);
+		if (!$id AND !$rstype){
+			foreach ($rs as $one){
+				$tmp = array_merge((array)$tmp, $one);
+			}
+			return $tmp;
+		}
+		return $id>0 ? current($rs) : $rs;
 	}
 	private function inmap($map, $id){
 		if (!$this->map OR ''===$map) return FALSE;
