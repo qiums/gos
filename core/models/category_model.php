@@ -196,8 +196,12 @@ class category_model extends Model{
 		return $data;
     }
 	function parents($id, $self=FALSE){
-		$data = $this->get($id);
-		$node = $data['fullnode'];
+		if (FALSE===strpos($id, ',')){
+			$data = $this->get($id);
+			$node = $data['fullnode'];
+		}else{
+			$node = $id;
+		}
 		$parent = array_intersect_key($this->find(), array_flip(explode(',', $node)));
 		if (!$self) return array_slice($parent, 0, -1);
 		return $parent;
@@ -247,7 +251,7 @@ class category_model extends Model{
 	function position($url, $id=0, $all=FALSE){
 		$pos = array();
 		if (!$id) return $pos;
-		if (FALSE!==strpos($id,',')) $id = substr($id,strrpos($id,',')+1);
+		//if (FALSE!==strpos($id,',')) $id = substr($id,strrpos($id,',')+1);
 		$result = $this->parents($id, TRUE);
 		if (!empty($result)){
 			if (is_array($url)){

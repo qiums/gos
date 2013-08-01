@@ -170,7 +170,7 @@ $(function(){
 		var href=$(this).attr('href');
 		return run_menu(href.substr(href.lastIndexOf('#')));
 	});
-	/*<!--{if 'reset'==$do}-->*/run_menu('#findpass');/*<!--{elseif !INAJAX}-->*/run_menu(document.location.hash);/*{/if}*/
+	/*<!--{if 'reset'==$do}-->*/run_menu('#findpass');/*<!--{elseif !$_ENV[ajaxreq]}-->*/run_menu(document.location.hash);/*{/if}*/
 });
 </script>
 <!--{if !$_ENV[ajaxreq]}-->

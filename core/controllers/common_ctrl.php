@@ -18,6 +18,7 @@ class common_controller extends controller{
 		if ($this->post){
 			unset($this->post['token']);
 		}
+		gc('env.static_path', gc('env.webroot').'static/', TRUE);
 		// 导航
 		$this->assign('topnav', $this->category->callback()->root());
 	}

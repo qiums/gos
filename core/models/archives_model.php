@@ -43,6 +43,7 @@ class archives_model extends model{
 			if ($thumb){
 				$thumb = explode('x', $thumb);
 				array_unshift($thumb, $data['coverpic']);
+				if (isset($data['tid'])) $thumb[] =  'type-'.qstrstr($data['tid'],',',TRUE);
 				$data['thumb'] = call_user_func_array('ct', $thumb);
 			}
 		}

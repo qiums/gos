@@ -26,9 +26,32 @@ class search_controller extends core_search_controller{
 	public function map(){
 		$this->qdata['mode'] = 'map';
 		$channel = $this->channel->get('venue');
-		$this->assign('channel', $channel);
 		$this->assign(array(
-			'pagetit' => (isset($this->qdata['local']) ? "Near by {$this->qdata['local']}-" : ''). $channel['channel_name'],
+			'mc' => $channel,
+			'pagetit' => (isset($this->qdata['local']) ? "Nearby in {$this->qdata['local']}-" : ''). $channel['channel_name'],
+		)
+		)->view("venue_list");
+	}
+	// 附近
+	public function near(){
+		$id = $this->gp('id');
+		if (!$id) return $this->output('Undefined Id');
+		$channel = $this->channel->get('venue');
+		$this->archives->config = $channel;
+		$data = $this->archives->callback()->where('id', $id)->find();
+		if ($_ENV['ajaxreq']){
+			$map = near_latlng($data['maplat'], $data['maplng'], $this->gp('dist', 3));
+			$this->append_cond = array(
+				'maplat' => "BETWEEN {$map['x'][0]} AND {$map['y'][0]}",
+				'maplng' => "BETWEEN {$map['x'][1]} AND {$map['y'][1]}",
+			);
+			return parent::index();
+		}
+		$this->qdata['mode'] = 'map';
+		$this->assign(array(
+			'mc' => $channel,
+			'data' => $data,
+			'pagetit' => ('Nearby in '. $data['fulltitle']) .'-'. $channel['channel_name'],
 		)
 		)->view("venue_list");
 	}

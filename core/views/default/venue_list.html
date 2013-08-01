@@ -9,7 +9,7 @@
                 </div>
                 <!--{/if}-->
                 <form action="search/redirect" method="post" name="searchForm">
-                <input type="hidden" name="mid" value="{$channel[prefix]}" />
+                <input type="hidden" name="mid" value="{$mc[prefix]}" />
             	<div class="quyu">
                 	<div class="quyu1">
                     	<label class="cuisine">CUISINE</label>
@@ -17,7 +17,6 @@
                         	<input type="hidden" name="tid" value="{$G[tid]}" data-kname="dataname" data-alt="SELECT CUISINE" />
                         	<a class="moren-left dropmenu-handle" id="sel-cuisine" href="javascript:;" data-target="dropmenu-tid">All<b></b></a>
                         </div>
-                        <!--{if $G[local]}--><b>Find nearby in <em>{$G[local]}</em></b><!--{/if}-->
                     </div>
                 	<div class="quyu2">
                     	<!--{if !$G[local]}--><label class="cuisine">AREA</label>
@@ -36,6 +35,7 @@
                 </div>
                 </form>
                 <div class="title-nav">
+                    <!--{if $G[local] OR $data[maplat]}--><b style="float:right;margin:0 10px;line-height:40px;display:inline-block">{$pagetit}</b><!--{/if}-->
                     <ul>
                         <li class="view-normal"><a href="{echo url('search/venue', $_GET)}">Results</a></li>
                         <li><a href="{echo url('search/map', $_GET)}">See on map</a></li>
@@ -113,6 +113,9 @@ var app = {
 			});
 			return app.getsource();
 		});
+		/*{if $data[maplat]}*/
+		$('.view-normal>a').hide();
+		this.cache.local = new google.maps.LatLng('{$data[maplat]}', '{$data[maplng]}');/*{/if}*/
 	}, 
 	getsource: function(p){
 		var url = (null === this.cache.url) ? '{echo url("#current#", array("page"=>max(1, (int)$G[page])))}' : this.cache.url
@@ -154,8 +157,8 @@ var app = {
 		this.page = page;
 		$('.pageinfo').html('<b>'+ page.cur + '</b>/' + page.total);
 		$('.pager').parent().removeClass('hide')
-			.end().find('li.previous')[1===page.cur ? 'addClass' : 'remove']('disabled')
-			.end().find('li.next')[page.total===page.cur ? 'addClass' : 'remove']('disabled');
+			.end().find('li.previous')[1===page.cur ? 'addClass' : 'removeClass']('disabled')
+			.end().find('li.next')[page.total===page.cur ? 'addClass' : 'removeClass']('disabled');
 	},
 	geocode: function(addr){
 		var geocoder = new google.maps.Geocoder();
@@ -175,11 +178,11 @@ var app = {
 		return this.getsource();
 	},
 	googlemap: function(){
-		var styles = [ 
+		var styles = [/* 
 			{ stylers: [ { hue: "#ff0900" }, { saturation: -20 } ] },
 			{ elementType: "labels", stylers: [ { visibility: "off" } ] },
 			{ featureType: "road.local", stylers: [ { visibility: "on" } ] },
-			{ } ]
+			{ }*/ ]
 		, myOptions = {
 			zoom:12,
 			//center: new google.maps.LatLng(31.227996,121.473557),
@@ -193,15 +196,16 @@ var app = {
 			var a = new google.maps.Marker({
 				position: this.cache.local,
 				map: map, 
-				animation: google.maps.Animation.DROP,
+				animation: google.maps.Animation.DROP/*,
 				icon: '{$config[env][static_path]}common/imhere.png',
-				title: "I'm here."
+				title: "I'm here."*/
 			});
-			/*infowindow.setOptions({content: 'Hi, You\'re here. :)'});
-			infowindow.open(map, a);
-			delete a;*/
 		}
-		$.each(app.source, function(i, res){
+		if (!this.source.length){
+			if (this.cache.local) map.setCenter(this.cache.local);
+			return false;
+		}
+		$.each(this.source, function(i, res){
 			if (res.maplat=='0' || res.maplng=='0') return true;
 			var pos = new google.maps.LatLng(res.maplat, res.maplng);
 			var marker = new google.maps.Marker({
@@ -235,7 +239,7 @@ var app = {
 	}
 }, ginit = function(){app.init();};
 var markers = []
-	, source = {}
+	, source = {};
 </script>
 <!--{/if}-->
 <script type="text/javascript">

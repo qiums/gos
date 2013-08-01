@@ -158,9 +158,9 @@
                         	<li><a data-index="{$one_index}" href="#!{echo url('search/venue/tid/'.$one[id],array('attrib'=>3))}">{$one[dataname]}</a></li>
                         <!--{/list}-->
                         </ul>
-                        <div class="search3">
+                        <!--<div class="search3">
                             <input type="text" placeholder="name of restaurant, bar, hotel, etc" class="so1"/><input type="button" value="" class="so2" />
-                        </div>
+                        </div>-->
                     </div>
 					<!--{loop $blockv $one}-->
                     <div class="travel-info" id="rec-{$one_index}">
@@ -230,7 +230,7 @@
 					$(this).parent().siblings('.tnav-on').removeClass('tnav-on').end().addClass('tnav-on');
 					$('#rec-'+i).siblings('.travel-info:visible').hide().end().show();
 					if (wrap.data('loaddata')=='1') return ;
-					$.post($(this).attr('href').substr(2), {thumb:'small', limit:15}, function(res){
+					$.post($(this).attr('href').substr(2), {thumb:'small', strlen:30, limit:15}, function(res){
 						if (0===res.code || res.body.page.rows===0) return ;
 						$.tmpl(tmpl, res.body.data).appendTo(wrap.data('loaddata', '1').empty());
 						build(wrap);

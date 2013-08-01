@@ -39,7 +39,8 @@ class core_search_controller extends common_controller{
 		$list = array_keys($this->channel->get_fields($channel['id'], 5));
 		$cond = $this->append_cond + $this->archives->apply_cond($fields);
 		$data = $this->archives->attr('fields', join(',', $list))
-			->page($this->gp('page'), $this->gp('limit'))->order()
+			->page($this->gp('page'), $this->gp('limit'))
+			->order($this->gp('order'), $this->gp('way','desc'))
 			->callback()->where($cond)->findAll();
 		$this->append_cond = array();
 		$this->qdata['pagedata'] = $this->archives->pagedata;
@@ -47,7 +48,7 @@ class core_search_controller extends common_controller{
 		$this->apply_category();
 		$this->assign('form', $this->form->render('', request::get(), 1));
 		$this->assign('arrdata', $data);
-		$this->assign('channel', $channel);
+		$this->assign('mc', $channel);
 	}
 	public function redirect(){
 		if ($this->post){

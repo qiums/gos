@@ -2,34 +2,34 @@
     <div class="content">
         <div class="c-down">
         	{template widget/pleft}
-            <div class="c-mid">
+            <div class="c-mid"{if !$lc[typeid]} style="width:725px"{/if}>
             	<h1>{$lc[catename]}</h1>
                 {$lc[content]}
             </div>
-            <!--{if $lc[venue_type]}-->
+            <!--{if $lc[typeid]}-->
             <div class="c-right">
                 <div class="browse">
                 	<h3>Browse by cuisine</h3>
                     <div class="bro-list">
                         <ul>
-                        	<!--{list cp.tree=do/dget/id/#lc[venue_type]#/key/hot property=tid/venue}-->
-                            <!--{eval $tree_root = $this->cp->tree->get($one[rootid]);}-->
+                        	<!--{list cp.tree=do/dget/id/#lc[typeid]#/key/hot property=tid/venue}-->
+                            <!--{eval $tree_root = $this->cp->tree->get($one[pid]);}-->
                             <li><a href="{url search/venue/tid/$one[id]}">{$one[dataname]} <i>({$tree_root[dataname]})</i></a></li>
                             <!--{/list}-->
                         </ul>
-                        <a class="all" href="{url search/venue/tid/$lc[venue_type]}">More >></a>
+                        <a class="all" href="{url search/venue/tid/$lc[typeid]}">More >></a>
                     </div>
                 </div>
                 <div class="browse">
                 	<h3>Browse by area</h3>
                     <div class="bro-list">
                         <ul>
-                        	<!--{list cp.tree=do/dget/id/#lc[venue_type]#/key/hot property=tid/region}-->
+                        	<!--{list cp.tree=do/dget/id/#lc[typeid]#/key/hot property=tid/region}-->
                             <!--{eval $tree_root = $this->cp->tree->get($one[rootid]);}-->
-                            <li><a href="{url search/venue/tid/$lc[venue_type]/area/$one[id]}">{$one[dataname]} <i>({$tree_root[dataname]})</i></a></li>
+                            <li><a href="{url search/venue/tid/$lc[typeid]/region/$one[id]}">{$one[dataname]} <i>({$tree_root[dataname]})</i></a></li>
                             <!--{/list}-->
                         </ul>
-                        <a class="all" href="{url search/venue/tid/$lc[venue_type]}">More >></a>
+                        <a class="all" href="{url search/venue/tid/$lc[typeid]}">More >></a>
                     </div>
                 </div>
             </div><!--{/if}-->
@@ -38,7 +38,7 @@
     </div>
 <script type="text/javascript">
 $(function(){
-	$('.dload a').iscroll(parseInt($('.c-mid').outerWidth(false),10)-($('.c-right:visible').length>0?100:180),
+	$('.dload a').iscroll(parseInt($('.c-mid').outerWidth(false),10)-($('.c-right:visible').length>0?50:100),
 	function(){
 		$(this).parent().removeClass('dload');
 	});

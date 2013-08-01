@@ -214,7 +214,7 @@ class com_tree_model extends model{
 		return $rs;
 	}
 	function parents($id,$self=FALSE){
-		$data = $this->get($id);
+		/*$data = $this->get($id);
 		if ($data['node']==$data['id']) return array($data);
 		$tree = $this->qfind();
 		$parent = array();
@@ -223,6 +223,15 @@ class com_tree_model extends model{
 			$parent[$cid] = $one;
 		}
 		if ($self) $parent[] = $data;
+		return $parent;*/
+		if (FALSE===strpos($id, ',')){
+			$data = $this->get($id);
+			$node = $data['fullnode'];
+		}else{
+			$node = $id;
+		}
+		$parent = array_intersect_key($this->qfind(), array_flip(explode(',', $node)));
+		if (!$self) return array_slice($parent, 0, -1);
 		return $parent;
 	}
 	function delete_data($cond){
@@ -244,7 +253,7 @@ class com_tree_model extends model{
 	/* 当前位置 */
 	function position($url,$id=0,$all=FALSE){
 		$pos = array();
-		if (FALSE!==strpos($id,',')) $id = substr(strrchr($id,','), 1);
+		//if (FALSE!==strpos($id,',')) $id = substr(strrchr($id,','), 1);
 		if (!$id) return $pos;
 		$result = $this->parents($id, TRUE);//
 		if (!empty($result)){
