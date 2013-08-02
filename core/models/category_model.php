@@ -59,7 +59,7 @@ class category_model extends Model{
 		if ($cond AND is_array($cond)){
 			foreach ($data as $key=>$one){
 				foreach ($cond as $k=>$val){
-					if (!isset($one[$k]) OR $one[$k] !== $val){
+					if (!isset($one[$k]) OR FALSE===strpos($val, $one[$k])){
 						unset($data[$key]);
 						break;
 					}

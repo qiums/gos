@@ -27,7 +27,7 @@ $config['dispatch']['rename_group'] = array('gosupe' => 'admin');
 $config['tpl']['theme'] = 'default';
 
 $config['image']['avatar_size'] = array('small'=>'30x30','mid'=>'80x80','big'=>'160x160');
-$config['image']['thumb_size'] = array('small'=>'120x120x1');
+$config['image']['thumb_size'] = array('small'=>'120x120x1','8050'=>'80x50x1');
 $config['image']['thumb_extension'] = 'jpg';
 // Upload
 $config['upload']['tmpdir'] = TMP_PATH. 'uploads'. DS;

@@ -16,14 +16,6 @@ class archives_model extends model{
 		$data['fulltitle'] = $data['subject'];
 		if ($data['subtitle']) $data['fulltitle'] .= " ({$data['subtitle']})";
 		if ($data['filesize']) $data['filesize_text'] = formatSize($data['filesize']);
-		/*if ($data['cid']){
-			$this->load->model('category')->block(array('mid'=>$this->config['id']));
-			$id = GFS($data['cid'], ',', 'end');
-			$data['catedata'] = $this->category->get($id);
-			//$data['catedata']['rootalias'] = $id;
-			$data['catedata']['rootalias'] = current(explode('/',$data['catedata']['fullalias']));
-			//unset($data['catedata']['id']);
-		}*/
 		if (isset($data['runtype'])){
 			$data['short_rundate'] = short_rundate($data);
 			$data['rundate']= get_rundate($data);
@@ -32,6 +24,7 @@ class archives_model extends model{
 				($data['enddate']>0?'<br />E:'.D::cdate($data['enddate'],'Y-m-d'):'');
 		}
 		if ($data['description']) $data['description'] = strip_tags($data['description']);
+		if (array_key_exists('content', $data) AND is_null($data['content'])) $data['content'] = $data['description'];
 		$strlen = Base::getInstance()->gp('strlen');
 		if (is_numeric($strlen) AND ($data['description'])){
 			$data['description'] = csubstr($data['description'], $strlen);
@@ -52,62 +45,37 @@ class archives_model extends model{
 	public function save($p){
 		$time = D::get('curtime');
 		$id = (int)$p['id'];
-		$conf = $this->conf;
-		$p['mid'] = $conf['id'];
-		$p['sd_arcdata'] = array();
+		unset($p['id']);
+		$p['mid'] = $this->config['id'];
+		$p['sd_arcdata'] = $p['sd_arcindex'] = array();
 		if (!empty($p['begindate']) OR !empty($p['enddate'])){
-			$p2 = array_intersect_key($p, array_flip(array('begindate','enddate')));
-			if ($p2['begindate'] AND !is_float($p2['begindate'])) $p2['begindate'] = D::timestamp($p2['begindate']);
-			if ($p2['enddate'] AND !is_float($p2['enddate'])) $p2['enddate'] = D::timestamp($p2['enddate']);
-			if (!isset($p['published'])){
-				$p['published'] = (int)(
-					!isset($p['subdata_runtype']) AND (!$p2['begindate'] OR $p2['begindate']<$time) AND (!$p2['enddate'] OR $p2['enddate']>$time)
+			if (!isset($p['sd_published'])){
+				$p['sd_published'] = (int)(
+					!isset($p['subdata_runtype']) AND (!$p['sd_begindate'] OR $p['sd_begindate']<$time) AND (!$p['sd_enddate'] OR $p['sd_enddate']>$time)
 					);
 			}else{
-				$p['publock'] = (int)(!$p['published']);
+				$p['sd_arcdata']['publock'] = (int)(!$p['published']);
 			}
-			$p['subdata_arcdata'] = $p2;
-			unset($p2, $p['begindate'],$p['enddate']);
+			$p['sd_arcdata'] = $p2;
+			unset($p2);
 		}
-		unset($p['id']);
-		$p['subdata_searchindex'] = array(
-			'updatetime'=>$time,
-			'subject' => $p['subject'],
-			'keywords'=>trim("{$p['subject']}#||#{$p['keywords']}#||#{$p['description']}",'#||#'),
-		);
-		if (isset($p['published'])) $p['subdata_searchindex']['published'] = $p['published'];
-		if (isset($p['subdata_filepath'])){
-			$filepath = filepath($p['subdata_filepath']);
-			if (is_file($filepath)) $p['subdata_filesize']=filesize($filepath);
-			unset($filepath);
-		}
-		$cond = array('aid,id','cond'=>array('aid'=>$id, 'mid'=>$p['mid']));
-		if (!$id) unset($cond['cond']);
-		$this->join_table('searchindex', $cond);
+		$p['sd_searchtag'] = trim("{$p['subject']} {$p['subtitle']} {$p['sd_keywords']} {$p['sd_description']}");
+		$append = array('mid'=>$p['mid'], 'aid'=>$id);
+		if (!$id) unset($append['aid']);
 		if (!$id){
-			if (!$p['createtime']) $p['createtime'] = $time;
-			$p['sd_searchindex'] += array('mid'=>$p['mid'], 'createtime'=>$time);
-			$p['sd_arcdata'] += array('mid'=>$p['mid'],'activetime'=>$time);
-			$id = $this->join('arcdata', '', $cond)
-				->join_table($this->conf['addon_table'],array('aid,id','cond'=>array('aid'=>$id)))
+			if (!$p['sd_createtime']) $p['sd_createtime'] = $time;
+			$p['sd_arcdata'] += array('mid'=>$p['mid'], 'activetime'=>$time);
+			$id = $this->join('arcdata.aid', NULL, $append)
+				->join('arcindex.aid', NULL, $append)
 				->insert($p);
 		}else{
 			if (!$p['updatetime']) $p['updatetime'] = $time;
-			$this->join_table('arcdata', $cond)
-				->join_table($this->conf['addon_table'],array('aid,id','cond'=>array('aid'=>$id)))
-				->update($p, array('id'=>$id));
+			$this->join('arcdata', NULL, $append)
+				->join('arcindex', NULL, $append)
+				->where('id', $id)
+				->update($p);
 		}
 		return $id;
-	}
-	private function apply_pre($cond){
-		$base = Base::getInstance();
-		if (4==$this->config['id'] AND 'admin'!=$dir){
-			if (!isset($cond['events.runstat'])) $cond['events.runstat'] = '> 0';
-		}
-		if ($base->gp('distance') AND $base->gp('latlng')){
-			$this->apply_latlng($cond, $base->gp('latlng'), $base->gp('distance'));
-		}
-		return $cond;
 	}
 	public function content(){
 		$this->join('contents.aid', '*', 'mid');

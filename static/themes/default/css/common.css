@@ -1,10 +1,18 @@
 /* CSS Document */
 body{margin:0;padding:0;color:#333;height:100%;font-family:Arial, Helvetica, sans-serif;font-size:12px;line-height:18px;background:#fff;}
-div,p,a,ul,li,img,h1,h2,h3,h4,h5,h6,span,dl,dd,ol{margin:0;padding:0;border:0;font-weight:normal;}
+div,p,a,ul,li,img,h1,h2,h3,h4,h5,h6,span,dl,dd,ol{margin:0;padding:0;border:0;/*font-weight:normal;*/}
 a{text-decoration:none;}
 table,tbody,tr,td{margin:0;padding:0;border:0;}
 li{list-style:none;}
 input,textarea,button{border:none;outline-color:none;font-family:Arial, Helvetica, sans-serif;}
+
+.branch{background-color:#FFF;border:1px solid #DDD;border-radius:5px;font-size:12px;margin-left:10px;padding:3px;}
+.branch:hover{background-color:#8EC21F;}
+.branch b{margin:0 3px;}
+.branch i{margin-left:5px;}
+.block{border:1px solid #DDD;margin:2px;background-color:#F5F5F5;padding:2px;display:block;}
+.open-link {margin-top:5px;text-align: right;}
+.open-link a {background-color: #369;color: #FFF;font-weight: bold;padding: 3px;}
 
 .top{background:#8ec21f;}
 .welcome-bg{height:20px;}
@@ -356,7 +364,7 @@ input,textarea,button{border:none;outline-color:none;font-family:Arial, Helvetic
 .add{float:left;background:#f8f8f8;border-top:1px dotted #d7d7d7;border-bottom:1px dotted #d7d7d7;padding:5px 10px;margin:6px 0;}
 .adds{overflow:hidden;width:380px;}
 .adds label{float:left;border-right:1px solid #ccc;padding-right:6px;width:24px;font-weight:600;}
-.adds p{float:left;padding-left:6px;width:340px;}
+.adds p{float:left;padding-left:6px;width:340px;margin:0;}
 .jieshao{float:left;width:400px;color:#999;}
 .jieshao a{color:#1F638A;}
 .jieshao a:hover{text-decoration:underline;}

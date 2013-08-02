@@ -13,6 +13,8 @@ class common_controller extends controller{
 		$this->load->model('user');
 		$us = $this->user->us;
 		if (!$us['id']) redirect(url('user/home/login', array('url' => url('admin'))), FALSE);
+		$this->assign('user_perm', $us['perm']);
+		unset($us['perm']);
 		$this->assign('user_data', $us);
 		if (!session::get('supe')){
 			if ('home'===gc('env.controller') AND in_array(gc('env.action'), array('index','login'))){
@@ -33,7 +35,7 @@ class common_controller extends controller{
 	}
 	private function build_menu(){
 		$supe_menu = lang('supe_menu');
-		$this->group->supemenu($supe_menu, $this->vars['user_data']['perm']);
+		$this->group->supemenu($supe_menu, $this->vars['user_perm']);
 		$this->assign($this->get_pagetit($supe_menu));
 		$this->assign('supe_menu', $supe_menu);
 		unset($supe_menu);

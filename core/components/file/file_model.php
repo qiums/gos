@@ -4,40 +4,34 @@
 * author by Sam <wuyou192@163.com>.
 */
 class com_file_model extends model{
-	public $thumb_fixed = 0;
-	public $thumb_size = FALSE;
-	private $thumb;
-	private $picsize;
 
-	function build(&$data){
-		if ($data['filepath'] AND $this->thumb){
-			if (function_exists('ct')){
-				$thumb = explode('x', $this->thumb);
-				array_unshift($thumb, $data['filepath']);
-				$data['thumb'] = call_user_func_array('ct', $thumb);
-				unset($thumb);
-			}else{
-				$data['thumb'] = fileurl($data['filepath']);
+	public function build(&$data){
+		$data['thumb'] = $data['fileurl'] = fileurl($data['filepath']);
+		$data['formatsize'] = formatSize($data['filesize']);
+		$thumb = Base::getInstance()->gp('thumb');
+		if ($data['filepath'] AND $thumb){
+			if (is_scalar($thumb) AND function_exists('ct')){
+				$thumb_size = gc('image.thumb_size');
+				$thumb = $thumb_size[$thumb];
+				if ($thumb){
+					$thumb = explode('x', $thumb);
+					array_unshift($thumb, $data['filepath']);
+					$data['thumb'] = call_user_func_array('ct', $thumb);
+				}
 			}
 		}
-		if($data['filepath']){
-			if($this->picsize AND function_exists('ct')){
-				$thumb = explode('x', $this->picsize);
-				array_unshift($thumb, $data['filepath']);
-				$data['fileurl'] = call_user_func_array('ct', $thumb);
-				unset($thumb);
-			}else{
-				$data['fileurl'] = fileurl($data['filepath']);
-			}
+	}
+	public function hash($hash='add'){
+		$user = Base::getInstance()->vars['user_data'];
+		if ('add'!==$hash){
+			if (!is_scalar($hash)) return FALSE;
+			$hash = explode("\t", authcode($hash));
+			if (!$hash OR !$hash[0]) return FALSE;
+			return $hash;
 		}
-		if($data['filesize']) $data['formatsize'] = formatSize($data['filesize']);
+		return authcode("{$user['id']}\t{$user['name']}\t{$hash}", 'ENCODE');
 	}
-	function findAll($cond=array(), $table=''){
-		$this->callback();
-		return parent::findAll($cond, $table);
-	}
-	function delete($cond=''){
-		//$data = Db::delete($this->get_maintbl(), $cond);
+	public function delete($cond=''){
 		$data = $this->findAll($cond);
 		if (!$data) return true;
 		parent::delete($cond);//
@@ -52,4 +46,3 @@ class com_file_model extends model{
 		return $data;
 	}
 }
-?>

@@ -110,7 +110,7 @@ class archives_controller extends common_controller{
 		$list = array_keys($this->channel->get_fields($mc['id'], 5));
 		$this->archives->attr('fields', join(',', $list))->callback()->content()->apply_cond();
 		$data = $this->archives->where('id', $id)->find();
-		if(!$data) return $this->output(0, 'Not found archive detail');//print_r($data);return ;
+		if(!$data) return $this->output(0, 'Not found archive detail');//dump($data);return ;
 		if(!$this->vars['user_perm']['admin'] AND !$data['published']) show_error('The archive is unpublished now');
 		if($data['extlink']) redirect($data['extlink']);
 		if ($data['cid']){

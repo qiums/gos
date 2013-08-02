@@ -4,108 +4,81 @@
 * author by Sam <wuyou192@163.com>.
 */
 class com_file_controller extends common_controller{
-	public function browse(){
-		$user = Base::getInstance()->vars['user_data'];
-		if (!$user) return $this->output(0, 'need_login');
-	}
-}
-$file_types = array(
-	'media' => array('title'=>'Media Files', 'extensions'=>'flv,mp3,mp4,swf'),
-	'image' => array('title'=>'Image Files', 'extensions'=>'jpg,jpeg,gif,png'),
-	'album' => array('title'=>'Image Files', 'extensions'=>'jpg,jpeg,gif,png','mid'=>3),
-	'events' => array('title'=>'Image Files', 'extensions'=>'jpg,jpeg,gif,png','mid'=>5),
-	'venue' => array('title'=>'Image Files', 'extensions'=>'jpg,jpeg,gif,png','mid'=>4),
-	'file'=> array('title'=>'Documents Files', 'extensions'=>'zip,rar,pdf,doc,docx'),
-	'ads'=> array('title'=>'Allowed Files', 'extensions'=>'jpg,jpeg,gif,png,swf'),
-	'docs' => array('title'=>'Allowed Files', 'extensions'=>'jpg,jpeg,gif,png,zip,rar,pdf'),
-	'all' => array('title'=>'Allowed Files', 'extensions'=>'flv,mp3,mp4,swf,zip,rar,pdf'),
-);
-$path = req('path','all');
-$filetype = $file_types[$path];
-if ('upload'==$ACTION){
-	$token = authcode(req('token','p'));
-	if(!$token) cprint_exit('faild_token', 'message');
-	$token = explode("\t", $token);
-	if (''===$token[0]) cprint_exit('no_uid', 'message');
-	$name = req('name');
-	$in = (array)req('mid,aid,cid');
-	$in['uid'] = (int)$token[0];
-	$in['createtime']=D::get('curtime');
-	$in['description']=substr($name,0,strrpos($name,'.'));
-	$filename = req('filename');
-	$upload = import('libs.mxupload');
-	//$upload->custom_path = $config['upload']['savepath']. $type.DS;
-	if (0!==$in['uid']){
-		$user_model = import('member');
-		$user = $user_model->find($in['uid']);
-		$upload->oversize = max(0, intval($user_perm['upload']['space']*1024*1024-$user['attachsize']));
-	}
-	if ($path) $upload->custom_path = $config['upload']['savepath']. $path.DS;
-	if ($filetype AND $filetype['path']){
-		$upload->subpath = $filetype['subpath'];
-	}
-	//$chunk, $chunks, $name
-	$rs = $upload->run(req('chunk',0), req('chunks',0),$name);
-	if ($filename) df($filename);
-	if (!isset($rs['filepath'])) cprint_exit($rs);
-	if ($user_model){
-		import('app.file')->insert($rs+$in);
-		$user_model->setInc('attachsize', array('id'=>$in['uid']), $rs['filesize']);
-		/*$user_model->update_events($uid, 'upload', req('mid',0), req('aid',0));*/
-	}
-	if ($in['mid']*$in['aid']>0){
-		Db::update('arcdata', array('pictures'=>array('update',1)), array('mid'=>$in['mid'],'aid'=>$in['aid']));
-	}
-	cprint_exit($rs);
-}elseif ('get'==$ACTION){
-	$id = (int)req('id');
-	$mid = (int)req('mid',3);
-	$get = req('mid,page,size,thumb,cid');
-	$cond = array_intersect_key($get, array('mid'=>'','cid'=>''));
-	if(0===$id){
-		$cond['uid'] = $user_data['id'];
-		if (3==$mid) $cond['aid'] = 0;
-	}else{
-		$cond['aid'] = $id;
-	}
-	if($filetype) $cond['filetype'] = explode(',', $filetype['extensions']);
-	$file_model = import('app.file');
-	if($get['thumb'])
-		$file_model->property('thumb', $get['thumb']);
-	$loop = $file_model->page(max(1, (int)$get['page']),
-		isset($get['size'])?(int)$get['size']:20)
-		->order('id','desc')
-		->callback()->findAll($cond);
-	$pagedata = $file_model->get_page();
-}elseif ('browse'==$ACTION){
-	if (!$user_data['id']) cprint_exit('login_timeout');
-	$path = req('path');
-	$mid = req('mid', 0);
-	$uid = (int)req('uid', $user_data['id']);
-	$token = authcode($uid."\t".D::get('curtime'),'ENCODE');
-	/*加载语言包*/
-	$lang_replace = array(
-		'max-size'=>$upload_options['max_file_size'],
-		'all-space'=>$user['allsize_text'],
-		'url'=>url('dir=member&app=file'),
+	public $file_types = array(
+		'media' => array('title'=>'Media Files', 'extensions'=>'flv,mp3,mp4,swf'),
+		'image' => array('title'=>'Image Files', 'extensions'=>'jpg,jpeg,gif,png'),
+		'album' => array('title'=>'Image Files', 'extensions'=>'jpg,jpeg,gif,png','mid'=>3),
+		'events' => array('title'=>'Image Files', 'extensions'=>'jpg,jpeg,gif,png','mid'=>5),
+		'venue' => array('title'=>'Image Files', 'extensions'=>'jpg,jpeg,gif,png','mid'=>4),
+		'file'=> array('title'=>'Documents Files', 'extensions'=>'zip,rar,pdf,doc,docx'),
+		'ads'=> array('title'=>'Allowed Files', 'extensions'=>'jpg,jpeg,gif,png,swf'),
+		'docs' => array('title'=>'Allowed Files', 'extensions'=>'jpg,jpeg,gif,png,zip,rar,pdf'),
+		'all' => array('title'=>'Allowed Files', 'extensions'=>'flv,mp3,mp4,swf,zip,rar,pdf'),
 	);
-	$lang_plupload = mxlang('lang_plupload');
-	$template_file = 'browse';
-}elseif ('download'==$ACTION){
-	$get = req('id,aid');
-	if ($get['id']>0){
-		$data = import('app.file')->find($get['id']);
-	}elseif ($get['aid']>0){
-		$module_conf = import('module')->get(7);
-		$cond = array('aid'=>$get['aid']);
-		$data = Db::find($module_conf['addon_table'], $cond);
-		$cname = 'down_file_'.$data['aid'];
-		if (!cookie::get($cname)){
-			Db::update($module_conf['addon_table'], array('downs'=>array('update',1)), $cond);
-			cookie::set($cname, 1);
-		}
+
+	public function browse(){
+		if (!$this->vars['user_data']) return $this->output(0, 'need_login');
 	}
-	import('util.http');
-	http::download(filepath($data['filepath']));
-	exit;
+	public function get(){
+		$search = array(
+			'mid' => array('search'=>'1'),
+			'aid' => array('search'=>'1'),
+			'cid' => array('search'=>'1'),
+		);
+		$cond = $this->cp->file->apply_cond($search);
+		if (!$cond['aid']) $cond['uid'] = $this->vars['user_data']['id'];
+		$data = $this->cp->file
+			->page($this->gp('page'), $this->gp('limit'))
+			->order($this->gp('order'), $this->gp('way','desc'))
+			->callback()->where($cond)->findAll();
+		$this->qdata['pagedata'] = $this->cp->file->pagedata;
+		if ($_ENV['ajaxreq']) return $this->output(1, '', array('data'=>$data, 'page'=>$this->qdata['pagedata']));
+		$this->assign('arrdata', $data);
+	}
+	public function upload(){
+		$hash = $this->cp->file->hash($this->gp('hash'));
+		if (!$hash) return $this->output(0, 'need login');
+		$oldname = $this->gp('name');
+		$in = (array)$this->gp('mid,aid,cid');
+		$in['uid'] = (int)$hash[0];
+		$in['createtime'] = D::get('curtime');
+		$in['description'] = qstrstr($oldname, '.', TRUE);
+		$path = $this->gp('path');
+		$this->load->libs('upload');
+		if (0<$in['uid']){
+			$user = $this->user->where('id', $in['uid'])->find();
+			$this->upload->oversize = max(0, intval($this->vars['user_perm']['upload']['space']*1024*1024-$user['attachsize']));
+		}
+		if ($path) $this->upload->custom_path = gc('upload.savepath'). $path.DS;
+		//$chunk, $chunks, $name
+		$res = $this->upload->run($this->post['chunk'], $this->post['chunks'], $oldname);
+		if ($this->post['oldfile'] AND function_exists('df')) df($this->post['oldfile']);
+		if (!isset($res['filepath'])) return $this->output(0, '', $res);
+		if ($in['uid']>0){
+			$this->cp->file->insert($res + $in);
+			$this->user->where('id',$in['uid'])->setInc('attachsize', $res['filesize']);
+		}
+		if ($in['mid']*$in['aid']>0){
+			$this->cp->file->db()->where(array('mid'=>$in['mid'],'aid'=>$in['aid']))->update('arcindex', array('pictures'=>'[+]1'));
+		}
+		return $this->output(1, '', $res);
+	}
+	public function download(){
+		$get = req('id,aid');
+		if ($get['id']>0){
+			$data = import('app.file')->find($get['id']);
+		}elseif ($get['aid']>0){
+			$module_conf = import('module')->get(7);
+			$cond = array('aid'=>$get['aid']);
+			$data = Db::find($module_conf['addon_table'], $cond);
+			$cname = 'down_file_'.$data['aid'];
+			if (!cookie::get($cname)){
+				Db::update($module_conf['addon_table'], array('downs'=>array('update',1)), $cond);
+				cookie::set($cname, 1);
+			}
+		}
+		import('util.http');
+		http::download(filepath($data['filepath']));
+		exit;
+	}
 }
