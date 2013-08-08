@@ -4,7 +4,7 @@
     <h4 class="boxes-tit">{$tabletit}</h4>
     <div class="boxes-body">
       <form action="{url admin/{$config[env][controller]}/save}" method="post" name="saveForm" class="ajaxForm" data-ckblur="1">
-      <!--{echo $this->form->hidden('id')}-->
+      <!--{echo $this->form->hidden('id','',$data[id])}--><!--{echo $this->form->hidden('mid','',$channel[id])}-->
       <ul class="nav nav-tabs clearfix">
       <!--{loop $form_group $group}-->
         <li><a href="#tabs-{$group}" data-toggle="tab"><b>{echo lang('form_group.'.$group)}</b></a></li>
@@ -30,6 +30,7 @@
     </div>
   </div>
 </section>
+<script type="text/javascript" src="0/jslib/jquery.tmpl.min.js"></script>
 <script type="text/javascript" src="0/jslib/jquery.dtpicker.js"></script>
 <!--{if $this->form->htmlflag['mselect']}-->
 <script type="text/javascript" src="0/jslib/jquery.mselect.js"></script>
@@ -39,33 +40,93 @@
 <script type="text/javascript" src="0/jslib/jquery.ubbcode.js"></script><!--{/if}-->
 <!--{if $this->form->htmlflag['file']}-->
 <script type="text/javascript" src="0/jslib/plupload/plupload.js"></script>
-<script type="text/javascript" src="0/jslib/plupload/plupload.plus.js"></script><!--{/if}-->
+<script type="text/javascript" src="0/jslib/plupload/plupload.plus.js"></script>
+<div id="file-browse" class="picpanel">
+  <ul>
+    <!--<li><a href="${fileurl}" data-path="${filepath}" title="${subject}" class="picitem"><img src="${thumb}" alt="${subject}" /></a></li>-->
+  </ul>
+  <div class="picselected"></div>
+</div><!--{/if}-->
 <script type="text/javascript">
 var app = {
+	tmpl: '', wrap: '#file-browse > ul',
 	init: function(){
 		/*{if $this->form->htmlflag['file']}*/
-		$('[name=sd_coverpic]').data('url','{:url cp/file/upload}').data('browse','{:url cp/file/browse}');
-		$.pluploader.callback(this.uploader);/*{/if}*/
+		$('[name=sd_coverpic]').data('url','{:url cp/file/upload}').data('browse','#file-browse');
+		if ($.pluploader) $.pluploader.callback(this.uploader);
+		this.tmpl = $.trim($(this.wrap).html()).replace(/^(<!\-\-)|((\/\/)*\-\->)$/g, '');
+		$('.picselected').delegate('a', 'click',
+		function(){
+			$(this).remove();
+			return false;
+		});/*{/if}*/
 		$.mselect.data['cid'] = {mid: '{$channel[id]}'};
 		$('.nav a:first').addClass('active').trigger('click.tab.data-api');
-	},
+		$('.ajaxForm').bind('form-pre-serialize', this.before).saveForm(this.save);
+	},/*{if $this->form->htmlflag['file']}*/
 	uploader: function(ac){
-		if (!$.pluploader) return ;
 		if ('reset' === ac) return $.pluploader.reset();
 		var op = {
-			panelname: 'file-panel'
+			id: 'plupload-file-panel', top:'100',
+			onRender: app.browse,
+			onSubmit: app.inspic
 		};
 		$('.form-file').plupload_plus(op);
+	},
+	browse: function(){
+		if ($(app.wrap).data('loaded')===1) return ;
+		app.get(0);
+		$(app.wrap).data('loaded', 1)
+			//.delegate('a.picitem', 'click', app.setpic);
+			.on('click.setpic', {op:this}, app.setpic);
+	},
+	setpic: function(e){
+		if (e.target.nodeName === 'IMG'){
+			if ($(e.data.op.ele).prev().is('[name=sd_coverpic]')) $('.picselected').empty();
+			$(e.target).parent().clone().removeClass('picitem').appendTo('.picselected');
+		}
+		return false;
+	},
+	inspic: function(){
+		if (!$('.picselected a').length) return false;
+		if ($(this.ele).prev().is('[name=sd_coverpic]')){
+			$(this.ele).prev().val($('.picselected a:first').data('path'));
+		}
+		this.hide();
+	},
+	get: function(p){
+		p = p || 1;
+		$.getJSON('{:url cp/file/get}', {thumb:'small', page:p}, function(res){
+			$.tmpl(app.tmpl, res.body.data).appendTo($(app.wrap).empty());
+		});
+	},/*{/if}*/
+	before: function(e, form, m){
+		/*{if $this->form->htmlflag['html-editor']}*/
+		$('.html-editor').trigger('set-editor-data');/*{/if}*/
+		return m.veto = true;
+	},
+	save: function(res){
+		$('#qc-hidden-id').val(res.body.id);
+		$.dialog('<h3>'+res.message+'</h3><p>{lang next_action}</p>', {
+			appendClass:'ui-dialog-ok',
+			buttons:{
+				'{lang button.backlist}':'{url #back#}',
+				'{lang button.reedit}':'{:url("admin/archives/".$channel[prefix])}/edit/'+res.body.id,
+				/*<!--{if $channel[pic_category]}-->*/'{lang button.picmanage}':'{:url("admin/archives/".$channel[prefix])}/picture/'+json.id,/*<!--{/if}-->*/
+				'{lang button.readd}':'{:url("admin/archives/".$channel[prefix]."/add")}'
+			}
+		});
+		return false;
 	}
 }
 $(function(){
 	app.init();
 	/*{if $this->form->htmlflag['html-editor']}*/
-	$(document).on('click.load-editor', '.html-editor',
+	$('.html-editor').on('click.load-editor',
 	function(){
 		$(this).prev().css('display','block');
 		CKEDITOR.replace(this, {language: '{$config[site][language]}',width:'80%'});
-	}).bind('setdata', function(){
+	}).bind('set-editor-data', function(){
 		if (CKEDITOR.instances[this.id]){
 			if ($.trim($('[name=description]').val())===''){
 				$('[name=description]').val(CKEDITOR.instances[this.id].document.getBody().getText().csubstr(200));

@@ -43,8 +43,8 @@
           <td><!--{if !$row[attrib]}-->N/A<!--{else}--><i class="icons attrib-{$row[attrib]}">{$row[attrib]}</i><!--{/if}--></td>
           <td><input type="text" name="sortby[{$row[id]}]" value="{$row[sortby]}" style="width:40px" /></td>
           <td>{echo D::cdate($row[createtime],'y/m/d H:i')}</td>
-          <td><a class="edit" href="{:url('admin/archives/preview',array('mid'=>$row[mid],'id'=>$row[id]))}" title="{lang form_label.preview}"><i class="icon-screenshot"></i>{lang button.preview}</a>
-            <a class="copy" href="{:url('admin/archives/'.$channel[prefix],array('edit'=>$row[id]))}" title="{lang form_label.edit}"><i class="icon-edit"></i>{lang button.edit}</a></td>
+          <td><a class="preview" href="{:url('admin/archives/preview',array('mid'=>$row[mid],'id'=>$row[id]))}" title="{lang form_label.preview}"><i class="icon-screenshot"></i>{lang button.preview}</a>
+            <a class="edit" href="{:url('admin/archives/'.$channel[prefix],array('edit'=>$row[id]))}" title="{lang form_label.edit}"><i class="icon-edit"></i>{lang button.edit}</a></td>
         </tr>
         <!--{/loop}-->
         </tbody>

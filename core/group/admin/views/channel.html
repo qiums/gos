@@ -92,7 +92,10 @@ var app = {
 				return ;
 			}
 		}
-		form.saveForm().trigger('submit');
+		this.hide();
+		form.saveForm(function(res){
+			$.ckSuccess(res, 'reload');
+		}).trigger('submit');
 	},
 	data: function(){
 		var ele = this.cache.ele
@@ -125,6 +128,6 @@ $(function(){
 				app.get.call(this);
 			});
 	});
-	$('.saveForm').ckForm();
+	//$('.saveForm').ckForm();
 });
 </script>{template footer}

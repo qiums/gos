@@ -38,7 +38,7 @@ class QC_UbbTags extends UbbTags{
 		$args=explode('|',$args);
 		$args[0] = preg_replace('/^'.str_replace(array('\\','/'),array('\\\\','\/'),gc('env.webroot')).'+/is','/',$args[0]);
 		$args[0]=preg_replace('/\_\d+x\d+(\_water)*/is','',$args[0]);
-		if ($edit) return '<img src="'.(upwebroot(FALSE).ltrim($args[0],'/')).'" class="localimg" title="'.$str.'" />';
+		if ($edit) return '<img src="'.(fileurl($args[0])).'" class="localimg" title="'.$str.'" />';
 		$style = 'style="';
 		$class = 'dload localimg';
 		if (isset($args[3])){

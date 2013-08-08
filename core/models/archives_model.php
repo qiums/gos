@@ -42,12 +42,10 @@ class archives_model extends model{
 		}
 		unset($strlen, $thumb);
 	}
-	public function save($p){
+	public function save($id, $p){
 		$time = D::get('curtime');
-		$id = (int)$p['id'];
-		unset($p['id']);
 		$p['mid'] = $this->config['id'];
-		$p['sd_arcdata'] = $p['sd_arcindex'] = array();
+		$p['sd_arcdata'] = array();
 		if (!empty($p['begindate']) OR !empty($p['enddate'])){
 			if (!isset($p['sd_published'])){
 				$p['sd_published'] = (int)(
@@ -56,10 +54,8 @@ class archives_model extends model{
 			}else{
 				$p['sd_arcdata']['publock'] = (int)(!$p['published']);
 			}
-			$p['sd_arcdata'] = $p2;
-			unset($p2);
 		}
-		$p['sd_searchtag'] = trim("{$p['subject']} {$p['subtitle']} {$p['sd_keywords']} {$p['sd_description']}");
+		$p['sd_searchtag'] = trim("{$p['subject']}, {$p['subtitle']}, {$p['sd_keywords']}, {$p['sd_description']}");
 		$append = array('mid'=>$p['mid'], 'aid'=>$id);
 		if (!$id) unset($append['aid']);
 		if (!$id){
@@ -67,11 +63,13 @@ class archives_model extends model{
 			$p['sd_arcdata'] += array('mid'=>$p['mid'], 'activetime'=>$time);
 			$id = $this->join('arcdata.aid', NULL, $append)
 				->join('arcindex.aid', NULL, $append)
+				->join('contents.aid', NULL, $append)
 				->insert($p);
 		}else{
 			if (!$p['updatetime']) $p['updatetime'] = $time;
 			$this->join('arcdata', NULL, $append)
 				->join('arcindex', NULL, $append)
+				->join('contents', NULL, $append)
 				->where('id', $id)
 				->update($p);
 		}

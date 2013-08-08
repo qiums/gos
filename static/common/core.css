@@ -133,3 +133,12 @@ table{max-width:100%;background-color:transparent;border-collapse:collapse;borde
 .dtpicker-body ul.dtpicker-days{height:152px;}
 .dtpicker-footer{padding:2px 0 0;}
 .dtpicker-time{width:60px;}
+/******/
+.picpanel{}
+.picpanel ul{list-style:none;margin:0;padding:0;}
+.picpanel li{display:inline;}
+.picpanel li a.picitem{float:left;background-color:#FAFAFA;margin:3px;}
+.picpanel li a.picitem img{width:80px;padding:1px;border:1px solid #DEDEDE;}
+.picselected{height:54px;padding:5px;overflow:hidden;clear:both;background-color:#FAFAFA;border-radius:5px;}
+.picselected a{float:left;}
+.picselected a img{border:1px solid #DEDEDE;padding:1px;width:50px;}

@@ -26,7 +26,10 @@ class com_file_controller extends common_controller{
 			'cid' => array('search'=>'1'),
 		);
 		$cond = $this->cp->file->apply_cond($search);
-		if (!$cond['aid']) $cond['uid'] = $this->vars['user_data']['id'];
+		if (!$cond['aid']){
+			$cond['uid'] = $this->vars['user_data']['id'];
+			unset($cond['aid']);
+		}
 		$data = $this->cp->file
 			->page($this->gp('page'), $this->gp('limit'))
 			->order($this->gp('order'), $this->gp('way','desc'))

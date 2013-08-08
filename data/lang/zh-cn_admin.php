@@ -167,6 +167,7 @@ return array(
 		'extend' => '扩展信息',
 		'other' => '其它信息',
 		'catetxt' => '栏目介绍',
+		'picpanel' => '图片管理',
 	),
 	'supe_option'=>array('remove'=>'批量删除','move'=>'移动到..','attrib'=>'设置属性','published'=>'改变状态','sortby'=>'保存排序数字'),
 	'grouptype' => array('用户组','系统组'),

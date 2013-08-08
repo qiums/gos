@@ -33,7 +33,7 @@ class channel_controller extends common_controller{
 	public function copy(){
 		$this->edit();
 	}
-	public function save(){exit;
+	public function save(){
 		$ac = $this->post['ac'];
 		$id = $this->post['id'];
 		unset($this->post['id']);

@@ -64,14 +64,29 @@ class archives_controller extends common_controller{
 		}
 		$this->output(1, 'update_success');
 	}
+	public function save(){
+		$id = (int)$this->post['id'];
+		$mid = (int)$this->post['mid'];
+		$channel = $this->channel->get($mid);
+		if (!$mid OR !$channel) return $this->output(0, 'not_request_data');
+		$this->archives = $channel;
+		if (!$this->form->validate($this->channel->get_fields($channel['id'], 3), $this->post)){
+			exit($this->form->error());
+		}
+		$id = $this->archives->save($id, $this->post);
+		if ($id) return $this->output(1, 'supe_success', array('id'=>$id));
+		return $this->output(0, 'unknown_error');
+	}
 	private function add(){
 		$channel = $this->archives->config;
 		if (!$this->vars['tabletit']) $this->assign('tabletit', '[+] '. lang('button.add').' '. $channel['channel_name']);
 		$group = array('common', 'extend');
 		if ($channel['form_group']) $group = array_merge ($group, explode(',', $channel['form_group']));
+		if ($channel['pic_category']) $group[] = 'picpanel';
 		$form = array();
 		foreach ($group as $k=>$one){
 			$fields = $this->channel->get_fields($channel['id'], 3, $k);
+			if ($channel['pic_category']) unset($fields['arcindex.coverpic']);
 			$form[$k] = $this->form->render($fields, $this->vars['data']);
 		}
 		$this->assign('form_group', $group);
@@ -88,7 +103,11 @@ class archives_controller extends common_controller{
 		}
 		$data = $this->archives->join('arcindex.aid', '*', 'mid')
 			->join('contents.aid', 'content','mid')->where('id', $id)->find();
-		$data['content'] = $this->ubb->replace($data['content']);
+		if ($channel['enable_ubb']){
+			$this->ubb->edit = TRUE;
+			$this->ubb->custom_tags = 'venue|download|events';
+			$data['content'] = $this->ubb->replace($data['content']);
+		}
 		$this->assign('data', $data);
 		$this->assign('tabletit', lang('button.edit'). ' '. $channel['channel_name']);
 		return $this->add();
