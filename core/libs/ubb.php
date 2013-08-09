@@ -31,7 +31,7 @@ class QC_UbbTags extends UbbTags{
 		$me = &getInstance('QC_UbbTags');
 		if (array_key_exists($tag,$me->short_tags)) return '<'.$me->short_tags[$tag].'>'.nl2br($str).'</'.$me->short_tags[$tag].'>';
 		if (method_exists($me,"parse_{$tag}")) return call_user_func(array($me,"parse_{$tag}"),$str,$args,$edit);
-		return '<div id="'.$tag.'-'.$args.'" class="ubbparse ubb'.$tag.'"></div>';
+		return '<span id="'.$tag.'-'.$args.'" class="ubbparse ubb'.$tag.'"></span>';
 	}
 	function parse_localimg($str,$args,$edit){
 		//import('libs.image');

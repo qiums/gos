@@ -1,0 +1,31 @@
+{template header} 
+    <div class="content">
+        <div class="c-down">
+        	{template widget/pleft}
+            <div class="c-mid view-mode-a{$G[mode]}">
+            	<!--{if $position}-->
+            	<div class="weizhi">
+                	<a href="/">Home</a> &raquo; {echo join(' &raquo; ', $position)} &raquo; List
+                </div>
+                <!--{/if}-->
+                <ul class="lis-info">
+                <!--{loop $arrdata $one}-->
+                	<li><div class="liss">
+                        <!--{if $one[coverpic]}--><a class="liss-img" href="{$one[link]}"><img src="{echo ct($one[coverpic],120,120,1)}" alt="{$one[fulltitle]}" /></a><!--{/if}-->
+                        <div class="liss-right">
+                        	<div class="r-title">
+                            	<h2><a href="{$one[link]}">{$one[fulltitle]}</a></h2>
+                            </div>
+                            <p class="jieshao">{echo csubstr($one[description],100)}<a href="{$one[link]}">More&raquo;</a></p>
+                        </div>
+                    </div></li><!--{/loop}-->
+                </ul>
+                <div class="page">{widget:page/run}</div>
+            </div>
+            <div class="c-right">
+                <div class="ad right"></div>
+            </div>
+            <div style="clear:both;"></div>
+        </div>
+    </div>
+{template footer}

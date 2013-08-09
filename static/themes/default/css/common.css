@@ -348,7 +348,7 @@ input,textarea,button{border:none;outline-color:none;font-family:Arial, Helvetic
 .liss-img:hover{border-color:#8ec21f;}
 .liss-right{float:right;width:400px;margin-left: 10px;overflow:hidden;}
 .r-title{overflow:hidden;}
-.r-title h2{float:left;font-size:16px;}
+.r-title h2{float:left;font-size:16px;font-weight:normal;}
 .r-title h2 a{color:#333;}
 .r-title h2 a:hover{text-decoration:underline;}
 .r-title .ib{float:right;}
@@ -366,7 +366,7 @@ input,textarea,button{border:none;outline-color:none;font-family:Arial, Helvetic
 .adds label{float:left;border-right:1px solid #ccc;padding-right:6px;width:24px;font-weight:600;}
 .adds p{float:left;padding-left:6px;width:340px;margin:0;}
 .jieshao{float:left;width:400px;color:#999;}
-.jieshao a{color:#1F638A;}
+.jieshao a{color:#1F638A;margin-left:5px;}
 .jieshao a:hover{text-decoration:underline;}
 /* where to------------------------------------------------------------------------------------ */
 
@@ -523,7 +523,13 @@ background-color:#FFF;color:#333;padding:4px 7px 4px 0;}
 .model2 .more2{line-height:36px;color:#1F638A;}
 .model2 .more2:hover{text-decoration:underline;}
 /* mycenter------------------------------------------------------------------------------------ */
-
-
+/** Ubb Replace **/
+.ubbdata{-moz-border-radius:3px;-webkit-border-radius:2px;border-radius:3px;border:1px solid #EFEFEF;background-color:#FFF;padding:10px;}
+.ubbdata legend{font:16px/22px Verdana;padding:0 10px;background-color:#FCFCFC;border:1px solid #EFEFEF;}
+.ubbdata .picthumb{float:left;margin-right:10px;}
+.ubbdata .picthumb img{border:1px solid #000;width:90px;}
+.ubbdata ul{list-style:none;margin:0 0 0 100px;padding:0;}
+.ubbdata .daddress{background-color:#F8F8F8;border-color:#E5E5E5;border-style:solid;border-width:1px 0;padding:3px;}
+.ubbdata .description{font:.9em/1.3em Verdana;color:#666;margin:4px 0;}
 
 

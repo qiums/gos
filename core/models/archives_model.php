@@ -55,7 +55,8 @@ class archives_model extends model{
 				$p['sd_arcdata']['publock'] = (int)(!$p['published']);
 			}
 		}
-		$p['sd_searchtag'] = trim("{$p['subject']}, {$p['subtitle']}, {$p['sd_keywords']}, {$p['sd_description']}");
+		$p['sd_searchtag'] = trim("{$p['subject']} {$p['subtitle']} {$p['sd_keywords']} {$p['sd_description']}");
+		$p['sd_alias'] = replace_alias("{$p['subject']} {$p['subtitle']}");
 		$append = array('mid'=>$p['mid'], 'aid'=>$id);
 		if (!$id) unset($append['aid']);
 		if (!$id){

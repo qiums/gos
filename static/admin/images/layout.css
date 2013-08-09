@@ -154,18 +154,11 @@ ul.menu-list li a i{margin-right:5px;}
     float: right;
     margin: 25px 0 0;}
 
-body.theme-coffee{background-image:url("coffee-bg-body.png");}
-body.theme-coffee .navbar ul li.active>a {background-color:#633b23;}
-body.theme-coffee .navbar ul li ul li a:hover,
-body.theme-coffee .navbar ul li.active ul li a:hover{color:#fff;background-color:#835b3f;}
-body.theme-coffee .footer-wrapper{background-image:url('coffee-bg-footer.png');}
-body.theme-coffee .boxes .boxes-tit {background-color:#835b3f;}
-
 .fullscreen #wrapper, .fullscreen .footer{width:98%;}
 .supeopt.affix{top:10px;}.supeopt{width:193px;}
 .icon-pub1{background-position:-288px 0;}.icon-pub0{background-position:-216px -96px;}
 
-body.login-page{background:url(bg-login.jpg) repeat-x center;margin:0;padding:0;}
+body.login-page{background:url(bg-login.png) repeat-x center;margin:0;padding:0;}
 .login-boxes{width:560px;height:150px;position:fixed;left:50%;top:50%;margin-left:-250px;margin-top:-75px;}
 .login-boxes h1{margin:-3px 0 3px;color:#FFF;text-shadow:2px -2px #666}
 .login-form .formline{float:left;width:275px;margin:5px 0;}
@@ -177,6 +170,14 @@ body.login-page{background:url(bg-login.jpg) repeat-x center;margin:0;padding:0;
 .login-form .formbtn{clear:both;width:auto;}
 .lang-zh-cn .login-form .formbtn{padding-left:70px;}
 .lang-en .login-form .formbtn{padding-left:90px;}
+
+body.theme-coffee{background-image:url("coffee-bg-body.png");}
+body.theme-coffee .navbar ul li.active>a {background-color:#633b23;}
+body.theme-coffee .navbar ul li ul li a:hover,
+body.theme-coffee .navbar ul li.active ul li a:hover{color:#fff;background-color:#835b3f;}
+body.theme-coffee .footer-wrapper{background-image:url('coffee-bg-footer.png');}
+body.theme-coffee .boxes .boxes-tit {background-color:#835b3f;}
+body.theme-coffee.login-page{background-image:url(coffee-bg-login.png);}
 
 span.captcha-boxes {background-color:#FFF;border:1px solid #999;left:70px;padding:2px;position:absolute;top:30px;}
 .lang-en span.captcha-boxes{left:90px;}

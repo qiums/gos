@@ -137,6 +137,7 @@ class archives_controller extends common_controller{
 			unset($data['pagetotal']);
 		}
 		//$this->_update_views();
+		if ($_ENV['ajaxreq']) return $this->output(1, '', $data);
 		$this->assign(array(
 			'seokeywords' => trim($data['keywords']. ','. $this->vars['lc']['keywords']. ','. $mc['keywords'], ','),
 			'seodesc' => $data['description']. $mc['description'],

@@ -1,0 +1,51 @@
+{template header} 
+    <div class="content">
+        <div class="c-down">
+        	{template widget/pleft}
+            <div class="c-mid" style="width:725px">
+            	<!--{if $position}--><div class="weizhi">
+                	<a href="/">Home</a> &raquo; {echo join(' &raquo; ', $position)} &raquo; Details
+                </div><!--{/if}-->
+            	<h1>{$data[fulltitle]}</h1>
+                <div class="dc">{$data[content]}</div>
+                <div class="page">{widget:page/run}</div>
+            </div>
+            <div style="clear:both;"></div>
+        </div>
+    </div>
+<!--{if $mc[enable_ubb]}-->
+<script type="text/x-jquery-tmpl" id="venue-tmpl">
+<fieldset class="ubbdata fdatavenue">
+  <legend>${fulltitle}</legend>
+  <a class="picthumb" href="${link}"><img src="${thumb}" /></a>
+  <ul>
+    <li class="daddress">${enaddr}<br />${cnaddr}</li>
+    <li class="description">${description} <a href="${link}" class="more">Full listing&raquo;</a></li>
+  </ul>
+</fieldset>
+</div>
+</script>
+<script type="text/javascript" src="0/jslib/jquery.tmpl.min.js"></script>
+<script type="text/javascript" src="0/jslib/jquery.ubbcode.js"></script>
+<script type="text/javascript">
+$(function(){
+	$('.ubbparse').ubbparse('{echo str_replace(",","|",$mc[ubb_tags])}','{echo url("search/index")}',{thumb:'small'});
+});
+</script>
+<!--{/if}-->
+<script type="text/javascript">
+$(function(){
+	$('.dload a').iscroll(parseInt($('.c-mid').outerWidth(false),10)-($('.c-right:visible').length>0?50:100),
+	function(){
+		$(this).parent().removeClass('dload');
+	});
+	if ($('.dc .localimg').length>0 || $('.tabpic').length>0){
+		$.include('{$config[site][static_path][0]}scripts/fancybox/jquery.fancybox-1.3.4.css');
+		$.getScript('{$config[site][static_path][0]}scripts/fancybox/jquery.fancybox-1.3.4.pack.js',
+		function(){
+			$('[rel=gallery]').fancybox();
+		});
+	}
+});
+</script>
+{template footer}

@@ -13,14 +13,14 @@
             <div class="bigimages">
             <!--{loop $topnav $one}-->
 				<!--{if !$one[hide_focus]}-->
-            	<div class="b{$one_index}" class="hide"><img src="{echo ct($one[coverpic],600,345,1)}" alt="{$one[catename]}"/></div>
+            	<div class="b{$one_index} hide"><img src="{echo ct($one[coverpic],600,345,1)}" alt="{$one[catename]}"/></div>
 				<!--{/if}-->
             <!--{/loop}-->
             </div>
             <div class="images-info">
             <!--{loop $topnav $one}-->
 				<!--{if !$one[hide_focus]}-->
-            	<div class="c{$one_index}" class="hide">
+            	<div class="c{$one_index} hide">
                     <h2>{$one[catename]}</h2>
                     <p>{$one[description]}</p>
                     <a href="{$one[link]}">read more >></a>
@@ -49,105 +49,45 @@
             	<div class="travel">
                 	<div class="title-nav">
                     	<h2><a href="#"><img src="images/index/travel.gif" alt="Travel Guides" /></a></h2>
-                        <ul>
-                        	<li><a class="tnav-on" href="#">One day</a></li>
-                        	<li><a href="#">Two days</a></li>
-                        	<li><a href="#">Three days</a></li>
-                        	<li><a href="#">Outside of SH</a></li>
+                        <ul class="tablink">
+                        	<!--{list archives=mid/1/cid/9/content/1/limit/4}-->
+                        	<li><a data-index="{$one_index}" data-prefix="tra" href="{$one[link]}">{$one[subject]}</a></li>
+                        	<!--{/list}-->
                         </ul>
-                        <div class="search3">
+                        <!--<div class="search3">
                             <input type="text" value="Find a..." class="so1"/><input type="button" value="" class="so2" />
-                        </div>
+                        </div>-->
                     </div>
-                    <div class="travel-info">
+                    <!--{loop $blockv $one}-->
+                    <!--{eval preg_match_all('/\[venue=(\d+)\]/is', $one[content], $venues);}-->
+                    <div class="travel-info" id="tra{$one_index}" data-vids="{echo join(',',$venues[1])}" data-ua="1">
                     	<div class="show-page">
-                        	<a class="seemap" href="#">See on map >></a>
-                            <div class="page-info">
+                        	<a class="seemap" href="#ggmap">See on map >></a>
+                            <!--<div class="page-info">
                             	<span>3</span><span>/</span><span>5</span>
                                 <a href="#" class="left-arrow"></a>
                                 <a href="#" class="right-arrow"></a>
-                            </div>
+                            </div>-->
                         </div>
                         <div class="travel-img">
                         	<ul>
-                            	<li>
+                            	<!--<li data-latlng="${maplat},${maplng}" data-tid="${tid}">
                                 	<div class="img-info">
                                         <div class="img-right">
                                         	<span class="zhu">Start</span>
-                                            <h2><a href="#">The Chino ...</a></h2>
-                                            <p>A unique restaurant featuring ...</p>
+                                            <h2><a href="#">${fulltitle}</a></h2>
+                                            <p>${description}</p>
                                         </div>
                                     	<div class="img-left">
-                                        	<a href="#"><img src="images/img2.jpg" alt="" /></a>
+                                        	<a href="${link}"><img src="${thumb}" alt="${fulltitle}" /></a>
                                         </div>
                                     </div>
-                                </li>
-                            	<li>
-                                	<div class="img-info">
-                                        <div class="img-right">
-                                        	<span class="zhu">2nd station</span>
-                                            <h2><a href="#">The Chino ...</a></h2>
-                                            <p>A unique restaurant featuring ...</p>
-                                        </div>
-                                    	<div class="img-left">
-                                        	<a href="#"><img src="images/img2.jpg" alt="" /></a>
-                                        </div>
-                                    </div>
-                                </li>
-                            	<li>
-                                	<div class="img-info">
-                                        <div class="img-right">
-                                        	<span class="zhu">3rd station</span>
-                                            <h2><a href="#">The Chino ...</a></h2>
-                                            <p>A unique restaurant featuring ...</p>
-                                        </div>
-                                    	<div class="img-left">
-                                        	<a href="#"><img src="images/img2.jpg" alt="" /></a>
-                                        </div>
-                                    </div>
-                                </li>
-                            	<li>
-                                	<div class="img-info">
-                                        <div class="img-right">
-                                        	<span class="zhu">4th station</span>
-                                            <h2><a href="#">The Chino ...</a></h2>
-                                            <p>A unique restaurant featuring ...</p>
-                                        </div>
-                                    	<div class="img-left">
-                                        	<a href="#"><img src="images/img2.jpg" alt="" /></a>
-                                        </div>
-                                    </div>
-                                </li>
-                            	<li>
-                                	<div class="img-info">
-                                        <div class="img-right">
-                                        	<span class="zhu">5th station</span>
-                                            <h2><a href="#">The Chino ...</a></h2>
-                                            <p>A unique restaurant featuring ...</p>
-                                        </div>
-                                    	<div class="img-left">
-                                        	<a href="#"><img src="images/img2.jpg" alt="" /></a>
-                                        </div>
-                                    </div>
-                                </li>
-                            	<li>
-                                	<div class="img-info">
-                                        <div class="img-right">
-                                        	<span class="zhu">6th station</span>
-                                            <h2><a href="#">The Chino ...</a></h2>
-                                            <p>A unique restaurant featuring ...</p>
-                                        </div>
-                                    	<div class="img-left">
-                                        	<a href="#"><img src="images/img2.jpg" alt="" /></a>
-                                        </div>
-                                    </div>
-                                </li>
+                                </li>-->
                             </ul>
                             <div style="clear:both"></div>
                         </div>
-                        <div class="more2"><a href="#">Detailed info >></a></div>
-                    </div>
-
+                        <div class="more2"><a href="{$one[link]}">Detailed info >></a></div>
+                    </div><!--{/loop}-->
                 </div>
                 
             	<div class="travel" style="margin-top:10px;height:290px">
@@ -155,7 +95,7 @@
                     	<h2><a href="venue/attrib/3"><img src="images/index/recommend.gif" alt="Recommend" /></a></h2>
                         <ul class="tablink">
                         <!--{list cp.tree=do/dget/id/0/key/recommend property=tid/venue}-->
-                        	<li><a data-index="{$one_index}" href="#!{echo url('search/venue/tid/'.$one[id],array('attrib'=>3))}">{$one[dataname]}</a></li>
+                        	<li><a data-index="{$one_index}" data-prefix="rec" href="#!{echo url('search/venue/tid/'.$one[id],array('attrib'=>3))}">{$one[dataname]}</a></li>
                         <!--{/list}-->
                         </ul>
                         <!--<div class="search3">
@@ -163,7 +103,7 @@
                         </div>-->
                     </div>
 					<!--{loop $blockv $one}-->
-                    <div class="travel-info" id="rec-{$one_index}">
+                    <div class="travel-info" id="rec{$one_index}">
                     	<div class="show-page">
                         	<a class="seemap" href="{echo url('search/map/attrib/3', array('tid'=>$one[id]))}">See on map >></a>
                             <div class="page-info">
@@ -194,50 +134,137 @@
                 </div>
             </div>
             <div style="clear:both;"></div>
-			<script type="text/javascript" src="0/jslib/jquery.tmpl.min.js"></script>
-            <script type="text/javascript">
-			$(function(){
-				var tmpl = $.trim($('#rec-1 .travel-img > ul').html()).replace(/^(<!\-\-)|((\/\/)*\-\->)$/g, '')
-				, build = function(wrap){
-					var li = $('li', wrap);
-					if (!li.length) return ;
-					var w = li.first().outerWidth(true)
-						, parent = wrap.parent()
-						, pi = parent.siblings('.show-page').find('.page-info');
-					pi.data('index', '1');
-					wrap.width(w*li.length);
-					$('span', pi).filter(':first').text('1')
-						.end().filter(':last').text(Math.ceil(w*li.length/parent.width()));
-				}, nav = function(){
-					var d = $(this).hasClass('left-arrow')
-						, pi = $(this).parent()
-						, p = parseInt(pi.data('index'), 10)
-						, total = parseInt($(this).siblings('span:last').text())
-						, wrap = pi.parent().next(), w=wrap.width();
-					if (d && p===1 || !d && p===total) return false;
-					d ? p-- : p++;
-					wrap.scrollLeft((p-1)*w);
-					$(this).siblings('span:first').text(p);
-					pi.data('index', p);
-					$('.left-arrow', pi)[p===1 ? 'addClass' : 'removeClass']('disabled');
-					$('.right-arrow', pi)[p===total ? 'addClass' : 'removeClass']('disabled');
-					return false;
-				};
-				$(document).delegate('a.left-arrow, a.right-arrow', 'click.block-nav', nav);
-				$('.tablink').on('mouseover', 'a',
-				function(){
-					var i = $(this).data('index'), wrap=$('#rec-'+i+' .travel-img > ul');
-					$(this).parent().siblings('.tnav-on').removeClass('tnav-on').end().addClass('tnav-on');
-					$('#rec-'+i).siblings('.travel-info:visible').hide().end().show();
-					if (wrap.data('loaddata')=='1') return ;
-					$.post($(this).attr('href').substr(2), {thumb:'small', strlen:30, limit:15}, function(res){
-						if (0===res.code || res.body.page.rows===0) return ;
-						$.tmpl(tmpl, res.body.data).appendTo(wrap.data('loaddata', '1').empty());
-						build(wrap);
-					});
-				}).find('a:eq(0)').trigger('mouseover');
-			});
-			</script>
         </div>
     </div>
+<div class="hide">
+  <div id="ggmap" class="ggmap"></div>
+</div>
+<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false&hl=en"></script>
+<script type="text/javascript" src="0/jslib/jquery.tmpl.min.js"></script>
+<script type="text/javascript">
+var app = {
+	markers: [],
+	tmpl: function(k){
+		if (!this.tmpl.data){
+			this.tmpl.data = {};
+		}
+		if (!this.tmpl.data[k]) this.tmpl.data[k] = $.trim($('#'+k+'1 .travel-img > ul').html()).replace(/^(<!\-\-)|((\/\/)*\-\->)$/g, '');
+		return this.tmpl.data[k];
+	},
+	build: function(wrap){
+		var li = $('li', wrap);
+		if (!li.length) return ;
+		var w = li.first().outerWidth(true)
+			, parent = wrap.parent()
+			, pi = parent.siblings('.show-page').find('.page-info');
+		pi.data('index', '1');
+		wrap.width(w*li.length);
+		$('span', pi).filter(':first').text('1')
+			.end().filter(':last').text(Math.ceil(w*li.length/parent.width()));
+	},
+	nav: function(){
+		var d = $(this).hasClass('left-arrow')
+			, pi = $(this).parent()
+			, p = parseInt(pi.data('index'), 10)
+			, total = parseInt($(this).siblings('span:last').text())
+			, wrap = pi.parent().next(), w=wrap.width();
+		if (d && p===1 || !d && p===total) return false;
+		d ? p-- : p++;
+		wrap.scrollLeft((p-1)*w);
+		$(this).siblings('span:first').text(p);
+		pi.data('index', p);
+		$('.left-arrow', pi)[p===1 ? 'addClass' : 'removeClass']('disabled');
+		$('.right-arrow', pi)[p===total ? 'addClass' : 'removeClass']('disabled');
+		return false;
+	},
+	get: function(){
+		var i = $(this).data('index'), pre=$(this).data('prefix'), id='#'+pre+i, wrap=$(id+' .travel-img > ul');
+		$(this).parent().siblings('.tnav-on').removeClass('tnav-on').end().addClass('tnav-on');
+		$(id).siblings('.travel-info:visible').hide().end().show();
+		if (wrap.data('loaddata')=='1') return ;
+		var url = $(this).attr('href').substr(2)
+			, data = {thumb:'small', strlen:30, limit:15};
+		if ($(id).data('vids')){
+			url = '{echo url("search/venue")}';
+			data.ids = $(id).data('vids');
+		}
+		$.post(url, data, function(res){
+			if (0===res.code || res.body.page.rows===0) return ;
+			$.datacache['data'][id] = res.body.data;
+			$.tmpl(app.tmpl(pre), res.body.data).appendTo(wrap.data('loaddata', '1').empty());
+			if (!$(id).data('ua')) app.build(wrap);
+		});
+	},
+	map: function(){
+		var me=this, id = '#'+$(me).parent().parent().attr('id');
+		if ('undefined'===typeof $.datacache['data'][id]) return false;
+		if ('undefined'===typeof google){
+			$.getScript('http://maps.google.com/maps/api/js?sensor=false&hl=en', function(){
+				app.map.call(me);
+			});
+			return false;
+		}
+		if (app.markers.length >0){
+			for (p in this.markers) {
+				app.markers[p].setMap(null);
+			}
+			app.markers.length = 0;
+		}
+		$(me).dialog({title:'See on map - '+$(me).text(), id:'see-on-map', width:700, addclass:'ui-nop', onRender:app.loadmap});
+		return false;
+	},
+	loadmap: function(){
+		var id='#'+$(this.ele).parent().parent().attr('id')
+		, myOptions = {
+			zoom:12,
+			mapTypeId: google.maps.MapTypeId.ROADMAP,
+			mapTypeControl: false
+		}
+		, map = new google.maps.Map(document.getElementById('ggmap'), myOptions)
+		, bounds = new google.maps.LatLngBounds()
+		, infowindow= new google.maps.InfoWindow({});
+		$.each($.datacache['data'][id], function(i, res){
+			if (res.maplat=='0' || res.maplng=='0') return true;
+			var pos = new google.maps.LatLng(res.maplat, res.maplng);
+			var marker = new google.maps.Marker({
+				position: pos,
+				map: map, 
+				animation: google.maps.Animation.DROP,
+				icon: '{$config[env][static_path]}common/marker-'+app.strstr(res.tid)+'.png',
+				title: res.fulltitle
+			});
+			google.maps.event.addListener(marker, 'click', function(){
+				infowindow.setOptions({
+					title: res.fulltitle,
+					content:'<div class="mapinfowin"><a href="'+res.link+'" target="_blank"><img src="'+res.thumb+'" alt="'+res.fulltitle+'" /><span>'+res.fulltitle+'</span></a>'
+						+ '<br /><em>'+res.enaddr+'<br />'+res.phone+'</em><br /><span class="ib rate'+res.rate+'"></span></div>',
+					size: new google.maps.Size(50,50),
+					position: pos
+				});
+				infowindow.open(map);
+			});
+			bounds.extend(marker.getPosition());
+			app.markers.push(marker);
+		});
+		map.fitBounds(bounds);
+		return false;
+	},
+	strstr: function(string, needle){
+		needle = needle || ',';
+		needle = string.indexOf(needle)
+		if (-1 === needle) return string;
+		return string.substr(0, needle);
+	},
+	init: function(){
+		$('.tablink').each(function(){
+			$(this).on('mouseover', 'a', app.get).find('a:eq(0)').trigger('mouseover');
+		});
+	}
+};
+$(function(){
+	app.init();
+	$(document).delegate('a.left-arrow, a.right-arrow', 'click.block-nav', app.nav);
+	$(document).delegate('a.seemap', 'click.seemap', app.map);
+});
+</script>
 {template footer}

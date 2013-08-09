@@ -132,7 +132,7 @@ $(function(){
 				$('[name=description]').val(CKEDITOR.instances[this.id].document.getBody().getText().csubstr(200));
 			}
 			$(this).val(UBB.html2ubb(CKEDITOR.instances[this.id].getData()));
-		}else if (app.task==='edit'){
+		}else if (parseInt('{$data[id]}', 10) > 0){
 			$(this).attr('disabled', 'disabled');
 		}
 	});/*{/if}*/

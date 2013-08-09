@@ -8,7 +8,7 @@ return array(
 	'users.username' => array('search'=>'k|2', 'islist'=>'1'),
 	//'users.email' => array('search'=>'k|2', 'islist'=>'1'),
 	'arcindex.mid'=> array('islist'=>'1'),
-	'arcindex.cid' => array('type'=>'input:hidden', 'attr'=>'class="req-any minlength1 mselect" data-kname="catename"', 'islist'=>'1', 'option'=>'u.category/data'),
+	'arcindex.cid' => array('type'=>'input:hidden', 'attr'=>'class="req-any minlength1 mselect" data-kname="catename"', 'islist'=>'1', 'option'=>'u.category/data', 'map'=>'arcindex.catetag'),
 	'arcindex.attrib' => array('type'=>'select:[label]', 'search'=>'1', 'islist'=>'1', 'group'=>'1'),
 	'arcindex.published' => array('type'=>'select:[label]', 'search'=>'1', 'value'=>'1', 'islist'=>'1', 'group'=>'1'),
 	'arcindex.begindate' => array('type'=>'input:text', 'attr'=>'class="req-date lt-qc-text-sd_enddate" readonly="readonly"', 'group'=>'1'),
