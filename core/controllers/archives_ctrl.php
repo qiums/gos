@@ -120,8 +120,9 @@ class archives_controller extends common_controller{
 		}
 		if ($data['tid']){
 			$typeid = $this->vars['lc']['typeid'];
-			$tid = ($typeid AND FALSE!==($index=cstrpos($data['tid'], $typeid))) ? trim(substr(",{$data['tid']},", $index+strlen(",{$typeid},")),',') : $data['tid'];
-			$position = array_merge((array)$position, $this->cp->tree->property('tid', 'venue')->position("search/{$mc['prefix']}/tid/[id]", $tid, 1));
+			$tid = ($typeid AND FALSE!==($index=cstrpos($data['tid'], $typeid))) ? substr(",{$data['tid']},", $index+strlen(",{$typeid},")) : $data['tid'];
+			$position = array_merge((array)$position,
+					$this->cp->tree->property('tid', 'venue')->position($typeid ? "{$this->vars['lc']['fullalias']}/tid/[alias]" : "search/{$mc['prefix']}/tid/[id]", $tid, 1));
 			$data['lasttid'] = qstrstr($tid, ',', TRUE);
 		}
 		$data['content'] = htmlspecialchars($data['content']);

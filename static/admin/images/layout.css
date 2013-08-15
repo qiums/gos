@@ -186,9 +186,11 @@ span.captcha-boxes a {display:block;text-align:center;text-transform:uppercase;}
 .treedata{overflow:hidden;}
 .treedata ul{margin:0;padding:0;list-style:none;}
 .treedata li {background-image:url(tv-item.gif);background-repeat:no-repeat;background-position:0 -5px;padding:0 0 0 18px;margin:0;*border-bottom:1px solid #E8E7E1;*padding:4px 2px 4px 18px;*clear:both;}
-  .treedata li em{cursor:pointer;float:left;height:15px;margin-left:-18px;width:15px;}
+  .treedata li em.hitarea{cursor:pointer;float:left;height:15px;margin-left:-18px;width:15px;}
   .treedata li span{border-bottom:1px solid #E8E7E1;padding:5px 2px;height:16px;text-align:right;display:block;}
+  .treedata li span:hover{background-color:#FF9;}
   .treedata li span label{float:left;}
+  .treedata li span em.opstr{float:left;color:#999;margin-left:5px;}
   .treedata li span a{margin-left:5px;}
 .treedata li.collaps{background-image: url(tv-collapsable.gif);}
 .treedata li.expand{background-image: url(tv-expandable.gif);}
@@ -200,7 +202,7 @@ span.captcha-boxes a {display:block;text-align:center;text-transform:uppercase;}
 .treedata li.lastCollaps { background-image: url(tv-collapsable-last.gif);}
 .treedata li.lastExpand { background-image: url(tv-expandable-last.gif);}
 .treedata li.loading{background:url(../../common/loading.gif) no-repeat 0 5px;}
-.treedata .arrow{display:block;width:8px;height:16px;float:left;margin:-2px 5px 0;}
+.treedata li span em.arrow{display:block;width:8px;height:16px;float:left;margin:-2px 5px 0;}
 .treedata .arrow a{display:block;width:8px;height:8px;margin:-4px 0 8px -4px;}
 .treedata .arrow small{border-style:solid;border-width:4px;width:1px;height:1px;display:inline-block;}
 .arrow .arrow_down small{border-color:#000 transparent transparent;}

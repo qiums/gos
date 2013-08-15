@@ -17,7 +17,7 @@ return array(
 	'arcindex.author' => array('type'=>'input:text', 'attr' => 'class="req-any" maxlength="100"', 'group'=>'1', 'islist'=>'1'),
 	'arcindex.extlink' => array('type' => 'input:text', 'attr' =>'class="req-any" maxlength="255"', 'group'=>'1', 'islist'=>'1'),
 	'arcindex.coverpic' => array('type'=>'input:file', 'attr'=>'data-autoupload="1"', 'islist'=>'1'),
-	'arcindex.sortby' => array('type' => 'input:text', 'attr' =>'class="req-num" maxlength="5"', 'value'=>'0', 'group'=>'1'),
+	'arcindex.sortby' => array('type' => 'input:text', 'attr' =>'class="req-num" maxlength="5"', 'value'=>'0', 'group'=>'1', 'islist'=>'1'),
 	'arcindex.keywords' => array('type'=>'input:text', 'attr'=>'class="req-any" maxlength="255"', 'group'=>'1', 'islist'=>'1'),
 	'arcindex.description' => array('type'=>'textarea', 'attr'=>'rows=3', 'group'=>'1', 'islist'=>'1'),
 	'arcindex.totalview' => array('type'=>'input:text', 'attr'=>'class="req-num minlength1" maxlength="10"', 'value'=>'0', 'group'=>'1', 'islist'=>'1'),

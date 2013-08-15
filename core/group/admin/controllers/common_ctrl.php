@@ -42,15 +42,16 @@ class common_controller extends controller{
 	}
 	private function get_pagetit($menu){
 		$as = array('tabletit' => lang('form_label.'. gc('env.controller').'_'.gc('env.action')));
-		$c = gc('env.controller');$a=gc('env.action');
-		if ($_ENV['iscp']) $c = 'cp';
-		if (isset($menu[$c])){
-			$as['pagetit'] = $menu[$c][0];
-			$as['menu_active'] = $c;
-			$as['sub_menu'] = $menu[$c][1];
-			if (is_array($menu[$c][1])){
-				if (isset($menu[$c][1][$c]) OR isset($menu[$c][1]["{$c}/{$a}"])){
-					$as['sub_pagetit'] = isset($menu[$c][1][$c]) ? $menu[$c][1][$c] : $menu[$c][1]["{$c}/{$a}"];
+		$d = $c = gc('env.controller');$a = gc('env.action');
+		if ($_ENV['iscp']) $d = 'cp';
+		if (isset($menu[$d])){
+			$as['pagetit'] = $menu[$d][0];
+			$as['menu_active'] = $d;
+			$as['sub_menu'] = $menu[$d][1];
+			if (is_array($menu[$d][1])){
+				if ($d !== $c) $c = "{$d}/{$c}";
+				if (isset($menu[$d][1][$c]) OR isset($menu[$d][1]["{$c}/{$a}"])){
+					$as['sub_pagetit'] = isset($menu[$d][1][$c]) ? $menu[$d][1][$c] : $menu[$d][1]["{$c}/{$a}"];
 				}
 			}
 		}else{

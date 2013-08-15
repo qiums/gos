@@ -6,7 +6,7 @@ class search_controller extends core_search_controller{
 		if (!$this->archives->config){
 			$mid = $this->gp('mid');
 			if (!$mid) return $this->output('Undefined mid');
-			$this->archives = $this->channel->get($mid);
+			$this->archives->config = $this->channel->get($mid);
 		}
 		if (!$this->archives->config) return $this->output('Undefined channel');
 		if ($this->post['ids']){

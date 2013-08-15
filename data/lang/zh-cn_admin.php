@@ -197,5 +197,8 @@ return array(
 			'dgetfile'=>array('点击[继续]直接插入文件。','进入[我的文件]中选择以[插入文件]。'),
 		),
 	),
+	'cp' => array(
+		'typename' => '类型名称',
+	)
 );
 ?>

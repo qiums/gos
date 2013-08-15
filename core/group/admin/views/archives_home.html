@@ -13,7 +13,7 @@
       </form>
       </div>
       <form action="admin/archives/update" method="post" name="dataForm">
-      <input type="hidden" name="mid" value="{$channel[prefix]}" />
+      <input type="hidden" name="mid" value="{$channel[id]}" />
       <input type="hidden" name="upkey" id="upkey" />
       <input type="hidden" name="updata" id="updata" />
       <table class="table table-striped">
@@ -35,7 +35,8 @@
         <tr>
           <td><input type="checkbox" value="{$row[id]}" name="ids[]" data-item="check" /></td>
           <td>{$row[id]}</td>
-          <td><a href="{:url('admin/channel/'.$channel[prefix],array('edit'=>$row[id]))}" title="{$row[subject]}">{$row[subject]}</a>
+          <td><!--{if $row[coverpic]}--><i class="icon-picture"></i><!--{/if}-->
+            <a href="{:url('admin/channel/'.$channel[prefix],array('edit'=>$row[id]))}" title="{$row[subject]}">{$row[subject]}</a>
             <!--{if $row[subtitle]}--><em>{$row[subtitle]}</em><!--{/if}--></td>
           <td><a href="{:url('admin/archives/'.$channel[prefix],array('fk'=>2,'k'=>$row[username]))}">{$row[username]}</a>
             <!--{if $row[author]}--><em>{$row[author]}</em><!--{/if}--></td>
@@ -85,10 +86,10 @@ var app={
 			$('.supeopt li').addClass('disabled');
 		});
 		$('input[name=tid]').dropmenu({
-			url:'{url cp/tree/json/tid/venue}', data:{ac:'all'}
+			url:'{url cp/tree/json/tid/venue}', data:{'do':'all'}
 		});
 		$('input[name=region]').dropmenu({
-			url:'{url cp/tree/json/tid/region}', data:{ac:'all'}
+			url:'{url cp/tree/json/tid/region}', data:{'do':'all'}
 		});
 	},
 	trigger: function(fn){

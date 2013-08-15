@@ -6,7 +6,6 @@
  */
 class category_model extends Model{
     public $fields = NULL;
-	public $catdata;
 	public $datakey=0;
 	public $map = FALSE;
 	public $cache_conf=array();
@@ -42,20 +41,17 @@ class category_model extends Model{
 		$this->fields = $field;
 		return $this;
 	}
-	function find($cond=array()){
+	function qfind($cond=array()){
 		if (!$this->gc('data_table')) return array();
 		$cache = is_bool($cond) AND TRUE===$cond;
 		$cachename = 'category';
-		if (!$cache AND $this->catdata){
-			$data = $this->catdata;
-		}elseif ($cache OR FALSE===($data = cache::q($cachename))){
+		if ($cache OR FALSE===($data = cache::q($cachename))){
 			$data = $this->callback()
 				->order('depth,asc,orderby,asc,id,asc')
 				->attr('datatype', 3)
 				->findAll();
 			cache::q($cachename, $data);
 		}
-		if (!$this->catdata) $this->catdata = $data;
 		if ($cond AND is_array($cond)){
 			foreach ($data as $key=>$one){
 				foreach ($cond as $k=>$val){
@@ -88,14 +84,14 @@ class category_model extends Model{
 	}
 	function alias_to_id($alias){
 		if (is_numeric($alias)) return $alias;
-		$cat = $this->find();
+		$cat = $this->qfind();
 		foreach ($cat as $cid=>$one){
 			if ($alias==$one['alias']) return $cid;
 		}
 		return 0;
 	}
     function get($id, $use=''){
-		$cat = $this->find();
+		$cat = $this->qfind();
 		if (!is_array($id)){
 			if (is_numeric($id) && !$use){
 				$rs = isset($cat[$id]) ? $cat[$id] : array();
@@ -113,7 +109,7 @@ class category_model extends Model{
 		return $rs;
     }
 	function dget($id=0,$key='hot', $rstype=0){
-		$cat = $this->find();
+		$cat = $this->qfind();
 		$rs = array();
 		if ($id>0) $rs[$id] = array();
 		foreach ($cat as $one){
@@ -135,7 +131,7 @@ class category_model extends Model{
 		return FALSE!==strpos(",{$map},", ",{$id},");
 	}
     function root($by='byid'){
-		$cat = $this->find();
+		$cat = $this->qfind();
 		$data = $sort=$order=array();
 		foreach ($cat as $cid=>$one){
 			if (!empty($one['pid']) AND !$this->inmap($one['mapid'],0)) continue;
@@ -164,7 +160,7 @@ class category_model extends Model{
 	function siblings($id){
 		$rs = $this->get($id);
 		if (!$rs['pid']) return $this->root();
-		$cat = $this->find();
+		$cat = $this->qfind();
 		$data = array();
 		foreach ($cat as $cid=>$one){
 			if ($one['pid']!=$rs['pid'] OR $one['depth']!=$rs['depth']) continue;
@@ -179,7 +175,7 @@ class category_model extends Model{
 	//取得直属下级
     function child($id, $cond=array()){
 		if (!$id) return $this->root();
-		$cat = $this->find();
+		$cat = $this->qfind();
 		$data = array();
 		foreach ($cat as $cid=>$one){
 			if ($one['pid']!=$id OR $this->inmap($one['mapid'],$id)) continue;
@@ -202,14 +198,14 @@ class category_model extends Model{
 		}else{
 			$node = $id;
 		}
-		$parent = array_intersect_key($this->find(), array_flip(explode(',', $node)));
+		$parent = array_intersect_key($this->qfind(), array_flip(explode(',', $node)));
 		if (!$self) return array_slice($parent, 0, -1);
 		return $parent;
 	}
 	//取得下级（下级的下级等）
     function sub($id, $self=0, $cond=array()){
 		if (!$id) return $this->all();
-		$cat = $this->find();
+		$cat = $this->qfind();
 		$data = array();
 		foreach ($cat as $cid=>$one){
 			if (FALSE===(cstrpos($one['node'],$id))) continue;
@@ -227,11 +223,11 @@ class category_model extends Model{
 		return $data;
     }
 	function all(){
-		return $this->find();
+		return $this->qfind();
 	}
 	// 取得某一级的数据
 	function depth($depth=0, $num=0){
-		$cat = $this->find();
+		$cat = $this->qfind();
 		foreach ($cat as $cid=>$one){
 			if ($depth!=$one['depth']) unset($cat[$cid]);
 		}
@@ -317,7 +313,7 @@ class category_model extends Model{
 		foreach ($parent as $id=>$num){
 			Db::update($tab,array('childs'=>array('update',0-$num)),"id='$id'");
 		}
-		$this->find(TRUE);
+		$this->qfind(TRUE);
 		return TRUE;
 	}
 }

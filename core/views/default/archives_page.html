@@ -9,6 +9,16 @@
             <!--{if $lc[typeid]}-->
             <div class="c-right">
                 <div class="browse">
+                    <!--{if intval($lc[id]) === 1}-->
+                    <h3>Know more about SH</h3>
+                    <div class="bro-list">
+                        <ul>
+                        	<!--{list archives=mid/3/attrib/4/tid/#lc[typeid]#/limit/6}-->
+                            <li><a href="{$one[link]}">{$one[fulltitle]}</a></li>
+                            <!--{/list}-->
+                        </ul>
+                        <a class="all" href="{url search/venue/tid/$lc[typeid]}">More >></a>
+                    </div><!--{/if}-->
                 	<h3>Browse by cuisine</h3>
                     <div class="bro-list">
                         <ul>
@@ -24,7 +34,7 @@
                 	<h3>Browse by area</h3>
                     <div class="bro-list">
                         <ul>
-                        	<!--{list cp.tree=do/dget/id/#lc[typeid]#/key/hot property=tid/region}-->
+                        	<!--{list cp.tree=do/all/key/hot property=tid/region}-->
                             <!--{eval $tree_root = $this->cp->tree->get($one[rootid]);}-->
                             <li><a href="{url search/venue/tid/$lc[typeid]/region/$one[id]}">{$one[dataname]} <i>({$tree_root[dataname]})</i></a></li>
                             <!--{/list}-->

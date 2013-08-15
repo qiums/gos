@@ -20,7 +20,7 @@ class common_controller extends controller{
 		}
 		gc('env.static_path', gc('env.webroot').'static/', TRUE);
 		// 导航
-		$this->assign('topnav', $this->category->callback()->root());
+		$this->assign('topnav', $this->category->root());
 	}
 	/*public function __get($name){
 		//if ('category' === $name) return $this->load->model('archives/category');

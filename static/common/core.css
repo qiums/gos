@@ -110,6 +110,9 @@ table{max-width:100%;background-color:transparent;border-collapse:collapse;borde
 .formdiv div.formline select.elelayout,.qcform li select.elelayout{width:42%;}
 .formdiv .help-block,.qcform .help-block{margin-left:8px;color:#999;}
 .formdiv div.formline select,.qcform li select{margin-right:3px;}
+
+.formdiv div.formline.label-block label,.qcform li.label-block label{display:block;*float:none;width:auto;}
+.formdiv div.formline.label-block .elelayout,.qcform li.label-block .elelayout{width:96%;}
 /*******************
 	Date picker
 *******************/

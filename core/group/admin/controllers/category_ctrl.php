@@ -57,7 +57,7 @@ class category_controller extends common_controller{
 		if ('add' === $ac OR $uptxt){
 			$this->category->db()->insert('contents', array('mid'=>'0', 'aid'=>'0', 'cid'=>$id), array('content'=>$this->post['sd_content']));
 		}
-		$this->category->find(TRUE);
+		$this->category->qfind(TRUE);
 		return $this->output(1, 'supe_success', $this->category->get($id));
 	}
 	public function move(){

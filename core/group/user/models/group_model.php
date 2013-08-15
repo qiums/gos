@@ -115,11 +115,11 @@ class group_model extends model{
 			unset($arc, $cat);
 		}
 		if (isset($menu['cp']) AND (!$perm['modules'] OR FALSE!==cstrpos($perm['modules'],'components'))){
-			/*$GLOBALS['APPDATA'] = import('app.manage')->find();
-			foreach ($GLOBALS['APPDATA'] as $key=>$row){
-				if ($perm['app']&&FALSE===cstrpos($perm['app'],$key)) continue;
-				$menu['app=manage'][1]['app='.$key] = $row['app_name'];
-			}*/
+			$com = $this->cp->manage->get_coms();
+			foreach ($com as $key=>$row){
+				if ($perm['app'] && FALSE===cstrpos($perm['app'], $key)) continue;
+				$menu['cp'][1]["cp/{$key}"] = $row['app_name'];
+			}
 		}
 		return $menu;
 	}

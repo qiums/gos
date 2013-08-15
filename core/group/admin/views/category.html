@@ -39,12 +39,12 @@
     <h4 class="boxes-tit">{$tabletit}</h4>
     <div class="boxes-body treedata">
       <ul>
-        <!--<li class="collaps"><span id="id-${id}">
+        <!--<li class="collaps"><span data-id="${id}">
 		  <em class="arrow" data-order="${orderby}"><a href="javascript:;" class="arrow_up"><small></small></a><a href="javascript:;" class="arrow_down"><small></small></a></em>
-		  <label>${id}. <cite>${catename}</cite></label>
+		  <label>${id}. <cite>${catename}</cite></label>{{if options!=''}}<em class="opstr">${options}</em>{{/if}}
           <a href="#add" title="Add"><i class="icon-plus"></i></a>
           <a href="#edit" title="Edit"><i class="icon-edit"></i></a>
-          <a href="#del" title="Delete"><i class="icon-remove"></i></a></span>{{if childs>0}}<ul></ul>{{/if}}</li>-->
+          <a href="#del" title="Delete"><i class="icon-remove"></i></a></span>{{if childs>0}}<ul style="display:none"></ul>{{/if}}</li>-->
       </ul>
     </div>
   </div>
@@ -70,7 +70,7 @@ var app = {
 		this.html = $.trim(this.wrap.html()).replace(/^(<!\-\-)|((\/\/)*\-\->)$/g, '');
 		this.get(0);
 		this.form = $('form[name=supeForm]');
-		this.root.delegate('a', 'click', this.run);
+		this.root.delegate('a', 'click', this.run).delegate('em.hitarea', 'click', this.getsub);
 		this.form.bind('form-pre-serialize', function(e, form, op, veto){
 			$('.html-editor').trigger('setdata');
 		}).saveForm(this.save);
@@ -88,21 +88,21 @@ var app = {
 		var href = $(this).attr('href');
 		app.task = href.substr(href.lastIndexOf('#')+1);
 		app.target = this;
-		app.id = $(this).parent().hasClass('titrgt') ? 0 : parseInt($(this).parent().attr('id').substr(3));
+		app.id = $(this).parent().hasClass('titrgt') ? 0 : parseInt($(this).parent().data('id'));
 		app.wrap = !app.id ? app.root : $(this).closest('ul');
 		if ('undefined' !== typeof app[app.task]){
-			app[app.task](this);
+			app[app.task]();
 		}
 		return false;
 	},
-	add: function(el){
+	add: function(){
 		this.form[0].reset();
 		this.uploader('reset');
 		this.content('reset');
 		$('input[name=pid]:hidden').val(this.id);
-		$('.sidergt .boxes-tit').html('{lang button.add_category}' + (this.id > 0 ? ' / ' + $(el).prev('label').text() : ''));
+		$('.sidergt .boxes-tit').html('{lang button.add_category}' + (this.id > 0 ? ' / ' + $(this.target).prev('label').text() : ''));
 	},
-	edit: function(el){
+	edit: function(){
 		var data = $.datacache.catedata[this.id];
 		if (!data){
 			return $.getJSON('{:url admin/category/get}', {id:this.id},
@@ -154,6 +154,13 @@ var app = {
 		}
 		$.datacache.catedata[res.body.id] = res.body;
 		$.ckSuccess(res);
+	},
+	getsub: function(){
+		app.wrap = $(this).parent()
+			.swapClass('collaps','expand')
+			.swapClass('lastCollaps','lastExpand')
+			.find('>ul').toggle();
+		if (app.wrap.is(':visible')) app.get($(this).next('span').data('id'));
 	},
 	get: function(id){
 		this.id = id;

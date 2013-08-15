@@ -274,34 +274,3 @@ class uevents_model extends model{
 		return $rs;
 	}
 }
-class follow_model extends model{
-	public $conf = array(
-		'pagesize'=>20,
-		'data_table'=>'follows',
-		'sort_fields' => array(
-			'ftime' => array('ftime', 'desc'),
-		),
-	);
-	function exists($mid,$aid){
-		return $this->count(array('uid'=>$GLOBALS['user_data']['id'],'mid'=>$mid,'aid'=>$aid));
-	}
-	function add($uid, $mid, $aid=NULL){
-		if (!is_array($mid)){
-			$mid = array('mid'=>$mid, 'aid'=>$aid);
-		}
-		if (!$mid['mid'] OR !$mid['aid']) return 0;
-		$mid['ftime'] = D::get('curtime');
-		$mid['uid'] = $uid;
-		return $this->insert($mid);
-	}
-	function remove($uid, $mid, $aid=NULL){
-		if (!is_array($mid)){
-			$mid = array('mid'=>$mid, 'aid'=>$aid);
-		}
-		if (!$mid['mid'] OR !$mid['aid']) return 0;
-		$mid['uid'] = $uid;
-		return $this->delete($mid);
-	}
-	function get($uid){
-	}
-}

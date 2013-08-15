@@ -1,0 +1,128 @@
+{template header}
+<section class="sidemain sidehack">
+  <div class="boxes shadow">
+    <h4 class="boxes-tit">{$tabletit}</h4>
+    <div class="boxes-body treedata">
+      <table class="table table-striped">
+        <thead>
+        <tr>
+          <th style="width:5%">{lang text.id}</th>
+          <th style="width:20%">{lang text.alias}</th>
+          <th>{lang cp.typename}</th>
+          <th style="width:30%">{lang form_label.data_table}</th>
+		  <th style="width:20%">{lang text.manage}</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!--{loop $arrdata $app $one}-->
+        <tr>
+          <td>$one[id]</td>
+          <td><span class="alias_text">$one[alias]</span></td>
+          <td><span class="typename_alias">$one[typename]</span></td>
+          <td>$one[treetable]</td>
+		  <td><a href="{url admin/cp/tree/$one[alias]}" title="{lang button.data}"><i class="icon-th-list"></i> {lang button.data}</a></td>
+        </tr>
+        <!--{/loop}-->
+        </tbody>
+      </table>
+    </div>
+    <!--[if lte IE 6]><span style="float:right; position:relative;"></span><![endif]-->
+  </div>
+  <div class="clearfix"></div>
+</section>
+<div class="hide">
+  <div id="supe" class="qcform">
+  <form action="tree/save" method="post" name="addForm" autocomplete="off">
+  <!--{echo $this->form->hidden('id')}-->
+    <ul>
+      <!--{loop $form $one}-->
+      <li>{$one[label]}
+        {$one[ele]}
+        {$one[tips]}</li>
+      <!--{/loop}-->
+    </ul>
+  </form>
+  </div>
+</div>
+<script type="text/javascript">
+var app = {
+	cache: {ele:'', id:'', data:{}},
+	get: function(){
+		var me=this, id = $(this).attr('rel');
+		if (-1 !==$(this).attr('href').lastIndexOf('#add') || app.cache['data'][id]) return app.dialog.call(this);
+		return $.post('{url admin/cp/tree/get}', {id: id},
+			function(res){
+				if (1 !== res.code) return $.dialog(res.message, {title:'提示信息'});
+				app.cache['data'][id] = res.body;
+				return app.dialog.call(me);
+			});
+	},
+	dialog: function(){
+		var arg = {
+			target:'#supe', width:720, id:'supe-panel',
+			buttons: {
+				'{lang button.submit}.btn-primary': app.save,
+				'{lang button.cancel}': 'close'
+			},
+			onRender: function(){
+				if (!this.ele) return ;
+				$('form', this.dbody)[0].reset();
+				if (-1 !== $(this.ele).attr('href').lastIndexOf('#add')) return ;
+				var id = $(this.ele).attr('rel');
+				app.cache['ele'] = this.ele;
+				app.cache['id'] = id;
+				$('input[name=id]').val(id);
+				app.data();
+			}
+		};
+		$(this).dialog(arg);
+	},
+	save: function(){
+		var form = $('form', this.dbody);
+		if (!$(this.ele).hasClass('edit')){
+			if (app.check(form, '.alias_text', '[name=alias]:input', '别名已经存在')){
+				if (!app.check(form, '.typename_text', '[name=typename]:input', '类型名称已经存在')) return ;
+			}else{
+				return ;
+			}
+		}
+		this.hide();
+		form.saveForm(function(res){
+			$.ckSuccess(res, 'reload');
+		}).trigger('submit');
+	},
+	data: function(){
+		var ele = this.cache.ele
+			, data = this.cache.data[this.cache.id]
+			, iscopy = $(ele).hasClass('copy');
+		if (!data) return ;
+		$.each(data, function(key, val){
+			if (iscopy && ('prefix'===key || 'channel_name'===key)) return true;
+			$('[name=' + key + ']:input').val(val);
+		});
+	},
+	check: function(form, handle, ele, text){
+		var ck = true;
+		$(handle).each(function(){
+			if ($(this).text() === $.trim($(ele).val())){
+				ck = false; return false;
+			}
+		});
+		if (ck) return true;
+		form.trigger('form-check-error', [$(ele)[0], text]);
+		return false;
+	}
+};
+$(function(){
+	$('a[href$="#add"], a[href$="#edit"], a[href$="#copy"]')
+	.each(function(){
+		$(this).bind('click.supe-panel',
+			function(e){
+				e.preventDefault();
+				app.get.call(this);
+			});
+	});
+	//$('.saveForm').ckForm();
+});
+</script>
+{template footer}

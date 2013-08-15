@@ -1,0 +1,188 @@
+{template header}
+<section class="sidergt sidehack" style="width:520px">
+  <div class="boxes shadow">
+    <h4 class="boxes-tit">{lang button.add}</h4>
+    <div class="boxes-body">
+      <form action="admin/cp/tree/save" method="post" name="supeForm">
+      <input type="hidden" name="id" value="0" />
+	  <input type="hidden" name="pid" value="0" />
+      <input type="hidden" name="tid" value="{$data[id]}" />
+      <div class="qcform addform">
+        <ul>
+        <!--{loop $form $one}-->
+          <li class="label-block">{$one[label]}
+            {$one[ele]}</li>
+        <!--{/loop}-->
+        </ul>
+      </div>
+      <div class="qcform editform hide">
+        <ul>
+        <!--{loop $editform $one}-->
+          <li>{$one[label]}
+            {$one[ele]}
+            {$one[tips]}</li>
+        <!--{/loop}-->
+        </ul>
+      </div>
+      <div class="boxes-search">
+        <button type="submit" class="btn btn-primary">{lang button.submit}</button>
+        <span class="ajax-tips">{lang saving}</span></div>
+      </form>
+    </div>
+  </div>
+</section>
+<section class="sidemain sidehack">
+  <div class="boxes shadow">
+	<span class="titrgt"><a class="btn addroot" href="#add"><i class="icon-plus"></i>{lang button.add}</a></span>
+    <h4 class="boxes-tit">{$tabletit}</h4>
+    <div class="boxes-body treedata">
+      <ul>
+        <!--<li class="collaps"><span data-id="${id}">
+		  <em class="arrow" data-order="${orderby}"><a href="javascript:;" class="arrow_up"><small></small></a><a href="javascript:;" class="arrow_down"><small></small></a></em>
+		  <label>${id}. <cite>${dataname}</cite></label>{{if options!=''}}<em class="opstr">${options}</em>{{/if}}
+          <a href="#add" title="Add"><i class="icon-plus"></i></a>
+          <a href="#edit" title="Edit"><i class="icon-edit"></i></a>
+          <a href="#del" title="Delete"><i class="icon-remove"></i></a></span>{{if childs>0}}<ul style="display:none"></ul>{{/if}}</li>-->
+      </ul>
+    </div>
+  </div>
+</section>
+<script type="text/javascript" src="0/jslib/jquery.tmpl.min.js"></script>
+
+<script type="text/javascript">
+$.datacache = jQuery.extend({}, {treedata:{}, catedata:{}, content:{}});
+var app = {
+	id: 0, task: 'add', target: $('.addroot')[0], form: '',
+	root: $('.treedata > ul'),
+	wrap: '',
+	html: '',
+	init: function(){
+		this.wrap = this.root;
+		this.html = $.trim(this.wrap.html()).replace(/^(<!\-\-)|((\/\/)*\-\->)$/g, '');
+		this.get(0);
+		this.form = $('form[name=supeForm]');
+		this.root.delegate('a', 'click', this.run).delegate('em.hitarea', 'click', this.getsub);
+		/*{if property_exists($this,'form')}*/this.form.saveForm(this.save);/*{/if}*/
+		$('button[type=reset]').on('click.reset.form', this.reset);
+		$('.addroot').on('click.addroot', this.run);
+	},
+	reset: function(){
+		app.form[0].reset();
+		if ('undefined' !== typeof app[app.task]) app[app.task]();
+		return false;
+	},
+	run: function(){
+		var href = $(this).attr('href');
+		app.task = href.substr(href.lastIndexOf('#')+1);
+		app.target = this;
+		app.id = $(this).parent().hasClass('titrgt') ? 0 : parseInt($(this).parent().data('id'));
+		app.wrap = !app.id ? app.root : $(this).closest('ul');
+		if ('undefined' !== typeof app[app.task]){
+			app[app.task]();
+		}
+		return false;
+	},
+	add: function(){
+		this.form[0].reset();
+		if ($('.addform').is(':hidden')) $('.addform, .editform').toggle();
+		$('input[name=id]:hidden').val('0');
+		$('input[name=pid]:hidden').val(this.id);
+		$('.sidergt .boxes-tit').html('{lang button.add}' + (this.id > 0 ? ' / ' + $(app.target).prev('label').text() : ''));
+	},
+	edit: function(){
+		var data = $.datacache.catedata[this.id];
+		if (!data){
+			return $.getJSON('{url admin/cp/tree/get/tid/$data[id]}', {id:this.id},
+			function(res){
+				$.datacache.catedata[app.id] = res.body;
+				app.edit();
+			});
+		}
+		if ($('.editform').is(':hidden')) $('.addform, .editform').toggle();
+		$('input[name=id]:hidden').val(this.id);
+		$('.sidergt .boxes-tit').html('{lang button.edit} / '+ data.dataname);
+		$.each(data, function(k, val){
+			$('.editform [name="' + k + '"]').val(val);
+		});
+	},
+	save: function(res){
+		return app.dialog(res);
+	},
+	dialog: function(res){
+		if (this.task === 'add'){
+			var se = this.id > 0 ? $(this.target).parent().next('ul') : this.root
+				, a = {};//res.body;
+			if (res.body.id){
+				a[res.body.id] = res.body;
+			}else{
+				a = res.body;
+			}
+			if (!se.length) se = $('<ul />').insertAfter($(this.target).parent());
+			$.tmpl(this.html, res.body).appendTo(se);
+			if (!$.datacache.treedata[this.id]) $.datacache.treedata[this.id] = {};
+			$.datacache.treedata[this.id] = jQuery.extend({}, $.datacache.treedata[this.id], a);
+			this.reset();
+			this.tree();
+			$(this.target).siblings('em.hitarea').trigger('click.subcate');
+		}else if ('edit' === this.task){
+			$(this.target).parent().replaceWith($.tmpl(this.html, res.body).find('span'));
+			this.tree();
+		}
+		$.datacache.catedata[res.body.id] = res.body;
+		$.ckSuccess(res);
+	},
+	getsub: function(){
+		app.wrap = $(this).parent()
+			.swapClass('collaps','expand')
+			.swapClass('lastCollaps','lastExpand')
+			.find('>ul').toggle();
+		app.get($(this).next('span').data('id'));
+	},
+	get: function(id){
+		this.id = id;
+		if ($.datacache.treedata[id]) return this.build();
+		return $.getJSON('{:url cp/tree/json/res/array}', {id:id, 'do':'child', tid:'{$data[alias]}'},
+		function(res){
+			if (0===res.code) return ;
+			$.datacache.treedata[id] = res.body;
+			app.build();
+		});
+	},
+	build: function(){
+		var data = $.datacache.treedata[this.id];
+		if (!data) return ;
+		$.tmpl(this.html, data).appendTo(this.wrap.empty());
+		this.tree();
+	},
+	tree: function(wrap){
+		wrap = wrap || this.wrap;
+		$('small.disabled', wrap).removeClass('disabled');
+		wrap.find('>li')
+			.removeClass('last lastExpand lastCollaps')
+			.filter(":last-child")
+				.addClass('last')
+			.end()
+			.filter(':has(>ul:hidden)')
+				.replaceClass('collaps','expand')
+				.replaceClass('last','lastExpand')
+			.end()
+			.not(':has(>ul:hidden)')
+				.replaceClass('expand','collaps')
+				.replaceClass('last', 'lastCollaps')
+			.end()
+			.filter(':not(>ul):last-child')
+				.addClass('last')
+			.end()
+			.find('.hitarea').remove()
+			.end()
+			.filter(':has(>ul)')
+			.prepend('<em class="hitarea" />');
+		$('li:first',wrap).find('.arrow_up>small').addClass('disabled');
+		$('li:last',wrap).find('.arrow_down>small').addClass('disabled');
+	}
+};
+$(function(){
+	app.init();
+});
+</script>
+{template footer}

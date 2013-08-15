@@ -6,10 +6,10 @@
 class com_tree_model extends model{
 	public $treeinfo;
 	public $tid = 0;
-	private $fields = NULL;
+	protected $fields = NULL;
 	private $cachedata = array();
 
-	function get_tree($id=0,$cache=FALSE){
+	public function get_tree($id=0,$cache=FALSE){
 		if (is_null($id)) return array();
 		if (is_bool($id)){
 			$cache = $id;
@@ -62,10 +62,15 @@ class com_tree_model extends model{
 		}
 		return join('/', $alias);
 	}
-	public function all(){
-		return $this->qfind();
+	public function all($filter=''){
+		$res = $this->qfind();
+		if (!$filter) return $res;
+		foreach ($res as $k=>$one){
+			if (!isset($one[$filter])) unset($res[$k]);
+		}
+		return $res;
 	}
-	private function qfind($cache=FALSE){
+	public function qfind($cache=FALSE){
 		if (!$this->treeinfo){
 			if (!$this->tid) return array();
 			$tree = $this->get_tree($this->tid);
@@ -155,6 +160,7 @@ class com_tree_model extends model{
 		return $data;
 	}
 	function child($id){
+		if (!$id) return $this->root();
 		$tree = $this->qfind();
 		$data = array();
 		foreach ($tree as $cid=>$one){

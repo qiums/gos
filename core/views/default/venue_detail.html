@@ -46,7 +46,7 @@
                             <!--{if $data[phone]}--><li><label>Phone/Mobile:</label><strong>{make_phone $data[phone]}</strong></li><!--{/if}-->
                             <!--{if $data[website]}--><li><label>Website:</label><a class="website" href="{$data[website]}" target="_blank">{$data[website]}</a></li><!--{/if}-->
                             <!--{if $data[vemail]}--><li><label>Email:</label><a class="website" href="mailto:{$data[vemail]}" target="_blank">{$data[vemail]}</a></li><!--{/if}-->
-                            <li><a class="favor" href="javascript:;">Add to my favorites</a></li>
+                            <li><a class="favor" href="javascript:;" data-favcount="{$data[follows]}">Add to my favorites {$data[follows]}</a></li>
                         </ul>
                         <p class="miaoshu">{$data[content]}</p>
                     </div>
@@ -54,49 +54,6 @@
                 </div>
                 <!--查看部分图片-->
                 <div id="galleria" class="pictures"></div>
-                <!--查看部分图片-->
-                <!--<div class="pinlun">
-                	<div class="comment">
-                    	<a class="zan" href="#">Comments(<i>5</i>)</a>
-                    </div>
-                    <div class="saysth">
-                        <textarea>Say something...</textarea>
-                        <p><a href="#">Login</a>or<a href="#">SignUp</a></p>
-                    </div>
-                    <div style="clear:both;"></div>
-                    <div class="liuyan">
-                    	<ul>
-                        	<li>
-                            	<div class="left-img">
-                                	<a href="#"><img src="../images/img2.jpg" /></a>
-                                </div>
-                                <div class="right-info">
-                                	<h3>EvaCCQ<span class="date">Mar 31, 13</span></h3>
-                                    <p>nteresting and cosy looking bistro with quality food</p>
-                                </div>
-                            </li>
-                        	<li>
-                            	<div class="left-img">
-                                	<a href="#"><img src="../images/img2.jpg" /></a>
-                                </div>
-                                <div class="right-info">
-                                	<h3>EvaCCQ<span class="date">Mar 31, 13</span></h3>
-                                    <p>nteresting and cosy looking bistro with quality food</p>
-                                </div>
-                            </li>
-                        	<li>
-                            	<div class="left-img">
-                                	<a href="#"><img src="../images/img2.jpg" /></a>
-                                </div>
-                                <div class="right-info">
-                                	<h3>EvaCCQ<span class="date">Mar 31, 13</span></h3>
-                                    <p>nteresting and cosy looking bistro with quality food</p>
-                                </div>
-                            </li>
-                        </ul>
-                        <div style="clear:both;"></div>
-                    </div>
-                </div>-->
             </div>
             <div class="c-right cright6">
             	<div class="map" id="ggmap-wrap">
@@ -196,7 +153,7 @@ var app = {
 		$('#view-bigmap').on('click',
 		function(){
 			$(this).dialog({
-				id:'bigmap', width:720, title:'Bigger Map', addclass:'ui-nop',
+				id:'bigmap', width:720, title:'{$data[fulltitle]}', addclass:'ui-nop',
 				onRender: function(){
 					//$('>div', this.dbody).css({width:598, height:360});
 					google.maps.event.trigger(app.map, "resize");
@@ -209,6 +166,30 @@ var app = {
 				}
 			});
 			return false;
+		});
+		$('a.favor').on('click',
+		function(){
+			$.post('{url user/follow/add}', {mid:'{$mc[id]}', aid:'{$data[id]}'}, app.addfav, json);
+			return false;
+		})/*<!--{if $user_data[id]}-->*/.bind('load-fav-status',
+		function(){
+			$.post('{url user/follow/status}', {mid:'{$mc[id]}', aid:'{$data[id]}'},
+			function(res){
+				if (parseInt(res.body.count,10) === 0) return ;
+				$('a.favor').replaceWith('<span class="favor">Already in your favorites</span>');
+			}, 'json');
+		}).trigger('load-fav-status')/*{/if}*/;
+		$('input[name=tid]').dropmenu({
+			url:'{url cp/tree/json/tid/venue}', data:{'do':'all'}
+		});
+		$('input[name=region]').dropmenu({
+			url:'{url cp/tree/json/tid/region}', data:{'do':'all'}
+		});
+	},
+	addfav: function(res){
+		if (!res.code) return ;
+		$('a.favor').each(function(){
+			$(this).replaceWith('<span class="favor">Already in your favorites</span>');
 		});
 	},
 	getbranch: function(){
@@ -240,9 +221,13 @@ var app = {
 	},
 	get: function(wrap, data){
 		if (!data || $.isEmptyObject(data)) return ;
-		$.getJSON('{echo url("search/venue")}', jQuery.extend({}, {thumb:'small', limit:3}, data || {}),
+		$.getJSON('{echo url("search/venue")}', jQuery.extend({}, {thumb:'small', limit:4}, data || {}),
 		function(res){
 			if (res.code === 0) return ;
+			$.each(res.body.data,
+			function(i, d){
+				if (parseInt(d.id,10) === parseInt("{$data[id]}",10) || i>3) delete res.body.data[i];
+			});
 			$.tmpl(app.html, res.body.data).appendTo($('#'+wrap+'>ul').removeClass('loading').empty());
 		});
 	},

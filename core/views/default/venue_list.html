@@ -245,16 +245,10 @@ var markers = []
 <script type="text/javascript">
 $(function(){
 	$('input[name=tid]').dropmenu({
-		url:'{url cp/tree/json/tid/venue}', data:{ac:'all'}/*,
-		onRender: function(){
-			document.title = $(this).next().text() + '-' + document.title;
-		}*/
+		url:'{url cp/tree/json/tid/venue}', data:{'do':'all'}
 	});
 	$('input[name=region]').dropmenu({
-		url:'{url cp/tree/json/tid/region}', data:{ac:'all'}/*,
-		onRender: function(){
-			document.title = $(this).next().text() + '-' + document.title;
-		}*/
+		url:'{url cp/tree/json/tid/region}', data:{'do':'all'}
 	});
 	$('.stardiv span').each(function(){
 		$(this).rate({

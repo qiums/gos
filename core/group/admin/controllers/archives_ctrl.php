@@ -57,11 +57,12 @@ class archives_controller extends common_controller{
 		$mid = $this->post['mid'];
 		if (!$ids OR !$mid) return $this->output(0, 'not_request_data');
 		if (!is_array($ids)) $ids = explode(',', $ids);
-		$updata = $this->post['updata'] ? $this->post['updata'] : array($this->post['upkey']=>$this->post['updata']);
+		$updata = is_array($this->post['updata']) ? $this->post['updata'] : array($this->post['upkey']=>$this->post['updata']);
 		if (!$updata) return $this->output(0, 'not_request_data');
-		foreach ($ids as $id){
+		/*foreach ($ids as $id){
 			$this->archives->db()->where(array('aid'=>$id, 'mid'=>$mid))->update('arcindex', $updata);
-		}
+		}*/
+		$this->archives->db()->where(array('aid'=>$ids, 'mid'=>$mid))->update('arcindex', $updata);
 		$this->output(1, 'update_success');
 	}
 	public function save(){

@@ -19,7 +19,7 @@ class channel_model extends model{
 			if (TRUE === $channel_name OR FALSE===($channel = cache::q($key))){
 				$data = $this->findAll();
 				$channel = array();
-				foreach ($data as $i=>$one){
+				foreach ($data as $one){
 					if (!empty($one['other_setting']))
 						$one = array_merge($one, parse_ini_string($one['other_setting'],TRUE));
 					unset($one['other_setting']);
@@ -49,24 +49,31 @@ class channel_model extends model{
 		}
 		return $res;
 	}
+	public function cache_fields($mid){
+		if (!$mid) return array();
+		$cache_key = 'channels.field'.$mid;
+		if (FALSE===($fields = cache::q($cache_key))){
+			$data = $this->db()
+				->where('mid', $mid)
+				->order('sort', 'desc')
+				->findAll('fields');
+			$fields = array();
+			foreach ($data as $one){
+				if (!empty($one['settings']))
+					$one = array_merge($one, parse_ini_string($one['settings'],TRUE));
+				unset($one['settings']);
+				$fields[$one['field_name']] = $one;
+			}
+			cache::q($cache_key, $fields);
+		}
+		return $fields;
+	}
 	/*
 	 * $mode - 0 获取自定义字段 1 获取搜索字段 2 获取列表字段 3 添加/修改内容时的字段(含channel.common的字段)
 	 * 4 1+3的组合 5 2+3的组合 大于5相当于0+3的组合
 	 */
 	public function get_fields($mid, $mode=0, $group=NULL){
-		$cache_key = 'channels.field'.$mid;
-		$fields = $this->cache_data[$cache_key];
-		if (!$fields){
-			if (FALSE===($fields = cache::q($cache_key))){
-				/*$fields = $this->db()
-					->where('mid', $mid)
-					->order('sort', 'desc')
-					->findAll('fields');
-				cache::q($cache_key, $fields);*/
-				$fields = array();
-			}
-			$this->cache_data[$cache_key] = $fields;
-		}
+		$fields = $this->cache_fields($mid);
 		if (3<=$mode){
 			$common_fields = $this->cache_data['common.fields'];
 			if (!$common_fields){
@@ -80,7 +87,7 @@ class channel_model extends model{
 		$filter = array(NULL, 'search', 'islist');
 		if ($filter[$mode]){
 			foreach ($fields as $key=>&$one){
-				if (!isset($one[$filter[$mode]])){
+				if (!$one[$filter[$mode]]){
 					unset($fields[$key]);
 					continue;
 				}
@@ -117,72 +124,4 @@ class channel_model extends model{
 		}
 		return $fields;
 	}
-	public function parse_sort($sort){
-		$sort = explode('|', $sort);
-		foreach ($sort as $key=>$one){
-			$one = explode(',', $one);
-			$sort[isset($one[2]) ? $one[2] : $one[0]] = array($one[0], $one[1]);
-			unset($sort[$key]);
-		}
-		return $sort;
-	}
-	public function parse_option($string){
-		$string = explode("\n", $string);
-		$rs = array();
-		foreach ($string as $one){
-			if (!trim($one)) continue;
-			$one = explode('=', trim($one));
-			$rs[$one[0]] = ('sort_fields'==$one[0]) ? $this->parse_sort($one[1]) : $one[1];
-		}
-		return $rs;
-	}
-	public function parse_fields($fields){
-		preg_match_all('/<field:([\w\.]+?)\s+(.+?)\/>/is', $fields, $matches);
-		$fields = array();
-		foreach ($matches[1] as $key=>$name){
-			$fields[$name] = $this->parse_field_params($matches[2][$key]);//$m;
-			//$fields['search'][$name] = FALSE!==strpos($matches[2][$key], 'search="true"');
-		}
-		return $fields;
-	}
-	public function parse_field_params($params){
-		preg_match_all('/(\w+?)="(.+?)"/is', $params, $matches);
-		$params = array();
-		foreach ($matches[1] as $key=>$name){
-			$params[$name] = $matches[2][$key];
-		}
-		return $params;//import('libs.form')->run($params);
-	}
-	public function parse_field_option($fields){
-		$option = explode("\n", $fields['element_option']);
-		$rs = array('option' => array());
-		foreach ($option as $index=>$one){
-			$ex = explode('|', trim($one));
-			if ($ex[0] == 'd'){
-				$rs['optext'] = (count($ex)==3 AND $ex[1]) ? array($ex[1] => $ex[2]) : $ex[1];
-			}else{
-				if (count($ex)==2){
-					$rs['option'][$ex[0]] = $ex[1];
-				}else{
-					$rs['option'][$index] = $ex[0];
-				}
-			}
-		}
-		if (!$rs['optext']) $rs['optext'] = $fields['field_name'];
-		return $rs;
-	}
-	public function merge_fields($field, $data, $syn, $use_alias=1){
-		$field = explode('|', $field);
-		if (!$syn AND isset($field[1])) unset($field[1]);
-		$updata = array();
-		foreach ($field as $row){
-			$row = explode(',', $row);
-			foreach ($row as $key){
-				$alias = str_replace('subdata_','',$key);
-				if (isset($data[$alias])) $updata[$use_alias ? $key : $alias] = $data[$alias];
-			}
-		}
-		return $updata;
-	}
 }
-?>
