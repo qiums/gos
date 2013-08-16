@@ -189,7 +189,7 @@ return array(
 		'all_upload_success'=>'恭喜，所有队列的文件都成功上传。',
 		'stopupload_text'=>'由于以下原因，上传过程被中止。',
 		'insert_tip'=>'待插入的图片在这里显示之后，再点击[插入图片]。',
-		'detect_title'=>'检测名称/标题','google_map_marker'=>'在谷歌地图中标记',
+		'detect_title'=>'检测名称/标题','map_marker'=>'在地图中标记',
 		'txt'=>array(
 			'dgetcover'=>array('点击[继续]将图片设置为封面图片。','进入[我的相册]来选中图片以[设置封面图片]。'),
 			'dgetpic'=>array('点击[继续]直接插入图片。','进入[我的相册]来选中图片以[插入图片]。'),

@@ -40,6 +40,8 @@ ol{margin:0 0 0 20px;}
 .ajax-tips{background-color:#D00;border-radius:3px;color:#FFF;padding:3px 5px;display:none;}
 .caret{border-left: 4px solid transparent;border-right: 4px solid transparent;border-top: 4px solid #000000;content: "";display: inline-block;height: 0;vertical-align: top;width: 0;}
 .highlight{background-color:#FF9;color:#D00;}
+.loading{min-height:100px;background:url(loading2.gif) no-repeat center;}
+.ajax-loading{position:fixed;top:0;right:0;bottom:0;left:0;background:url(loading3.gif) no-repeat center #FFF;z-index:9999;opacity:0.8;}
 /********************
 	From Bootcss
 ********************/

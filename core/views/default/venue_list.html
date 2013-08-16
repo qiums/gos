@@ -178,17 +178,11 @@ var app = {
 		return this.getsource();
 	},
 	googlemap: function(){
-		var styles = [/* 
-			{ stylers: [ { hue: "#ff0900" }, { saturation: -20 } ] },
-			{ elementType: "labels", stylers: [ { visibility: "off" } ] },
-			{ featureType: "road.local", stylers: [ { visibility: "on" } ] },
-			{ }*/ ]
-		, myOptions = {
+		var myOptions = {
 			zoom:12,
 			//center: new google.maps.LatLng(31.227996,121.473557),
 			mapTypeId: google.maps.MapTypeId.ROADMAP,
-			mapTypeControl: false,
-			styles: styles
+			mapTypeControl: false
 		}
 		, map = new google.maps.Map(document.getElementById('ggmap'), myOptions)
 		, bounds = new google.maps.LatLngBounds(), infowindow= new google.maps.InfoWindow({});

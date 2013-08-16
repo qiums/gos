@@ -137,7 +137,7 @@ class archives_controller extends common_controller{
 			$this->qdata['pagedata'] = array('cur'=>$this->gp('page', 1), 'ptotal'=>$data['pagetotal']);
 			unset($data['pagetotal']);
 		}
-		//$this->_update_views();
+		$this->update_views($id);
 		if ($_ENV['ajaxreq']) return $this->output(1, '', $data);
 		$this->assign(array(
 			'seokeywords' => trim($data['keywords']. ','. $this->vars['lc']['keywords']. ','. $mc['keywords'], ','),
@@ -150,5 +150,47 @@ class archives_controller extends common_controller{
 				"{$mc['prefix']}_detail",
 				'archives_detail'
 			));
+	}
+	public function history(){
+		$history = cookie::get('view_history');
+		if (!$history) return $this->output(0);
+		$tmp = array();
+		foreach ($history as $mid=>$ids){
+			if (!$ids) continue;
+			$tmp = array_merge($tmp,
+				$this->archives->block(array('mid'=>$mid))->where('id', $ids)->callback()->findAll());
+		}
+		if ($_ENV['ajaxreq']) return $this->output(1, '', array_slice($tmp, 0, 8));
+	}
+	private function update_views($id){
+		$mc = $this->mc;
+		$cookie_name = 'views-'.$mc['id'].'-'.$id;
+		$views = cookie::get($cookie_name);
+		if (!$views){
+			$cond = array('aid'=>$id, 'mid'=> $mc['id']);
+			$this->archives->db()->update('arcindex',
+				array(
+					'totalview'=> '[+]1',
+					'updatetime'=>D::get('curtime')
+				), $cond);
+			$this->archives->db()->update('arcdata', array(
+				'monthview'=> '[+]1',
+				'weekview'=> '[+]1',
+				'todayview'=> '[+]1',
+			), $cond);
+			cookie::set($cookie_name, 1);
+		}
+		$cookie_name = 'view_history';
+		$viewed = cookie::get($cookie_name);
+		if (!is_array($viewed) OR !isset($viewed[$mc['id']]) OR FALSE===array_search($id, $viewed[$mc['id']])){
+			/*$viewed = explode(',', $viewed);
+			if (FALSE===array_search($value, $viewed)){
+				array_unshift($viewed, $value);
+				$value = join(',', array_slice($viewed,0,8));
+				cookie::set($cookie_name, $value, 7*24*3600);
+			}*/
+			cookie::set("{$cookie_name}[{$mc['id']}][]", $id, 7*24*3600);
+		}
+		unset($cookie_name, $viewed);
 	}
 }

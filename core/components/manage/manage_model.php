@@ -19,7 +19,7 @@ class com_manage_model extends Model{
 				if (!$config[$one]) continue;
                 $apps[$one] = array('app_name'=>$config[$one]['app_name'], 'directory' => $mdir);
             }
-            if (!empty($apps)) cache::fq($cachename, $apps);
+            if (!empty($apps)) cache::q($cachename, $apps);
         }
 		if (!empty($name)) return isset($apps[$name]) ? $apps[$name] : NULL;
 		if ('byname' == $this->orderkey){

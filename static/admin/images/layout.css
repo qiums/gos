@@ -29,6 +29,7 @@ body.lang-en{font:10px Tahoma, Consolas, Arial;}
 	-moz-box-shadow: 0 0 5px rgba(0,0,0,0.2);
 	box-shadow: 0 0 5px rgba(0,0,0,0.2);margin:0 5px;}
 a.dropmenu-handle{display:inline-block;height:20px;padding:4px 6px;font-size:14px;line-height:20px;color:#555555;vertical-align:middle;-webkit-border-radius:4px;-moz-border-radius:4px;border-radius:4px;background-color:#ffffff;border:1px solid #cccccc;-webkit-box-shadow:inset 0 1px 1px rgba(0,0,0,0.075);-moz-box-shadow:inset 0 1px 1px rgba(0,0,0,0.075);box-shadow:inset 0 1px 1px rgba(0,0,0,0.075);-webkit-transition:border linear 0.2s,box-shadow linear 0.2s;-moz-transition:border linear 0.2s,box-shadow linear 0.2s;-o-transition:border linear 0.2s,box-shadow linear 0.2s;transition:border linear 0.2s,box-shadow linear 0.2s;}
+a.mapmarker{margin-left:5px;color:#666;}
 
 #wrapper{height:auto !important;margin:0 auto -113px;min-height:100%;position:relative;width:980px;}
 .tophead{margin-top:20px;}

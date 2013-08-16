@@ -1,7 +1,6 @@
 <?php if ( ! defined('ROOT')) exit('No direct script access allowed');
 
 class core_search_controller extends common_controller{
-	protected $append_cond = array();
 
 	public function __call($name, $args){
 		$this->archives->config = $this->channel->get($name);
@@ -37,7 +36,7 @@ class core_search_controller extends common_controller{
 		//$fields = $this->form->data(gc('env.controller'),gc('env.action'))->form_data;
 		$fields = $this->channel->get_fields($channel['id'], 4);
 		$list = array_keys($this->channel->get_fields($channel['id'], 5));
-		$cond = $this->append_cond + $this->archives->apply_cond($fields);
+		$cond = $this->archives->apply_cond($fields);
 		$data = $this->archives->attr('fields', join(',', $list))
 			->page($this->gp('page'), $this->gp('limit'))
 			->order($this->gp('order'), $this->gp('way','desc'))

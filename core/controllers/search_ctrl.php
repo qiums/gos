@@ -11,7 +11,8 @@ class search_controller extends core_search_controller{
 		if (!$this->archives->config) return $this->output('Undefined channel');
 		if ($this->post['ids']){
 			if (!is_array($this->post['ids'])) $this->post['ids'] = explode(',', $this->post['ids']);
-			$this->append_cond['id'] = $this->post['ids'];
+			//$this->append_cond['id'] = $this->post['ids'];
+			$this->archives->where('id', $this->post['ids']);
 		}
 		parent::index();
 		if ($_ENV['ajaxreq']) return ;
@@ -25,10 +26,10 @@ class search_controller extends core_search_controller{
 		$this->archives->config = $this->channel->get('venue');
 		if ($this->gp('lat')){
 			$map = near_latlng($this->gp('lat'), $this->gp('lng'), $this->gp('dist', 3));
-			$this->append_cond = array(
+			$this->archives->where(array(
 				'maplat' => "BETWEEN {$map['x'][0]} AND {$map['y'][0]}",
 				'maplng' => "BETWEEN {$map['x'][1]} AND {$map['y'][1]}",
-			);
+			));
 		}
 		self::index();
 	}
@@ -51,10 +52,10 @@ class search_controller extends core_search_controller{
 		$data = $this->archives->callback()->where('id', $id)->find();
 		if ($_ENV['ajaxreq']){
 			$map = near_latlng($data['maplat'], $data['maplng'], $this->gp('dist', 3));
-			$this->append_cond = array(
+			$this->archives->where(array(
 				'maplat' => "BETWEEN {$map['x'][0]} AND {$map['y'][0]}",
 				'maplng' => "BETWEEN {$map['x'][1]} AND {$map['y'][1]}",
-			);
+			));
 			return parent::index();
 		}
 		$this->qdata['mode'] = 'map';
@@ -71,9 +72,9 @@ class search_controller extends core_search_controller{
 		$channel = $this->channel->get('venue');
 		$this->archives->config = $channel;
 		$data = $this->archives->callback()->where('id', $id)->find();
-		$this->append_cond = array(
+		$this->archives->where(array(
 			'subject' => $data['subject'],
-		);
+		));
 		$this->assign(array(
 			'mc' => $channel,
 			'data' => $data,

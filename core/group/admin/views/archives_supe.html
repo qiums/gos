@@ -15,7 +15,8 @@
         <div class="tab-pane" id="tabs-{$group}">
           <ul>
           <!--{loop $form[$key] $one}-->
-            <li>{$one[label]}
+            <!--{if empty($one[label])}--><!--{echo '<li class="hide">'}--><!--{else}-->
+            <li><!--{/if}-->{$one[label]}
               {$one[ele]}
               {$one[tips]}</li>
           <!--{/loop}-->
@@ -118,7 +119,7 @@ var app = {
 		});
 		return false;
 	}
-}
+};
 $(function(){
 	app.init();
 	/*{if $this->form->htmlflag['html-editor']}*/
@@ -138,4 +139,109 @@ $(function(){
 	});/*{/if}*/
 });
 </script>
+<!--{if $channel[id]=='3'}-->
+<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false&callback=ginit&hl=en"></script>
+<script type="text/javascript">
+var gg = {
+	cache: {address:'', point:[]}, point: [$('#qc-hidden-maplat').val(), $('#qc-hidden-maplng').val()],
+	init: function(){
+		this.handler = '#qc-text-enaddr';
+		this.cache.address = $(this.handler).val();
+		this.cache.point = this.point;
+		$(this.handler).bind('blur.loadmap', this.loadMap)
+			.trigger('blur.loadmap');
+	},
+	loadMap: function(){
+		var marker = $(this).next('a.mapmarker');
+		if ($(this).val()!==''){
+			gg.getMap(this, false);
+			if (marker.length>0){
+				return marker.show();
+			}
+			gg.drawLink(this);
+		}else{
+			marker.hide();
+		}
+	},
+	drawLink: function(el){
+		$('<a>', {'class':'mapmarker',href:'javascript:;',title:'{lang arcpost.map_marker}'})
+			.text('[{lang arcpost.map_marker}]')
+			.insertAfter(el)
+			.on('click.dialog-api',
+			function(e){
+				jQuery.doane(e);
+				$(this).dialog({
+					message: '<div id="mapmark-canvas" style="width:100%;height:400px"></div>',
+					id: 'map-marker', width:600, addclass:'ui-nop',
+					reload: false,
+					title: '{lang arcpost.map_marker}',
+					onRender: function(){
+						gg.getMap(gg.handler);
+					},
+					buttons: {
+						'{lang button.submit}': function(){
+							gg.setVal();
+							this.hide();
+						}
+					}
+				});
+			});
+	},
+	getMap: function(el, draw){
+		var ll = gg.point, val = $(el).val();
+		draw = ('undefined'===typeof draw) && true;
+		if (!draw){
+			if (val===this.cache.address) return ;
+			return this.getLatlng(val, this.setVal);
+		}
+		if (val===this.cache.address && ll[0] !=='0' && ll[1] !=='0'){
+			return this.drawMap(new google.maps.LatLng(ll[0], ll[1]));
+		}
+		this.getLatlng(val);
+	},
+	getLatlng: function(val, fn){
+		if (!fn){
+			fn = function(p){
+				gg.drawMap(p);
+			}
+		}
+		this.cache.address = val;
+		var geocoder = new google.maps.Geocoder();
+		geocoder.geocode( { 'address': 'China Shanghai ' + addr}, function(results, status){
+			if (status == google.maps.GeocoderStatus.OK){
+				gg.setVal(results[0].geometry.location, 'point');
+				if ($.isFunction(fn)) fn(results[0].geometry.location);
+				return ;
+			}
+			return ;//$('#mapmark-canvas').text("Colud not find this place ("+ addr +") in google map.");
+		});
+	},
+	setVal: function(loc){
+		if ('undefined'!==typeof loc) return gg.point = [loc.lat(), loc.lng()];
+		$('#qc-hidden-maplat').val(gg.point[0]);
+		$('#qc-hidden-maplng').val(gg.point[1]);
+	},
+	drawMap: function(point){
+		var marker
+		, myOptions = {
+			zoom:15,
+			mapTypeId: google.maps.MapTypeId.ROADMAP,
+			mapTypeControl: false
+		}
+		, map = new google.maps.Map(document.getElementById('mapmark-canvas'), myOptions);
+		map.setCenter(point);
+		marker = new google.maps.Marker({
+			position: point,
+			map: map, 
+			animation: google.maps.Animation.DROP,
+			draggable: true
+		});
+		google.maps.event.addListener(marker, 'dragend',
+		function(){
+			gg.setVal(marker.getPosition());
+		});
+	}
+}, ginit = function(){gg.init();};
+</script>
+<!--{/if}-->
 {template footer}
