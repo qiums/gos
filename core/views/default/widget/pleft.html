@@ -27,19 +27,30 @@
         <p class="zhushi">Check your current location by typing street names, hotel names, attraction names, etc.</p>
     </form>
     </div>
-    <div class="model1">
-        <div class="mtitle"><h3><a class="biaoti" href="#">My favorites</a></h3></div>
-        <ul class="lis1">
-            <li><a href="#">1.The Bund</a></li>
-            <li><a href="#">2.The Bund</a></li>
-            <li><a href="#">3.The Bund</a></li>
-            <li><a href="#">4.The Bund</a></li>
-            <li><a href="#">5.The Bund</a></li>
+    <div class="model1" id="myfav">
+        <div class="mtitle"><h3><a class="biaoti" href="user">My favorites</a></h3></div>
+        <ul class="lis1 loading">
+            <!--<li><a href="${link}" title="${fulltitle}">${list__index}. ${fulltitle}</a></li>-->
         </ul>
-        <a class="more" href="#">More >></a>
+        <a class="more" href="user">More >></a>
+        <script type="text/javascript">
+		$(function(){
+			$('#myfav>ul').bind('load-has-user',
+			function(){
+				if (!$('#toplogin').data('logined')) return ;
+				var me = this, tmpl = $.trim($(me).html()).replace(/^(<!\-\-)|((\/\/)*\-\->)$/g, '');
+				$.getJSON('{echo url("user/follow")}', {limit:8, style:'sample'},
+				function(res){
+					if (res.code === 0) return ;
+					$.tmpl(tmpl, res.body.data)
+						.appendTo($(me).removeClass('loading').empty());
+				});
+			});
+		});
+		</script>
     </div>
     <!--{if $config[env][controller]==='home'&&$config[env][method]==='index'}-->
-    {template hot-spots}
+    {template widget/hot-spots}
     <!--{/if}-->
     <div class="way">
         <a href="#">

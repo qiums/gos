@@ -1,4 +1,43 @@
 // JavaScript Document
+(function($){
+	$.comment = function(el, op){
+		if (!op.url || !op.mid || !op.aid) return ;
+		var box = $('#cmtboxes', el)
+			, input = $('#cmtinput', el);
+		if (!box.length || !input.length) return ;
+		op.size = Math.min(20, op.size || 20);
+		this.op = op;
+		var ul = $('ul', box), data;
+		data = {mid:op.mid, aid:op.aid, limit:op.size};
+		if (op.type === 'html'){
+			box.empty().load(op.url, data);
+		}else{
+			var tmpl = ul.html().replace(/^(<!\-\-)|((\/\/)*\-\->)$/g, '');
+			$.post(op.url, data, render, op.type || 'json');
+		}
+		
+		var render = function(res){
+		}
+	};
+	$.comment.init = function(){
+		var me = this;
+		$('a.comment-map').on('click.movetoelem',
+		function(){$('html,body').animate({scrollTop:$(me.el).offset().top}, 1000);
+			return false;
+		});
+		//this.box.delegate('.reply', 'click.reply-cmt',
+	};
+	$.fn.comment = function(){
+		return this.each(function(){
+			$.comment(this, $(this).data() || {}).init();
+		});
+	};
+	if ('undefined' !== typeof $.iscroll){
+		$('[data-trigger="comment"]').iscroll('gt',
+		function(){
+			$(this).comment();
+		});
+	};
 var comment={
 	get: function(p){
 		if('number'==$.type(p) || -1!=p.search('/^\d+$/g')){
@@ -49,12 +88,6 @@ var comment={
 		}
 	},
 	init: function(){
-		$('a.comment').bind('click.movetoelem',
-		function(){
-			var o=$($(this).attr('href'));
-			if (o.length>0) $('html,body').animate({scrollTop:o.offset().top}, 1000);
-			return false;
-		});
 		$('.ccqinput','#comment').live('click',function(){
 			$.event.trigger('comment-input-cleanup');
 			return false;
@@ -75,3 +108,4 @@ var comment={
 		});
 	}
 };
+})(jQuery);

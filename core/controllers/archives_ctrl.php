@@ -157,8 +157,16 @@ class archives_controller extends common_controller{
 		$tmp = array();
 		foreach ($history as $mid=>$ids){
 			if (!$ids) continue;
-			$tmp = array_merge($tmp,
-				$this->archives->block(array('mid'=>$mid))->where('id', $ids)->callback()->findAll());
+			foreach ($ids as $id=>$time){
+				$tmp["{$mid}-{$id}"] = $time;
+			}
+			$ids = array_keys($ids);
+			$history[$mid] = $this->archives->block(array('mid'=>$mid))->attr('rstype', 3)->where('id', $ids)->callback()->findAll();
+		}
+		arsort($tmp);
+		foreach ($tmp as $id=>&$time){
+			list($mid, $id) = explode('-', $id);
+			$time = $history[$mid][$id];
 		}
 		if ($_ENV['ajaxreq']) return $this->output(1, '', array_slice($tmp, 0, 8));
 	}
@@ -181,16 +189,7 @@ class archives_controller extends common_controller{
 			cookie::set($cookie_name, 1);
 		}
 		$cookie_name = 'view_history';
-		$viewed = cookie::get($cookie_name);
-		if (!is_array($viewed) OR !isset($viewed[$mc['id']]) OR FALSE===array_search($id, $viewed[$mc['id']])){
-			/*$viewed = explode(',', $viewed);
-			if (FALSE===array_search($value, $viewed)){
-				array_unshift($viewed, $value);
-				$value = join(',', array_slice($viewed,0,8));
-				cookie::set($cookie_name, $value, 7*24*3600);
-			}*/
-			cookie::set("{$cookie_name}[{$mc['id']}][]", $id, 7*24*3600);
-		}
-		unset($cookie_name, $viewed);
+		cookie::set("{$cookie_name}[{$mc['id']}][{$id}]", D::get('curtime'), 7*24*3600);
+		unset($cookie_name);
 	}
 }

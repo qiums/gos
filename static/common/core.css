@@ -42,6 +42,7 @@ ol{margin:0 0 0 20px;}
 .highlight{background-color:#FF9;color:#D00;}
 .loading{min-height:100px;background:url(loading2.gif) no-repeat center;}
 .ajax-loading{position:fixed;top:0;right:0;bottom:0;left:0;background:url(loading3.gif) no-repeat center #FFF;z-index:9999;opacity:0.8;}
+.captchabox{background-color:#FFC;border:1px solid #DEDEDE;display:inline-block;margin-left:5px;padding:1px;position:absolute;text-align:center;width:90px;}
 /********************
 	From Bootcss
 ********************/
@@ -90,8 +91,9 @@ table{max-width:100%;background-color:transparent;border-collapse:collapse;borde
 .qcform ul{list-style:none;margin:0;padding:0;}
 .formdiv div.formline,.qcform li{padding:5px 5px;border-bottom:1px dotted #ececec;clear:both;/*line-height:22px;*/}
 .formdiv div.formline:nth-child(even),.qcform li:nth-child(even){background-color:#FAFAE9;}
+.formnb div.formline:nth-child(even),.formnb li:nth-child(even){background-color:transparent;}
 .formdiv div.last,.formdiv div:last-child,.qcform li.last,.qcform li:last-child{border-bottom:none;}
-.formdiv div.formline label,.qcform li label{display:inline-block;*float:left;width:80px;line-height:250%;font-weight:bold;padding:0 5px;}
+.formdiv div.formline label,.qcform li label{display:inline-block;*float:left;width:80px;line-height:200%;font-weight:bold;padding:0 5px;}
 .formdiv div.formline label cite,.qcform li label cite{font-style:normal;color:#F00;margin-right:3px;}
 .formdiv div.formline label.checkbox,.qcform li label.checkbox{width:auto;}
 .html-editor{width:98%;}
@@ -107,7 +109,7 @@ table{max-width:100%;background-color:transparent;border-collapse:collapse;borde
 .formdiv div.blocktips span.elem-tips,.qcform li.blocktips span.elem-tips{clear:left;padding-top:5px;display:block;margin-left:80px;}
 .formdiv div.nofloat span.elem-tips,.qcform li.blocktips .nofloat span.elem-tips{margin:0;}
 .formdiv div.hidetips span.elem-tips,.qcform li.hidetips span.elem-tips{display:none;}
-.formdiv div.formbtn,.qcform li.formbtn{border-bottom:none;padding-left:80px;}
+.formdiv div.formbtn,.qcform li.formbtn{border-bottom:none;padding-left:95px;}
 .formdiv div.formline .elelayout,.qcform li .elelayout{width:40%;}
 .formdiv div.formline select.elelayout,.qcform li select.elelayout{width:42%;}
 .formdiv .help-block,.qcform .help-block{margin-left:8px;color:#999;}

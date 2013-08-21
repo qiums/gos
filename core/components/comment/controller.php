@@ -16,6 +16,13 @@ class com_comment_controller extends controller {
 		$this->assign('loopdata', $data);
 		$this->view('tree');
 	}
+	public function save(){
+		$p = $this->post;
+		$p['uid'] = $this->vars['user_data']['id'];
+		Db::getInstance()
+			->where(array('mid'=>$p['mid'], 'aid'=>$p['aid']))
+			->update('arcindex', array('comments'=>'[+]1'));
+	}
 }
 /*$app_model = import('app.comment');
 if (!$app_model) cprint_exit('mod_notfound');

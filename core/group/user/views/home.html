@@ -4,25 +4,35 @@
 	<div class="content">
         <div class="c-down">
         	<div class="cd-left">
-            	<h2>Sheilayy</h2>
+            	<h2>{$user_data[name]}</h2>
                 <div class="head">
-                    <a class="head-img" href="#"><img src="images/img1.gif" /></a>
+                    <span class="head-img"><img src="{:fileurl $user_data[avatar]}" /></span>
                     <a class="upload" href="#" style="display:none;">Upload Image</a><!--鼠标移上去显示-->
                 </div>
-                <a class="button" href="#">Change Info</a>
+                <a class="button" href="user/account">Change Info</a>
             </div>
             <div class="c-right">
             	<div class="right-info">
                     <div class="title-nav">
                         <ul>
-                            <li><a class="tnav-on" href="#">My favorites(<i>0</i>)</a></li>
-                            <li><a href="#">I have viewed(<i>0</i>)</a></li>
-                            <li><a href="#">Reviews(<i>0</i>)</a></li>
-                            <li><a href="#">Comments(<i>0</i>)</a></li>
+                            <li class="tnav-on"><a href="#myfav">My favorites(<i>{$count[myfav]}</i>)</a></li>
+                            <li><a href="#history">I have viewed(<i>0</i>)</a></li>
+                            <li><a href="javascript:;">Reviews(<i>0</i>)</a></li>
+                            <li><a href="javascript:;">Comments(<i>0</i>)</a></li>
                         </ul>
                     </div>
-                    <div class="c-infos">
+                    <div class="c-infos" id="myfav" data-url="{url user/follow}">
                     	<p class="none">Your favorites are empty.</p>
+                        <div id="ggmap" style="height:500px;margin:10px 0;border:5px solid #AAA"><p>Loading map...</p></div>
+                        <div class="hide">
+                          <ul class="pager">
+                            <li class="previous"><a href="#">&larr; Prev</a></li>
+                            <li class="pageinfo"></li>
+                            <li class="next"><a href="#">Next &rarr;</a></li>
+                          </ul>
+                        </div>
+                    </div>
+                    <div class="c-infos" id="history" data-url="archives/history">
                     </div>
                 </div>
             </div>
@@ -31,11 +41,118 @@
     </div>
 <!--{if !$_ENV[ajaxreq]}-->
 </div>
-<link rel="stylesheet" type="text/css" href="0/jslib/fancybox/jquery.fancybox-1.3.4.css" />
-<script type="text/javascript" src="0/jslib/jquery.tmpl.min.js"></script>
+<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false&callback=ginit&hl=en"></script>
 <script type="text/javascript" src="0/jslib/jquery.ubbcode.js"></script>
-<script type="text/javascript" src="0/jslib/fancybox/jquery.fancybox-1.3.4.pack.js"></script>
 <script type="text/javascript">
+var app = {
+	markers: [], page:{},
+	source: {
+		fav:{}
+	},
+	tmpl: '<li><a href="${link}">${fulltitle}</a><p>${description}</p></li>',
+	get: function(){
+		var id = $(this).attr('href');
+		if ('javascript:;'!==id && $(id).length>0){
+			$(this).parent().siblings('.tnav-on').removeClass('tnav-on').end().addClass('tnav-on');
+			$(id).siblings(':not(.title-nav):visible').hide().end().show();
+			if (!$(id).data('loaded')){
+				$(id).data('loaded', 1).data('page', 0).trigger('load-data',[true]);
+			}
+		}
+		return false;
+	},
+	getfav: function(e, d){
+		var p = $(this).data('page');
+		d ? p++ : p--;
+		if (app.markers.length >0){
+			for (d in this.markers) {
+				app.markers[d].setMap(null);
+			}
+			app.markers.length = 0;
+		}
+		if ('undefined' !== typeof app.source.fav[p]){
+			app.page.cur = p;
+			app.pages(app.page);
+			return app.googlemap();
+		}
+		$.getJSON($(this).data('url'), jQuery.extend({}, {thumb: 'small'}, data || {}),
+		function(res){
+			if (res.code === 0) return $('#ggmap p').text("Colud not find any item.");
+			app.source.fav[p] = res.body.data;
+			app.pages(res.body.page);
+			app.googlemap();
+		});
+		return false;
+	},
+	pages: function(page){
+		if ('object' !== $.type(page) || page['rows']<1) return $('#ggmap').remove();
+		$('#myfav>p:first').remove();
+		page.total = Math.ceil(page['rows']/page['size']);
+		page.cur = Math.min(page.total, Math.max(1, parseInt(page.cur, 10)));
+		this.page = page;
+		$('.pageinfo').html('<b>'+ page.cur + '</b>/' + page.total);
+		$('.pager').parent().removeClass('hide')
+			.end().find('li.previous')[1===page.cur ? 'addClass' : 'removeClass']('disabled')
+			.end().find('li.next')[page.total===page.cur ? 'addClass' : 'removeClass']('disabled');
+	},
+	googlemap: function(){
+		var myOptions = {
+			zoom:12,
+			mapTypeId: google.maps.MapTypeId.ROADMAP,
+			mapTypeControl: false
+		}
+		, map = new google.maps.Map(document.getElementById('ggmap'), myOptions)
+		, bounds = new google.maps.LatLngBounds(), infowindow= new google.maps.InfoWindow({})
+		, src = this.source.fav[this.page.cur];
+		if (!src) return ;
+		$.each(src, function(i, res){
+			if (res.maplat=='0' || res.maplng=='0') return true;
+			var pos = new google.maps.LatLng(res.maplat, res.maplng);
+			var marker = new google.maps.Marker({
+				position: pos,
+				map: map, 
+				animation: google.maps.Animation.DROP,
+				icon: '{$config[env][static_path]}common/marker-'+app.strstr(res.tid)+'.png',
+				title: res.fulltitle
+			});
+			google.maps.event.addListener(marker, 'click', function(){
+				infowindow.setOptions({
+					title: res.fulltitle,
+					content:'<div class="mapinfowin"><a href="'+res.link+'" target="_blank"><img src="'+res.thumb+'" alt="'+res.fulltitle+'" /><span>'+res.fulltitle+'</span></a>'
+						+ '<br /><em>'+res.enaddr+'<br />'+res.phone+'</em><br /><span class="ib rate'+res.rate+'"></span></div>',
+					size: new google.maps.Size(50,50),
+					position: pos
+				});
+				infowindow.open(map);
+			});
+			bounds.extend(marker.getPosition());
+			app.markers.push(marker);
+		});
+		map.fitBounds(bounds);
+		return false;
+	},
+	init: function(){
+		$('#myfav').bind('load-data', this.getfav);
+		$('#history').bind('load-data', this.history);
+		$('.title-nav').each(function(){
+			$(this).on('mouseover', 'a', app.get).find('a:eq(0)').trigger('mouseover');
+		});
+		$('.pager').delegate('a', 'click.change-page',
+		function(){
+			if (!$(this).parent().hasClass('disabled')){
+				//app.getsource($(this).parent().hasClass('next'))
+				$(this).closest('.c-infos').trigger('load-data', [$(this).parent().hasClass('next')]);
+			}
+			;return false;
+		});
+	},
+	strstr: function(string, needle){
+		needle = needle || ',';
+		needle = string.indexOf(needle)
+		if (-1 === needle) return string;
+		return string.substr(0, needle);
+	}
+}, ginit = function(){app.init();};
 $(function(){
 	$('.dynamicload a').iscroll(300,
 	function(){

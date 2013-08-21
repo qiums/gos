@@ -62,7 +62,7 @@ class archives_controller extends common_controller{
 		/*foreach ($ids as $id){
 			$this->archives->db()->where(array('aid'=>$id, 'mid'=>$mid))->update('arcindex', $updata);
 		}*/
-		$this->archives->db()->where(array('aid'=>$ids, 'mid'=>$mid))->update('arcindex', $updata);
+		Db::getInstance()->where(array('aid'=>$ids, 'mid'=>$mid))->update('arcindex', $updata);
 		$this->output(1, 'update_success');
 	}
 	public function save(){

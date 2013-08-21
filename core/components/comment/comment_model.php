@@ -4,13 +4,13 @@ class com_comment_model extends model{
 	function treelist($cond){
 		$data = $this->order('updatetime','desc')
 			->join('users.id~uid', 'username,nickname,avatar')
-			->attr('datatype', 3)
-			->findAll($cond + array('pid'=>0));
+			->attr('datatype', 3)->where($cond + array('pid'=>0))
+			->findAll();
 		if (!$data) return array();
 		//$rows = $this->db()->count;
 		$cond = array(
 			'rootid' => array_keys($data),
-			'published'=>1,
+			'published' => 1,
 			'depth'=>'> 1',
 		);
 		$data = array_merge($data,
@@ -23,7 +23,6 @@ class com_comment_model extends model{
 		return $data;
 	}
 	function insert($p, $parent=array(), $a=0){
-		$conf = $this->conf;
 		$pid = (int)$p['pid'];
 		if ($parent){
 			$p['aid'] = $parent['aid'];
@@ -31,9 +30,9 @@ class com_comment_model extends model{
 			$p['depth'] = $parent['depth']+1;
 			$p['rootid'] = $p['pid'];
 		}
-		$p['uid'] = $GLOBALS['user_data']['id'];
+		//$p['uid'] = Base::getInstance()->vars['user_data']['id'];
 		$p['createtime'] = $p['updatetime'] = D::get('curtime');
-		$p['published'] = (int)$conf['default_pulished'];
+		$p['published'] = $this->gc('default_pulished', 1);
 		$id = parent::insert($p);
 		if ($parent){
 			$update['rootid'] = $parent['rootid'];
@@ -48,6 +47,6 @@ class com_comment_model extends model{
 		return intval($id);
 	}
 	function getone($cond){
-		return $this->join_table('users',array('id,uid', 'username,nickname,avatar'))->find($cond);
+		return $this->join('users.id~uid', 'username,nickname,avatar')->where($cond)->find();
 	}
 }

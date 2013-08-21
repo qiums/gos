@@ -54,6 +54,22 @@
                 </div>
                 <!--查看部分图片-->
                 <div id="galleria" class="pictures"></div>
+                <div id="qcomment" class="pinlun" data-trigger="comment" data-type="html" data-mid="{$data[mid]}" data-aid="{$data[id]}">
+                  <div id="cmtinput" class="saysth">
+					<textarea>Say something...</textarea>
+					<p><a href="#">Login</a>or<a href="#">SignUp</a></p>
+				  </div>
+                  <div id="cmtlist">
+                    <ul>
+                      <!--<li><div class="left-img"><a href="${userlink}"><img src="${useravatar}" /></a></div>
+                        <div class="right-info"><h3>${username}<span class="date">${posttime}</span></h3>
+                          <p>${</p>
+                        </div>
+                      </li>-->
+                    </ul>
+                  </div>
+                </div>
+                <script type="text/javascript" src="/cp/comment.js"></script>
             </div>
             <div class="c-right cright6">
             	<div class="map" id="ggmap-wrap">
@@ -113,7 +129,6 @@
         </div>
     </div>
 <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false&callback=ginit&hl=en"></script>
-<script type="text/javascript" src="0/jslib/jquery.tmpl.min.js"></script>
 <script type="text/javascript" src="0/galleria/galleria-1.2.9.min.js"></script>
 <script type="text/javascript">
 var app = {
@@ -167,18 +182,23 @@ var app = {
 			});
 			return false;
 		});
-		$('a.favor').on('click',
+		$('a.favor').bind('load-has-user',
 		function(){
-			$.post('{url user/follow/add}', {mid:'{$mc[id]}', aid:'{$data[id]}'}, app.addfav, json);
-			return false;
-		})/*<!--{if $user_data[id]}-->*/.bind('load-fav-status',
-		function(){
+			if (!$('#toplogin').data('logined')) return ;
 			$.post('{url user/follow/status}', {mid:'{$mc[id]}', aid:'{$data[id]}'},
 			function(res){
 				if (parseInt(res.body.count,10) === 0) return ;
 				$('a.favor').replaceWith('<span class="favor">Already in your favorites</span>');
 			}, 'json');
-		}).trigger('load-fav-status')/*{/if}*/;
+		}).on('click.add-favor',
+		function(){
+			if (!$('#toplogin').data('logined')){
+				$('.gologin').trigger('click.open-dialog');
+			}else{
+				$.post('{url user/follow/add}', {mid:'{$mc[id]}', aid:'{$data[id]}'}, app.addfav, 'json');
+			}
+			return false;
+		});
 		$('input[name=tid]').dropmenu({
 			url:'{url cp/tree/json/tid/venue}', data:{'do':'all'}
 		});

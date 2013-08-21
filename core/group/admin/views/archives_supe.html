@@ -62,7 +62,7 @@ var app = {
 			return false;
 		});/*{/if}*/
 		$.mselect.data['cid'] = {mid: '{$channel[id]}'};
-		$('.nav a:first').addClass('active').trigger('click.tab.data-api');
+		$('.nav a:first').trigger('click.tab.data-api');
 		$('.ajaxForm').bind('form-pre-serialize', this.before).saveForm(this.save);
 	},/*{if $this->form->htmlflag['file']}*/
 	uploader: function(ac){

@@ -10,14 +10,16 @@
 <meta name="Copyright" content="{lang site_name}" />
 <link rel="stylesheet" type="text/css" href="css/layout.css" />
 <!--[if lt IE 9]><script type="text/javascript" src="0/jslib/html5.js"></script><![endif]-->
-<script type="text/javascript" src="0/jslib/jquery-1.10.1.min.js"></script>
+<script type="text/javascript" src="0/jslib/jquery-1.8.3.min.js"></script>
 <script type="text/javascript" src="1/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="0/jslib/jquery.dialog.js"></script>
 <script type="text/javascript" src="0/jslib/jquery.fix.js"></script>
-<!--{if property_exists($this,'form')}--><script type="text/javascript" src="0/jslib/jquery.form.js"></script><!--{/if}-->
+<script type="text/javascript" src="0/jslib/jquery.form.js"></script>
+<script type="text/javascript" src="0/jslib/jquery.tmpl.min.js"></script>
 <script type="text/javascript">
 (function($){
-	jQuery.G=eval('({echo json_encode($config[env])})');
+jQuery.G = eval('({echo json_encode($config[env])})');
+jQuery.G.captchaurl = '{url home/captcha}';
 })(jQuery);
 </script>
 </head>
@@ -26,12 +28,11 @@
     <!--top-->
 	<div class="top">
     	<div class="welcome-bg">
-            <div class="welcome">
+            <div class="welcome" id="toplogin" data-url="{:url user/home/login}" data-ckurl="{:url user}" data-logined="{echo intval($user_data[id]>0)}">
                 <div class="login">
-                    <!--{if !$user_data[id]}--><a href="user/home/login">Login</a>|<a href="user/home/login">Sign up</a>
-                    <!--{else}--><!--{if isset($user_perm[admin])}--><a href="admin">Admin</a>|<!--{/if}--><a href="user/home/logout">Logout</a><!--{/if}-->
+                    <a href="user/home/login" class="gologin" title="{lang site_name} / User center">Login</a>|<a href="user/home/login#signup">Sign up</a>
                 </div>
-                <p class="w1">Welcome to SH! <!--{if $user_data}--><b>{$user_data[name]}</b><!--{/if}--></p>
+                <p class="w1">Welcome to SH! </p>
             </div>
         </div>
         <div class="logo-bg">

@@ -1,6 +1,9 @@
 <?php if ( ! defined('ROOT')) exit('No direct script access allowed');
 class common_controller extends controller{
-	function __construct(){
+	protected $uid = 0;
+	protected $username = '';
+
+	public function __construct(){
 		parent::__construct();
 		lang('common');
 		$this->load->helper('extend');
@@ -15,6 +18,8 @@ class common_controller extends controller{
 		$this->assign('user_perm', $us['perm']);
 		unset($us['perm']);
 		$this->assign('user_data', $us);
+		$this->uid = $us['id'];
+		$this->username = $us['name'];
 		if ($this->post){
 			unset($this->post['token']);
 		}

@@ -1,7 +1,34 @@
 <?php if ( ! defined('ROOT')) exit('No direct script access allowed');
 class home_controller extends common_controller{
+	private $regform;
+	
+	public function _init_data(){
+		$this->regform = array(
+			'username'	=>	array('type'=>'input:text', 'attr'=>'class="req-any minlength4" maxlength="16"'),
+			'passwd'	=>	array('type'=>'input:password', 'attr'=>'class="req-any minlength4 rule-passwd" maxlength="20"', 'function'=>'md5'),
+			'repasswd'	=>	array('type'=>'input:password', 'attr'=>'class="req-any minlength4 rule-passwd" maxlength="20"', 'function'=>'md5'),
+			'email'		=>	array('type'=>'input:text', 'attr'=>'class="req-email minlength4" maxlength="50"'),
+			//'captcha'	=>	array('type'=>'input:text', 'attr'=>'class="req-any minlength4" maxlength="4" size="4"'),
+		);
+	}
 	public function index(){
-		if (!$this->user->us['id']) return $this->login();
+		$do = $this->gp('do');
+		if (!$this->uid){
+			if ('check'===$do) return $this->output(0);
+			return $this->login();
+		}
+		if ('check'===$do){
+			return $this->output(1, '', array(
+				'command' => (isset($this->vars['user_perm']['admin']) ? '<a href="'.url('admin').'"><b>Admin Panel</b></a>|' : ''). '<a href="'.url('user/home/logout').'">'. lang('button.logout'). '</a>',
+				'username' => '<a href="'. url('user'). '"><b>'. $this->vars['user_data']['name']. '</b></a>',
+			));
+		}
+		$count = array(
+			'myfav' => $this->follow->where('uid', $this->uid)->count(),
+			'history' => 0,
+		);
+		$this->assign('count', $count);
+		$this->assign('user_data', $this->user->find($this->uid));
 		$this->view('home');
 	}
 	public function login(){
@@ -14,21 +41,25 @@ class home_controller extends common_controller{
 			'username'	=>	array('type'=>'input:text', 'attr'=>'class="req-any minlength4" maxlength="16"'),
 			'passwd'	=>	array('type'=>'input:password', 'attr'=>'class="req-any minlength4" maxlength="20"', 'function'=>'md5'),
 		);
-		// Captcha
-		if (1 === gc('site.captcha')){
-			 $form['captcha'] = array('type'=>'input:text', 'attr'=>'class="req-any minlength4" maxlength="4" size="4"');
-		}
 		$form['remember'] = array('type'=>'input:checkbox', 'option'=>'1=Remember me?', 'value'=>'1');
 		if ($this->post){
 			if (!$this->form->validate($form)){
 				exit($this->form->geterror());
 			}
 			$id = $this->user->login();
-			if (FALSE === $id) return $this->user->geterror();
+			if (FALSE === $id) return $this->user->error();
 			if (!$this->qdata['url']) $this->qdata['url'] = url('user');
+			if ($_ENV['ajaxreq']){
+				$btn[lang('button.continue')] = 'close';//$this->qdata['url'];
+				return $this->output(1,
+						lang('login_success', $this->post),
+						$btn);
+			}
 			return redirect($this->qdata['url'], FALSE);
 		}
 		$this->assign('loginform', $this->form->render($form));
+		$this->form->idpre = 'reg';
+		$this->assign('regform', $this->form->render($this->regform));
 		$this->view('login');
 	}
 	public function logout(){
@@ -45,39 +76,5 @@ class home_controller extends common_controller{
 			'captcha'	=>	array('type'=>'input:text', 'attr'=>'class="req-any minlength4" maxlength="4" size="4"'),
 		);
 		$this->assign('regform', $this->form->render($form));
-	}
-	public function history(){
-        $history = cookie::get('view_history');
-        $loop = $ht = array();
-        if ($history) {
-            $history = explode(',', $history);
-            foreach ($history as $one) {
-                $tmp = explode('-', $one);
-                $ht[$tmp[0]][] = $tmp[1];
-            }
-            $tmp = array();
-            $this->load->model('archives,channel');
-            foreach ($ht as $mid => $id) {
-                $this->archives->config = $this->channel->get($mid);
-				$data = $this->archives
-					->page($this->gp('page'))
-					->join('arcindex.aid', 'description,extlink', 'mid')
-					->callback()->where('id',$id)->findAll();
-                $tmp = array_merge($tmp, $data);
-            }
-            foreach ($history as $index => $one) {
-                foreach ($tmp as $row) {
-                    if ($one == "{$row['mid']}-{$row['id']}") {
-                        if (!$row['description']) {
-                            $row['description'] = "{$row[enaddress]}<br />" . make_phone($row['phone']);
-                        }
-                        $loop[] = $row;
-                    }
-                }
-            }
-            unset($tmp, $ht, $history);
-        }
-		$this->assign('arrdata', $loop);
-		$this->view('home');
 	}
 }

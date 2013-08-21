@@ -4,9 +4,7 @@ class follow_model extends model{
 	public $config = array(
 		'pagesize'=>20,
 		'data_table'=>'follows',
-		'sort_fields' => array(
-			'ftime' => array('ftime', 'desc'),
-		),
+		'sort_fields' => 'ftime,desc',
 	);
 	function add($uid, $mid, $aid=NULL){
 		if (!is_array($mid)){
@@ -24,7 +22,5 @@ class follow_model extends model{
 		if (!$mid['mid'] OR !$mid['aid']) return 0;
 		$mid['uid'] = $uid;
 		return $this->delete($mid);
-	}
-	function get($uid){
 	}
 }

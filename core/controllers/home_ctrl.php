@@ -41,8 +41,10 @@ class home_controller extends common_controller{
         $this->output($loop);
     }
 	function captcha(){
+		if ($this->post){
+			return $this->output(intval($this->post['val']===cookie::get('captcha')));
+		}
 		$this->widget->captcha;
-		//cookie::set('captcha', $code);
 		exit;
 	}
 	function _export(){
