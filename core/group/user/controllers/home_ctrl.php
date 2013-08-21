@@ -28,7 +28,7 @@ class home_controller extends common_controller{
 			'history' => 0,
 		);
 		$this->assign('count', $count);
-		$this->assign('user_data', $this->user->find($this->uid));
+		$this->assign('user_data', $this->user->where('id',$this->uid)->find());
 		$this->view('home');
 	}
 	public function login(){

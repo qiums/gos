@@ -168,7 +168,7 @@ var app = {
 		$('#view-bigmap').on('click',
 		function(){
 			$(this).dialog({
-				id:'bigmap', width:720, title:'{$data[fulltitle]}', addclass:'ui-nop',
+				id:'bigmap', width:720, title:'{addslashes $data[fulltitle]}', addclass:'ui-nop',
 				onRender: function(){
 					//$('>div', this.dbody).css({width:598, height:360});
 					google.maps.event.trigger(app.map, "resize");
@@ -267,7 +267,7 @@ var app = {
 			map: this.map, 
 			animation: google.maps.Animation.DROP,
 			//icon: '{$config[env][static_path]}common/imhere.png',
-			title: "{$data[fulltitle]}"
+			title: "{addslashes $data[fulltitle]}"
 		});
 	}
 }, ginit = function(){app.gmap();};

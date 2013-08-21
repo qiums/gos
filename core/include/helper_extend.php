@@ -263,7 +263,7 @@ function make_phone($phone){
 		$val = preg_replace('/\s+/i','',$val);
 		$ex = '';
 		if (FALSE!==($pos=strpos($val,'-'))){
-			$ex = substr($val,$pos+1);
+			$ex = ' * '. substr($val,$pos+1);
 			$val = substr($val,0,$pos);
 		}
 		if (8==strlen($val)){
@@ -273,7 +273,7 @@ function make_phone($phone){
 		}elseif (10==strlen($val)){
 			$val = substr($val,0,3).' '. substr($val,3,3).' '. substr($val,6);
 		}
-		$ar[$i] = $val. ' * '.$ex;
+		$ar[$i] = $val. $ex;
 	}
 	return join(', ',$ar);
 }
