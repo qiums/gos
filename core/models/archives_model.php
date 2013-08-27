@@ -99,8 +99,8 @@ class archives_model extends model{
 		if ('admin' !== $dir){
 			$cond['arcindex.ischeck'] = $base->gp('ischeck', 1);
 			$cond['arcindex.published'] = $base->gp('published', 1);
-			$cond['arcindex.delflag'] = $base->gp('delflag', 0);
 		}
+		$cond['arcindex.delflag'] = $base->gp('delflag', 0);
 		/*if ($cond['arcindex.cid']){
 			$cat = explode(',', $cond['arcindex.cid']);
 			$cond['arcindex.categorytag'] = array('match', 'cat'.end($cat).'tag');

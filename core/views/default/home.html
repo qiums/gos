@@ -74,7 +74,7 @@
                             	<!--<li data-latlng="${maplat},${maplng}" data-tid="${tid}">
                                 	<div class="img-info">
                                         <div class="img-right">
-                                        	<span class="zhu">Start</span>
+                                        	<span class="zhu">${tl}</span>
                                             <h2><a href="#">${fulltitle}</a></h2>
                                             <p>${description}</p>
                                         </div>
@@ -190,10 +190,22 @@ var app = {
 		}
 		$.post(url, data, function(res){
 			if (0===res.code || res.body.page.rows===0) return ;
-			$.datacache['data'][id] = res.body.data;
-			$.tmpl(app.tmpl(pre), res.body.data).appendTo(wrap.data('loaddata', '1').empty());
+			$.datacache['data'][id] = app.build_data(data.ids, res.body.data);
+			$.tmpl(app.tmpl(pre), $.datacache['data'][id]).appendTo(wrap.data('loaddata', '1').empty());
 			if (!$(id).data('ua')) app.build(wrap);
 		});
+	},
+	build_data: function(ids, data){
+		if ('undefined'===typeof ids) return data;
+		var i,n,newob = [], tl = ['Start','2nd station','3rd station','4th station','5th station','6th station'];
+		ids = ids.split(',').slice(0,6);
+		for (i in ids){
+			for (n in data){
+				if (parseInt(data[n].id,10)===parseInt(ids[i],10)) newob.push(jQuery.extend({}, data[n], {tl:tl[i]}));
+			}
+			//newob[i].tl = tl[i];
+		}
+		return newob;
 	},
 	map: function(){
 		var me=this, id = '#'+$(me).parent().parent().attr('id');

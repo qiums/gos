@@ -1,5 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE HTML>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>{lang site_name}</title>
@@ -12,15 +11,15 @@ pre{white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-s
 
 <body>
 <h3 style="color:#f77616">Dear</h3>
-<p>Hi there, Good-looking, thanks for registering an Urbanatomy account. Click on the link below to complete registration.<br />
+<p>Hi there, Good-looking, thanks for registering an <b>{lang site_name}</b> account. Click on the link below to complete registration.<br />
 </p>
 <p><a href="{echo $validurl}" target="_blank">{$validurl}</a><br />
 <span style="color:#999">(If the link is not clickable, please copy it and paste it into your browser address bar to access)</span></p>
-<p>Your UID：<span style="color:#0000ff">{$rs[id]}</span><br />
-Your Username: <span style="color:#0000ff">{$rs[username]}</span><br />
-Your Email: <span style="color:#0000ff">{$rs[email]}</span></p>
+<p>Your UID：<span style="color:#0000ff">{$user[id]}</span><br />
+Your Username: <span style="color:#0000ff">{$user[username]}</span><br />
+Your Email: <span style="color:#0000ff">{$user[email]}</span></p>
 <p>This e-mail has been sent automatically by the system, please do not reply directly.<br />
 </p>
-<p>{lang site_name}<br><a href="{echo DOMAIN}" target="_blank">{DOMAIN}</a></p> 
+<p>{lang site_name}<br><a href="{gc env.baseurl}" target="_blank">{gc env.baseurl}</a></p> 
 </body>
 </html>

@@ -15,10 +15,6 @@ class archives_controller extends common_controller{
 			if (method_exists($this, $ac)) return $this->$ac();
 		}
 		$channel = $this->archives->config;
-		if ($this->vars['sub_menu']){
-			$this->vars['sub_menu']['archives/'.$channel['prefix'].'/add'] = '[+] '. lang('button.add').' '. $channel['channel_name'];
-		}
-		$this->assign('tabletit', $this->vars['sub_pagetit']);
 		// 搜索字段
 		$fields = $this->channel->get_fields($channel['id'], 4);
 		$search = $this->channel->get_search($fields);
@@ -29,10 +25,36 @@ class archives_controller extends common_controller{
 			->page($this->gp('page'), $this->gp('limit'))->order()
 			->where($cond)->findAll();
 		$this->qdata['pagedata'] = $this->archives->pagedata;
+		if ($this->vars['sub_menu']){
+			$trash_count = $this->archives->db()->where(array('mid'=>$channel['id'], 'delflag'=>'1'))->count('arcindex');
+			$this->vars['sub_menu']['archives/'.$channel['prefix'].'/add'] = '<i class="icon-plus"></i> '. lang('button.add').' '. $channel['channel_name'];
+			$this->vars['sub_menu']['archives/trash/mid/'.$channel['prefix']] = '<i class="icon-trash"></i> '. lang('button.trash'). " ({$trash_count})";
+		}
+		$this->assign('tabletit', $this->vars['sub_pagetit']);
 		$this->assign('form', $this->form->render($search, request::get(), 1));
 		$this->assign('arrdata', $data);
 		$this->assign('channel', $channel);
 		$this->assign('supe_option', lang('supe_option'));
+		$this->view(array("{$channel['prefix']}_home", 'archives_home'));
+	}
+	public function trash(){
+		$mid = $this->gp('mid');
+		$channel = $this->channel->get($mid);
+		$this->archives->config = $channel;
+		$list = array_keys($this->channel->get_fields($channel['id'], 5));
+		$cond = $this->archives->apply_cond();
+		$data = $this->archives
+			->attr('fields', join(',', $list))
+			->page($this->gp('page'), $this->gp('limit'))->order()
+			->where(array('arcindex.mid'=>$channel['id'], 'arcindex.delflag'=>1))->findAll();
+		$this->qdata['pagedata'] = $this->archives->pagedata;
+		if ($this->vars['sub_menu']){
+			$this->vars['sub_menu']['archives/'.$channel['prefix'].'/add'] = '<i class="icon-plus"></i> '. lang('button.add').' '. $channel['channel_name'];
+		}
+		$this->assign('tabletit', lang('button.trash'). ' / '. $channel['channel_name']);
+		$this->assign('arrdata', $data);
+		$this->assign('channel', $channel);
+		$this->assign('supe_option', lang('trash_option'));
 		$this->view(array("{$channel['prefix']}_home", 'archives_home'));
 	}
 	public function search(){

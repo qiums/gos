@@ -135,29 +135,22 @@ class user_model extends model{
 		return $gid;
 	}
 	// Save register
-	function add($data){
+	function add($data=array()){
+		if (!$data) $data = Base::getInstance()->post;
 		// New register
-		if ($this->use_uc){
-			$uid = call_user_func_array('uc_user_register', $data);
-			if ($uid<0) return $uid;
+		if ($this->count(array('username'=>$data['username']))>0) return $this->error('username_exists', 'username');
+		if ($this->count(array('email'=>$data['email']))>0) return $this->error('email_exists', 'email');
+		$data['createtime'] = $data['updatetime'] = $data['logintime'] = D::get('curtime');
+		$data['createip'] = $data['loginip'] = ip_address();
+		$data['nickname'] = $data['username'];
+		$data['uncheck'] = (int)$this->gc('check_type');
+		$data['sub_gender'] = 0;
+		$id = $this->join($this->gc('addon_table'). '.aid', NULL)->insert($data);
+		if ($id){
+			$data['groupid'] = $this->update_credit($id,'register','register', 1, $id);
 		}
-		if (!$this->use_uc OR $uid>0){
-			if (!$this->use_uc){
-				if ($this->count(array('username'=>$data['username']))>0) return -3;
-				if ($this->count(array('email'=>$data['email']))>0) return -6;
-			}
-			$data['createtime'] = $data['updatetime'] = $data['logintime'] = D::get('curtime');
-			$data['createip'] = $data['loginip'] = ip_address();
-			$data['nickname'] = $data['username'];
-			$data['uncheck'] = (int)$this->gc('check_type');
-			$id = $this->insert($data);
-			if ($id){
-				Db::getInstance()->insert($this->gc('addon_table'), array('aid'=>$id));
-				$data['groupid'] = $this->update_credit($id,'register','register', 1, $id);
-			}
-			$data['sysgid']=0;
-			$data['id'] = $id;
-		}
+		$data['sysgid']=0;
+		$data['id'] = $id;
 		return $data;
 	}
 	function save_security($data){

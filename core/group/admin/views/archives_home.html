@@ -3,6 +3,7 @@
   <div class="boxes shadow">
     <h4 class="boxes-tit">{$tabletit}</h4>
     <div class="boxes-body">
+      <!--{if $config[env][action]!=='trash'}-->
       <div class="boxes-search">
       <form action="admin/archives/search" method="post" name="searchForm">
       <!--{echo $this->form->hidden('mid','',$channel[prefix])}-->
@@ -11,7 +12,7 @@
       <!--{/loop}-->
       <button type="submit" class="btn btn-primary">{lang button.search}</button>
       </form>
-      </div>
+      </div><!--{/if}-->
       <form action="admin/archives/update" method="post" name="dataForm">
       <input type="hidden" name="mid" value="{$channel[id]}" />
       <input type="hidden" name="upkey" id="upkey" />
@@ -23,9 +24,9 @@
           <th style="width:5%">{lang text.id}</th>
           <th class="sort_field subject">{lang form_label.subject}</th>
           <th style="width:10%">{lang form_label.username}</th>
-          <th style="width:5%">{lang form_label.published}</th>
+          <!--{if $config[env][action]!=='trash'}--><th style="width:5%">{lang form_label.published}</th>
           <th style="width:5%">{lang form_label.attrib}</th>
-          <th style="width:10%">{lang text.sortby}</th>
+          <th style="width:10%">{lang text.sortby}</th><!--{/if}-->
           <th style="width:15%">{lang form_label.createtime}</th>
           <th style="width:15%">{lang text.manage}</th>
         </tr>
@@ -35,14 +36,14 @@
         <tr>
           <td><input type="checkbox" value="{$row[id]}" name="ids[]" data-item="check" /></td>
           <td>{$row[id]}</td>
-          <td><!--{if $row[coverpic]}--><i class="icon-picture"></i><!--{/if}-->
-            <a href="{:url('admin/channel/'.$channel[prefix],array('edit'=>$row[id]))}" title="{$row[subject]}">{$row[subject]}</a>
+          <td><a href="#file-browse" class="coverpic icon-picture uploadbtn" title="{lang button.coverpic}" data-src="{echo $row[coverpic]?fileurl($row[coverpic]):''}" data-id="{$row[id]}" data-limit="1"></a>
+            <a href="{:url('admin/archives/'.$channel[prefix],array('edit'=>$row[id]))}" title="{$row[subject]}">{$row[subject]}</a>
             <!--{if $row[subtitle]}--><em>{$row[subtitle]}</em><!--{/if}--></td>
           <td><a href="{:url('admin/archives/'.$channel[prefix],array('fk'=>2,'k'=>$row[username]))}">{$row[username]}</a>
             <!--{if $row[author]}--><em>{$row[author]}</em><!--{/if}--></td>
-          <td><a href="#" data-trigger="published" data-id="{$row[id]}" class="icon-pub{$row[published]}"></a></td>
+          <!--{if $config[env][action]!=='trash'}--><td><a href="#" data-trigger="published" data-id="{$row[id]}" class="icon-pub{$row[published]}"></a></td>
           <td><!--{if !$row[attrib]}-->N/A<!--{else}--><i class="icons attrib-{$row[attrib]}">{$row[attrib]}</i><!--{/if}--></td>
-          <td><input type="text" name="sortby[{$row[id]}]" value="{$row[sortby]}" style="width:40px" /></td>
+          <td><input type="text" name="sortby[{$row[id]}]" value="{$row[sortby]}" style="width:40px" /></td><!--{/if}-->
           <td>{echo D::cdate($row[createtime],'y/m/d H:i')}</td>
           <td><a class="preview" href="{:url('admin/archives/preview',array('mid'=>$row[mid],'id'=>$row[id]))}" title="{lang form_label.preview}"><i class="icon-screenshot"></i>{lang button.preview}</a>
             <a class="edit" href="{:url('admin/archives/'.$channel[prefix],array('edit'=>$row[id]))}" title="{lang form_label.edit}"><i class="icon-edit"></i>{lang button.edit}</a></td>
@@ -56,7 +57,7 @@
   <div class="pagination">
     {widget:page/run}
   </div>
-</section>
+</section><!--{if $config[env][action]!=='trash'}-->
 <div class="hide">
   <div id="published-panel">
     <ul class="menu-list">
@@ -69,12 +70,33 @@
     <!--{loop $lang[form_source][attrib] $key $one}--><li><a href="#$key" data-trigger="attrib" class="attrib-{$key}">{$one}</a></li><!--{/loop}-->
     </ul>
   </div>
+  <div id="file-browse" class="picpanel">
+    <!--{if $channel[pic_category]}--><!--{eval $picc = explode(',', $channel[pic_category]);}-->
+    <ul class="nav nav-tabs clearfix" style="margin-top:0">
+      <!--{loop $picc $ccid $one}--><li><a href="#tabs-{$ccid}" data-toggle="tab" data-ccid="{$ccid}"><b>{echo lang('form_group.'. $one)}</b></a></li><!--{/loop}-->
+    </ul>
+    <div class="tab-content">
+      <!--{loop $picc $ccid $one}--><div class="tab-pane" id="tabs-{$ccid}"></div><!--{/loop}-->
+    </div>
+    <!--{else}-->
+    <div class="tab-pane"></div>
+    <!--{/if}-->
+    <div class="pagination" style="margin:0;padding:0"></div>
+    <div class="picselected"></div>
+  </div>
 </div>
+<script type="text/javascript" src="0/jslib/plupload/plupload.js"></script>
+<script type="text/javascript" src="0/jslib/plupload/plupload.plus.js"></script>
 <!--{if $this->form->htmlflag['mselect']}-->
 <script type="text/javascript" src="0/jslib/jquery.mselect.js"></script>
 <script type="text/javascript">$.mselect.data['qc-hidden-cid'] = {mid: '{$channel[id]}', tpltype:'list,index'};</script><!--{/if}-->
+<script type="text/javascript" src="0/jslib/jquery.tmpl.min.js"></script>
+<script type="text/x-jquery-tmpl" id="browse-tmpl">
+<a href="${fileurl}" data-path="${filepath}" title="${subject}" class="picitem"><img src="${thumb}" alt="${subject}" /></a>
+</script><!--{/if}-->
 <script type="text/javascript">
 var app={
+	post: {thumb:'small'}, filewin: null,
 	init: function(){
 		$('form[name=dataForm]').saveForm(app.callback);
 		$('#check-all').check('[data-item="check"]',
@@ -84,24 +106,95 @@ var app={
 			}
 			if (len>0) return $('.supeopt li.disabled').removeClass('disabled');
 			$('.supeopt li').addClass('disabled');
-		});
+		});/*<!--{if $config[env][action]!=='trash'}-->*/
 		$('input[name=tid]').dropmenu({
 			url:'{url cp/tree/json/tid/venue}', data:{'do':'all'}
 		});
 		$('input[name=region]').dropmenu({
 			url:'{url cp/tree/json/tid/region}', data:{'do':'all'}
 		});
+		$('a[data-src=""].coverpic').addClass('nonepic');
+		//$('a.coverpic').hover(this.previewpic, function(){$('#preview-pic').remove();});
+		if ($.pluploader) $.pluploader.callback(this.uploader);/*<!--{/if}-->*/
+	},/*<!--{if $config[env][action]!=='trash'}-->*/
+	uploader: function(ac){
+		if ('reset' === ac) return $.pluploader.reset();
+		var op = {
+			id: 'plupload-file-panel', top:'100', limit:'1',
+			url:'{:url cp/file/upload}',
+			browse:'#file-browse',
+			onRender: app.browse,
+			onSubmit: app.inspic,
+			onClose: function(){
+				$('.nav li.active', this.boxes).removeClass('active');
+			}
+		};
+		$('a.coverpic').imgpreview(600,600).plupload_plus(op);
 	},
-	trigger: function(fn){
-		if ($.isFunction(fn)) return fn.call(this);
-		if ($.isFunction(app[fn])) return app[fn].call(this);
+	browse: function(){
+		// this => dialog window
+		var me=this, id = $(me.ele).data('id');
+		$('.picpanel:hidden', this.boxes).show();
+		$('.nav', this.boxes).on('shown', 'a', function(){
+			app.post.aid = id;
+			app.post.cid = $(this).data('ccid');
+			app.get(1);
+		}).find('a:first').trigger('click.tab.data-api');
+		app.filewin = this;
+		if (this.boxes.data('called')) return ;
+		this.boxes.data('called', 1);
+		$('.tab-pane').on('click.setpic', 'a', {op:me}, app.setpic);
+		$('.picselected').on('click.removepic', 'a', function(e){
+			if (!$(this).siblings().length) $(this).parent().hide();
+			$(this).remove();
+			return false;
+		});
+		$('.pagination',app.filewin.boxes).on('click.change-page', 'a',
+		function(){
+			app.get($(this).data('page'));
+			return false;
+		});
 	},
-	remove: function(){
-		$.dialog('确定删除选中的记录吗？',
-		{width: 360, title:'操作确认', buttons: {'{lang button.submit}.btn-primary':app.doremove, '{lang button.cancel}':'close'}});
+	setpic: function(e){
+		var limit = parseInt($(e.data.op.ele).data('limit'),10);
+		$('.picselected:hidden').show();
+		if (limit===1) $('.picselected').empty();
+		if (limit > $('.picselected a').length){
+			$(this).clone().removeAttr('class').appendTo('.picselected');
+		}
+		return false;
 	},
-	doremove: function(){
-		app.upform('remove', 0);
+	inspic: function(){
+		if (!$('.picselected a').length) return false;
+		var el=this.ele, a=$('.picselected a:first'), path=$(this.ele).data('path');
+		$('.picselected').empty();
+		if ($(el).prev().is('[name=sd_coverpic]')){
+			$(el).prev().val(path);
+			this.hide();
+		}else{
+			app.update({id:$(el).data('id'), updata:{coverpic:path}},
+			function(){
+				app.filewin.hide();
+				$.dialog('{lang update_success}', {width:300,id:'supe-success',timeout:2,buttons:{'{lang button.close}':'close'}});
+				$(app.filewin.ele).data('src', a.attr('href')).removeClass('nonepic');
+			});
+		}
+	},
+	get: function(p){
+		p = jQuery.extend({}, app.post, {page:p || 1});
+		/*{if $channel[pic_category]}*/
+		p.mid = '{$channel[id]}';
+		/*{/if}*/
+		var k=$.param(p);
+		if ($.datacache.data[k]) return app.build($.datacache.data[k]);
+		$.getJSON('{:url cp/file/get}', p, function(res){
+			$.datacache.data[k] = res.body;
+			app.build(res.body);
+		});
+	},
+	build: function(res){
+		$.tmpl($('#browse-tmpl').text(), res.data).appendTo($('.tab-pane:visible').empty());
+		$('.pagination',app.filewin.boxes).pages(res.page);
 	},
 	published: function(){
 		var me=this, id=$(this).data('id');
@@ -119,6 +212,31 @@ var app={
 	},
 	attrib: function(){
 		app.run(this, 'attrib');
+	},/*<!--{/if}-->*/
+	trigger: function(fn){
+		if ($.isFunction(fn)) return fn.call(this);
+		if ($.isFunction(app[fn])) return app[fn].call(this);
+	},
+	restore: function(){
+		app.upform('delflag', 0);
+	},
+	remove: function(){
+		$.dialog('<h3>{lang confirm_delete}</h3><p>{echo lang($config[env][action]!=="trash"?"warning_delete":"caution_delete")}</p>',
+		{width: 360, title:'{lang confirm_manage}', id:'del-confirm',
+		buttons: {
+			'{lang button.submit}.btn-primary':function(){
+				this.hide();
+				app.doremove();
+			},
+			'{lang button.cancel}':'close'
+		}});
+	},
+	doremove: function(){
+		/*<!--{if $config[env][action]!=='trash'}-->*/
+		app.upform('delflag', 1);
+		/*<!--{else}-->*/
+		app.upform('remove', 0);
+		/*<!--{/if}-->*/
 	},
 	run: function(ele, ac){
 		var id, href = $(ele).attr('href')
@@ -134,6 +252,8 @@ var app={
 		$('form[name=dataForm]').trigger('submit');
 	},
 	update: function(data, fn){
+		data = data || {};
+		data.mid = '{$channel[id]}';
 		$.ajaxPost($('form[name=dataForm]').attr('action'),
 			data,
 			fn);

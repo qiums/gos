@@ -21,6 +21,7 @@
 							, fn = function(){ me.hide(); };
 						cmd_login($('form[name=loginForm]', this.boxes), true, fn);
 						cmd_signup($('form[name=signupForm]', this.boxes), fn);
+						cmd_find($('form[name=findForm]', this.boxes), fn);
 					}
 				});
 			};
@@ -95,6 +96,7 @@
 	$(function(){
 		cmd_login($('form[name=loginForm]'));
 		cmd_signup($('form[name=signupForm]'));
+		cmd_find($('form[name=findForm]'));
 		$.event.trigger('load-has-user');
 	});
 })(jQuery);

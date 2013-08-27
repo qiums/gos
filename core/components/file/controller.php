@@ -28,6 +28,7 @@ class com_file_controller extends common_controller{
 		$cond = $this->cp->file->apply_cond($search);
 		if (!$cond['aid']){
 			$cond['uid'] = $this->vars['user_data']['id'];
+			$cond['mid'] = 2;
 			unset($cond['aid']);
 		}
 		$data = $this->cp->file

@@ -3,13 +3,13 @@
   <!--{if $data['size']>0}--><li><span class="active"><b><!--{echo (($page-1)*$data[size]+1). '~'. min($data[rows], $page*$data[size])}--></b>{$data[rows]}</span></li><!--{/if}-->
   <!--{if $page>1}--><li class="prev"><a href="{:url($conf[url],array('page'=>$page-1))}" rel="{echo $page-1}">&lt;</a></li>
   <!--{else}--><li class="prev disabled"><span>&lt;</span></li><!--{/if}-->
-  <!--{if $start>2}--><li class="first"><a href="{:url($conf[url],array('page'=>1))}" rel="1">1...</a></li><!--{/if}-->
+  <!--{if $start>=2}--><li class="first"><a href="{:url($conf[url],array('page'=>1))}" rel="1">1<!--{echo $start>2?'...':''}--></a></li><!--{/if}-->
   <!--{eval for ($i=$start; $i<$end; $i++):}-->
     <!--{if $page==$i}--><li class="disabled"><span>{$i}</span></li><!--{else}-->
     <li><a href="{:url($conf[url],array('page'=>$i))}" rel="{$i}">{$i}</a></li><!--{/if}-->
   <!--{eval endfor;}-->
   <li class="pageinput"><span style="padding:3px 5px"><input type="text" class="pagenum" value="{$page}" data-pageuri="{:url($conf[url],array('page'=>'0'))}" /></span></li>
-  <!--{if $end<$ptotal-1}--><li class="end"><a href="{:url($conf[url],array('page'=>$ptotal))}" rel="{$ptotal}">...{$ptotal}</a></li><!--{/if}-->
+  <!--{if $end<$ptotal}--><li class="end"><a href="{:url($conf[url],array('page'=>$ptotal))}" rel="{$ptotal}">...{$ptotal}</a></li><!--{/if}-->
   <!--{if $page<$ptotal}--><li class="next"><a href="{:url($conf[url],array('page'=>$page+1))}" rel="{echo $page+1}">&gt;</a></li>
   <!--{else}--><li class="next disabled"><span>&gt;</span></li><!--{/if}-->
 </ul>

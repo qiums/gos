@@ -10,8 +10,10 @@ class common_controller extends controller{
 		//$this->load->model('archives/channel');
 		$this->load->model('user');
 		$us = $this->user->us;
-		if ('user' === gc('env.group')){
-			if (!$us['id'] AND 'home'!==gc('env.controller') AND !in_array(gc('env.action'), array('index','login','logout'))){
+		if ('user' === gc('env.group') AND !$us['id']){
+			if ('home'!==gc('env.controller') OR 
+				('home'===gc('env.controller') AND FALSE===strpos('index|login|valid|tips|findpass|signup', gc('env.action')))
+			){
 				redirect('user/home/login');
 			}
 		}

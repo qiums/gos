@@ -68,7 +68,7 @@ var app = {
 	uploader: function(ac){
 		if ('reset' === ac) return $.pluploader.reset();
 		var op = {
-			id: 'plupload-file-panel', top:'100',
+			id: 'plupload-file-panel', top:'100', limit:'1',
 			onRender: app.browse,
 			onSubmit: app.inspic
 		};

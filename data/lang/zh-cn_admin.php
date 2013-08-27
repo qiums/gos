@@ -80,7 +80,8 @@ return array(
 		'new_member' => '新用户',
 		'set_coverpic'=>'设置封面图片',
 		'updateuser'=>'更新用户信息',
-		'field' => '字段'
+		'field' => '字段',
+		'coverpic' => '设置封面图片',
 	),
 	'form_label' => array(
 		'choose_group' => '选择用户组',
@@ -168,8 +169,12 @@ return array(
 		'other' => '其它信息',
 		'catetxt' => '栏目介绍',
 		'picpanel' => '图片管理',
+		'local' => '环境',
+		'menu' => '菜单',
+		'other' => '其它',
 	),
 	'supe_option'=>array('remove'=>'批量删除','move'=>'移动到..','attrib'=>'设置属性','published'=>'改变状态','sortby'=>'保存排序数字'),
+	'trash_option'=>array('remove'=>'彻底删除','restore'=>'还原'),
 	'grouptype' => array('用户组','系统组'),
 	'before_choose_module'=>'请先从左边选择模块。',
 	'addimage'=>'上传图片','addmedia'=>'上传视频',

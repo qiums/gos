@@ -36,11 +36,12 @@ $config['upload']['savepath'] = UPLOAD_PATH;
 $config['upload']['thumbdir'] = UPLOAD_PATH. 'thumb'.DS;
 // Email
 $config['email']['protocol'] = 'smtp';
-$config['email']['smtp_host'] = 'smtp.qiye.163.com';
+$config['email']['smtp_host'] = 'smtp.exmail.qq.com';
 $config['email']['smtp_port'] = '25';
-$config['email']['smtp_user'] = 'newsletter@urbanatomy.com';
-$config['email']['smtp_pass'] = 'wspl2004sh';
+$config['email']['smtp_user'] = 'guideofshanghai@amulhome.net';
+$config['email']['smtp_pass'] = 'Aa123456()';
 $config['email']['smtp_timeout'] = '5';
-$config['email']['fromname'] = 'URBANATOMY MEDIA';
-$config['email']['from'] = 'newsletter@urbanatomy.com';
+$config['email']['from'] = 'guideofshanghai@amulhome.net';
 $config['email']['mailtype'] = 'html';
+$config['email']['newline'] = "\r\n";
+$config['email']['crlf'] = "\r\n";

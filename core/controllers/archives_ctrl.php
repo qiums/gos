@@ -4,6 +4,7 @@ class archives_controller extends common_controller{
 	private $mc;
 
 	function _init_data(){
+		if (gc('env.action')==='history') return ;
 		$mid = $this->gp('mid');
 		$cid = $this->gp('cid');
 		if (!$mid){
@@ -154,21 +155,29 @@ class archives_controller extends common_controller{
 	public function history(){
 		$history = cookie::get('view_history');
 		if (!$history) return $this->output(0);
+		$qmid = $this->gp('mid');
 		$tmp = array();
 		foreach ($history as $mid=>$ids){
-			if (!$ids) continue;
+			if (!$ids || ($qmid>0 AND $qmid != $mid)) continue;
 			foreach ($ids as $id=>$time){
 				$tmp["{$mid}-{$id}"] = $time;
 			}
 			$ids = array_keys($ids);
-			$history[$mid] = $this->archives->block(array('mid'=>$mid))->attr('rstype', 3)->where('id', $ids)->callback()->findAll();
+			$this->archives->config = $this->channel->get($mid);
+			if ($qmid) $this->archives->apply_cond();
+			$history[$mid] = $this->archives->callback()->where('id', $ids)->callback()->findAll();
 		}
 		arsort($tmp);
-		foreach ($tmp as $id=>&$time){
+		foreach ($tmp as $id=>$time){
+			unset($tmp[$id]);
 			list($mid, $id) = explode('-', $id);
-			$time = $history[$mid][$id];
+			foreach ($history[$mid] as $one){
+				if ($one['id']==$id) $tmp[] = $one;
+			}
 		}
-		if ($_ENV['ajaxreq']) return $this->output(1, '', array_slice($tmp, 0, 8));
+		$tmp = $qmid ? current($tmp) : array_values($tmp);
+		$tmp = array('data'=>array_slice($tmp, 0, 8));
+		if ($_ENV['ajaxreq']) return $this->output(1, '', $tmp);
 	}
 	private function update_views($id){
 		$mc = $this->mc;

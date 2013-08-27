@@ -18,4 +18,6 @@ return array(
 		'register' => 2,
 		'login' => array(1, 1),
 	),
+	// 验证类型: 0-不需要验证 1-人工验证 2-邮箱验证
+	'check_type' => 2,
 );

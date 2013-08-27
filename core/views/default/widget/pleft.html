@@ -29,26 +29,43 @@
     </div>
     <div class="model1" id="myfav">
         <div class="mtitle"><h3><a class="biaoti" href="user">My favorites</a></h3></div>
-        <ul class="lis1 loading">
+        <ul class="lis1 loading" data-url="{url user/follow}">
             <!--<li><a href="${link}" title="${fulltitle}">${list__index}. ${fulltitle}</a></li>-->
         </ul>
         <a class="more" href="user">More >></a>
-        <script type="text/javascript">
-		$(function(){
-			$('#myfav>ul').bind('load-has-user',
+    </div>
+    <div class="model1" id="myht">
+        <div class="mtitle"><h3><a class="biaoti" href="archives/history">I have viewed..</a></h3></div>
+        <ul class="lis1 loading" data-url="{url archives/history}">
+            <!--<li><a href="${link}" title="${fulltitle}">${list__index}. ${fulltitle}</a></li>-->
+        </ul>
+        <a class="more" href="archives/history">More >></a>
+    </div>
+	<script type="text/javascript">
+    $(function(){
+        $('#myfav>ul,#myht>ul').each(function(){
+			$(this).bind('load-has-user',
 			function(){
-				if (!$('#toplogin').data('logined')) return ;
-				var me = this, tmpl = $.trim($(me).html()).replace(/^(<!\-\-)|((\/\/)*\-\->)$/g, '');
-				$.getJSON('{echo url("user/follow")}', {limit:8, style:'sample'},
+				var me = this, tmpl = $(me).data('tmpl'), url=$(me).data('url');
+				if (!tmpl){
+					tmpl = $.trim($(me).html()).replace(/^(<!\-\-)|((\/\/)*\-\->)$/g, '');
+					$(me).data('tmpl', tmpl);
+				}
+				if ($(me).data('loaded')) return ;
+				if (url.search('user')!=-1 && !$('#toplogin').data('logined')){
+					return $(me).removeClass('loading').empty().append('<li>Please login first.</li>');
+				}
+				$.getJSON(url, {limit:8, style:'sample'},
 				function(res){
 					if (res.code === 0) return ;
 					$.tmpl(tmpl, res.body.data)
 						.appendTo($(me).removeClass('loading').empty());
+					$(me).data('loaded', 1);
 				});
 			});
 		});
-		</script>
-    </div>
+    });
+    </script>
     <!--{if $config[env][controller]==='home'&&$config[env][method]==='index'}-->
     {template widget/hot-spots}
     <!--{/if}-->
