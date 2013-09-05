@@ -42,18 +42,34 @@
 <!--{if $this->form->htmlflag['file']}-->
 <script type="text/javascript" src="0/jslib/plupload/plupload.js"></script>
 <script type="text/javascript" src="0/jslib/plupload/plupload.plus.js"></script>
-<div id="file-browse" class="picpanel">
-  <ul>
-    <!--<li><a href="${fileurl}" data-path="${filepath}" title="${subject}" class="picitem"><img src="${thumb}" alt="${subject}" /></a></li>-->
-  </ul>
-  <div class="picselected"></div>
-</div><!--{/if}-->
+<div class="hide">
+  <div id="file-browse" class="picpanel">
+    <!--{if $channel[pic_category]}--><!--{eval $picc = explode(',', $channel[pic_category]);}-->
+    <ul class="nav nav-tabs clearfix" style="margin-top:0">
+      <!--{loop $picc $ccid $one}--><li><a href="#tabs-{$ccid}" data-toggle="tab" data-ccid="{$ccid}"><b>{echo lang('form_group.'. $one)}</b></a></li><!--{/loop}-->
+    </ul>
+    <div class="tab-content">
+      <!--{loop $picc $ccid $one}--><div class="tab-pane" id="tabs-{$ccid}"></div><!--{/loop}-->
+    </div>
+    <!--{else}-->
+    <div class="tab-pane"></div>
+    <!--{/if}-->
+    <div class="pagination" style="margin:0;padding:0"></div>
+    <div class="picselected"></div>
+  </div>
+  <!--{if $this->form->htmlflag['html-editor']}-->
+  <div style="margin-top:10px" id="insbtn"><a title="{lang insert_album}" href="#file-browse" class="btn uploadbtn" data-limit="10"><i class="icon-picture"></i>{lang insert_album}</a></div><!--{/if}-->
+</div>
+<!--{/if}-->
+<script type="text/x-jquery-tmpl" id="browse-tmpl">
+<a href="${fileurl}" data-path="${filepath}" title="${subject}" class="picitem"><img src="${thumb}" alt="${subject}" /></a>
+</script>
 <script type="text/javascript">
 var app = {
-	tmpl: '', wrap: '#file-browse > ul',
+	post: {thumb:'small'}, tmpl: '',
 	init: function(){
 		/*{if $this->form->htmlflag['file']}*/
-		$('[name=sd_coverpic]').data('url','{:url cp/file/upload}').data('browse','#file-browse');
+		$('[name=sd_coverpic]').data('url','{:url cp/file/upload}').data('browse','#file-browse').data('limit',1);
 		if ($.pluploader) $.pluploader.callback(this.uploader);
 		this.tmpl = $.trim($(this.wrap).html()).replace(/^(<!\-\-)|((\/\/)*\-\->)$/g, '');
 		$('.picselected').delegate('a', 'click',
@@ -68,38 +84,88 @@ var app = {
 	uploader: function(ac){
 		if ('reset' === ac) return $.pluploader.reset();
 		var op = {
-			id: 'plupload-file-panel', top:'100', limit:'1',
+			id: 'plupload-file-panel', top:'100',
+			url:'{:url cp/file/upload}',
+			browse:'#file-browse',
+			multipart_params: {hash:'{echo $this->cp->file->hash()}'},
 			onRender: app.browse,
-			onSubmit: app.inspic
+			onSubmit: app.inspic,
+			onClose: function(){
+				$('.nav li.active', this.boxes).removeClass('active');
+				$('.picselected').empty().hide();
+			},
+			FilesAdded: function(e, up, files){
+				up.settings.multipart_params = jQuery.extend({}, up.settings.multipart_params, app.post);
+				up.start();
+			},
+			UploadComplete: function(e, up, files){
+				app.clean_cache();
+				app.get(1);
+			}
 		};
-		$('.form-file').plupload_plus(op);
+		$('.form-file,.uploadbtn').plupload_plus(op);
 	},
 	browse: function(){
-		if ($(app.wrap).data('loaded')===1) return ;
-		app.get(0);
-		$(app.wrap).data('loaded', 1)
-			//.delegate('a.picitem', 'click', app.setpic);
-			.on('click.setpic', {op:this}, app.setpic);
+		var me=this;
+		$('.picpanel:hidden', this.boxes).show();<!--{if $channel[pic_category]}-->
+		$('.nav', this.boxes).on('shown', 'a', function(){
+			app.post.mid = '{$channel[id]}';
+			app.post.aid = $(me.ele).data('id');
+			app.post.cid = $(this).data('ccid');
+			app.get(1);
+		}).find('a:first').trigger('click.tab.data-api');<!--{else}-->
+		app.get(1);<!--{/if}-->
+		app.filewin = this;
+		if (this.boxes.data('called')) return ;
+		this.boxes.data('called', 1);
+		$('.tab-pane',this.boxes).on('click.setpic', 'a', app.setpic);
+		$('.picselected').on('click.removepic', 'a', function(e){
+			if (!$(this).siblings().length) $(this).parent().hide();
+			$(this).remove();
+			return false;
+		});
+		$('.pagination',app.filewin.boxes).on('click.change-page', 'a',
+		function(){
+			app.get($(this).data('page'));
+			return false;
+		});
 	},
-	setpic: function(e){
-		if (e.target.nodeName === 'IMG'){
-			if ($(e.data.op.ele).prev().is('[name=sd_coverpic]')) $('.picselected').empty();
-			$(e.target).parent().clone().removeClass('picitem').appendTo('.picselected');
+	setpic: function(){
+		var limit = parseInt($(app.filewin.ele).data('limit'),10);
+		$('.picselected:hidden').show();
+		if (limit===1) $('.picselected').empty();
+		if (limit > $('.picselected a').length){
+			$(this).clone().removeAttr('class').appendTo('.picselected');
 		}
 		return false;
 	},
 	inspic: function(){
 		if (!$('.picselected a').length) return false;
-		if ($(this.ele).prev().is('[name=sd_coverpic]')){
-			$(this.ele).prev().val($('.picselected a:first').data('path'));
+		var el=app.filewin.ele, a=$('.picselected a');
+		$('.picselected').empty();
+		if ($(el).prev().is('[name=sd_coverpic]')){
+			$(el).prev().val(a.eq(0).data('path'));
+		}else{
+			var res=[];
+			a.each(function(){
+				res.push('<p><img src="'+$(this).attr('href')+'" class="localimg" /></p>');
+			});
+			$(el).parent().siblings('.html-editor').trigger('append-data', [res.join("\n")]);
 		}
 		this.hide();
 	},
 	get: function(p){
-		p = p || 1;
-		$.getJSON('{:url cp/file/get}', {thumb:'small', page:p}, function(res){
-			$.tmpl(app.tmpl, res.body.data).appendTo($(app.wrap).empty());
+		p = jQuery.extend({}, app.post, {page:p || 1});
+		app.key=$.param(p);
+		if ($.datacache.data[app.key]) return app.build($.datacache.data[app.key]);
+		$.getJSON('{:url cp/file/get}', p, function(res){
+			$.datacache.data[app.key] = res.body;
+			app.build(res.body);
 		});
+	},
+	build: function(res){
+		$.tmpl($('#browse-tmpl').text(), res.data).appendTo($('.tab-pane:visible',app.filewin.boxes).empty());
+		$('.pagination',app.filewin.boxes).pages(res.page);
 	},/*{/if}*/
 	before: function(e, form, m){
 		/*{if $this->form->htmlflag['html-editor']}*/
@@ -109,11 +175,10 @@ var app = {
 	save: function(res){
 		$('#qc-hidden-id').val(res.body.id);
 		$.dialog('<h3>'+res.message+'</h3><p>{lang next_action}</p>', {
-			appendClass:'ui-dialog-ok',
+			appendClass:'ui-dialog-ok', title:'{lang message_heading}',
 			buttons:{
 				'{lang button.backlist}':'{url #back#}',
 				'{lang button.reedit}':'{:url("admin/archives/".$channel[prefix])}/edit/'+res.body.id,
-				/*<!--{if $channel[pic_category]}-->*/'{lang button.picmanage}':'{:url("admin/archives/".$channel[prefix])}/picture/'+json.id,/*<!--{/if}-->*/
 				'{lang button.readd}':'{:url("admin/archives/".$channel[prefix]."/add")}'
 			}
 		});
@@ -127,6 +192,7 @@ $(function(){
 	function(){
 		$(this).prev().css('display','block');
 		CKEDITOR.replace(this, {language: '{$config[site][language]}',width:'80%'});
+		$('#insbtn').appendTo($(this).parent());
 	}).bind('set-editor-data', function(){
 		if (CKEDITOR.instances[this.id]){
 			if ($.trim($('[name=description]').val())===''){
@@ -136,6 +202,8 @@ $(function(){
 		}else if (parseInt('{$data[id]}', 10) > 0){
 			$(this).attr('disabled', 'disabled');
 		}
+	}).bind('append-data', function(e, html){
+		if (CKEDITOR && CKEDITOR.instances[this.id]) CKEDITOR.instances[this.id].insertHtml(html);
 	});/*{/if}*/
 });
 </script>
@@ -192,14 +260,14 @@ var gg = {
 		draw = ('undefined'===typeof draw) && true;
 		if (!draw){
 			if (val===this.cache.address) return ;
-			return this.getLatlng(val, this.setVal);
+			return this.getLatlng(val, this.setVal, true);
 		}
 		if (val===this.cache.address && ll[0] !=='0' && ll[1] !=='0'){
 			return this.drawMap(new google.maps.LatLng(ll[0], ll[1]));
 		}
 		this.getLatlng(val);
 	},
-	getLatlng: function(val, fn){
+	getLatlng: function(val, fn, auto){
 		if (!fn){
 			fn = function(p){
 				gg.drawMap(p);
@@ -207,17 +275,21 @@ var gg = {
 		}
 		this.cache.address = val;
 		var geocoder = new google.maps.Geocoder();
-		geocoder.geocode( { 'address': 'China Shanghai ' + addr}, function(results, status){
+		geocoder.geocode( { 'address': 'China Shanghai ' + val}, function(results, status){
 			if (status == google.maps.GeocoderStatus.OK){
 				gg.setVal(results[0].geometry.location, 'point');
-				if ($.isFunction(fn)) fn(results[0].geometry.location);
+				if ($.isFunction(fn)) fn(results[0].geometry.location, auto);
 				return ;
 			}
 			return ;//$('#mapmark-canvas').text("Colud not find this place ("+ addr +") in google map.");
 		});
 	},
-	setVal: function(loc){
-		if ('undefined'!==typeof loc) return gg.point = [loc.lat(), loc.lng()];
+	setVal: function(loc, auto){
+		auto = auto || false;
+		if ('undefined'!==typeof loc){
+			gg.point = [loc.lat(), loc.lng()];
+			if (!auto) return ;
+		}
 		$('#qc-hidden-maplat').val(gg.point[0]);
 		$('#qc-hidden-maplng').val(gg.point[1]);
 	},

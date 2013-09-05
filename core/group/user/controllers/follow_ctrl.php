@@ -6,18 +6,18 @@ class follow_controller extends common_controller{
 		$this->load->model('user/follow');
 	}
 	public function add(){
-		if (!$this->follow->add($this->uid, $this->post))
+		if (!$this->follow->add($this->tuid, $this->post))
 				return $this->output(0, 'not_request_data');
 		$this->follow->db()->update('arcindex', array('follows'=>'[+]1'), $this->post);
 		$this->output(1);
 	}
 	public function status(){
-		$this->post['uid'] = $this->uid;
+		$this->post['uid'] = $this->tuid;
 		$this->output(1, '', array('count' => $this->follow->where($this->post)->count()));
 	}
 	public function index(){
 		$this->archives = $this->channel->get('3');
-		$cond['follows.uid'] = $this->uid;
+		$cond['follows.uid'] = $this->tuid;
 		$cond['follows.mid'] = 3;
 		$data = $this->archives
 				->order('follows.ftime', 'desc')

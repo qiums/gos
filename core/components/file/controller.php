@@ -28,7 +28,7 @@ class com_file_controller extends common_controller{
 		$cond = $this->cp->file->apply_cond($search);
 		if (!$cond['aid']){
 			$cond['uid'] = $this->vars['user_data']['id'];
-			$cond['mid'] = 2;
+			//$cond['mid'] = 2;
 			unset($cond['aid']);
 		}
 		$data = $this->cp->file
@@ -44,6 +44,7 @@ class com_file_controller extends common_controller{
 		if (!$hash) return $this->output(0, 'need login');
 		$oldname = $this->gp('name');
 		$in = (array)$this->gp('mid,aid,cid');
+		if (!$in['mid']) $in['mid'] = '2';
 		$in['uid'] = (int)$hash[0];
 		$in['createtime'] = D::get('curtime');
 		$in['description'] = qstrstr($oldname, '.', TRUE);

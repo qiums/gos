@@ -49,6 +49,17 @@
     </div>
   </div>
 </section>
+<div class="hide">
+  <div id="file-browse" class="picpanel">
+    <div class="tab-pane"></div>
+    <div class="pagination" style="margin:0;padding:0"></div>
+    <div class="picselected"></div>
+  </div>
+  <div style="margin-top:10px" id="insbtn"><a title="{lang insert_album}" href="#file-browse" class="btn uploadbtn" data-limit="10"><i class="icon-picture"></i>{lang insert_album}</a></div>
+</div>
+<script type="text/x-jquery-tmpl" id="browse-tmpl">
+<a href="${fileurl}" data-path="${filepath}" title="${subject}" class="picitem"><img src="${thumb}" alt="${subject}" /></a>
+</script>
 <script type="text/javascript" src="0/jslib/jquery.tmpl.min.js"></script>
 <!--{if $this->form->htmlflag['html-editor']}-->
 <script type="text/javascript" src="0/jslib/ckeditor/ckeditor.js"></script>
@@ -58,7 +69,7 @@
 <script type="text/javascript" src="0/jslib/plupload/plupload.js"></script>
 <script type="text/javascript" src="0/jslib/plupload/plupload.plus.js"></script><!--{/if}-->
 <script type="text/javascript">
-$.datacache = jQuery.extend({}, {cate:{}, catedata:{}, content:{}});
+$.datacache = jQuery.extend({}, {data:{}, cate:{}, catedata:{}, content:{}});
 var app = {
 	id: 0, task: 'add', target: $('.addroot')[0], form: '',
 	root: $('.treedata > ul'),
@@ -66,7 +77,11 @@ var app = {
 	html: '',
 	init: function(){
 		this.wrap = this.root;
-		/*{if $this->form->htmlflag['file']}*/$.pluploader.callback(this.uploader);/*{/if}*/
+		/*{if $this->form->htmlflag['file']}*/
+		$.pluploader.callback(function(){
+			app.uploader();filepanel.init();
+		});
+		/*{/if}*/
 		this.html = $.trim(this.wrap.html()).replace(/^(<!\-\-)|((\/\/)*\-\->)$/g, '');
 		this.get(0);
 		this.form = $('form[name=supeForm]');
@@ -131,7 +146,7 @@ var app = {
 				delete up.settings.multipart_params.oldfile;
 				app.dialog(res);
 			}).pluploader();
-			if (uploader.files.length>0){
+			if (uploader && uploader.files.length>0){
 				i++;
 				uploader.start();
 			}
@@ -208,6 +223,7 @@ var app = {
 		if (!$.pluploader) return ;
 		if ('reset' === ac) return $.pluploader.reset();
 		var op = {
+			multipart_params: {hash:'{echo $this->cp->file->hash()}'},
 			'FileUploaded': function(e, up, file, res){
 				$(this).prev(':text').val(res.code === 0 ? '' : res.body.filepath);
 			}
@@ -234,6 +250,95 @@ var app = {
 		/*{if $this->form->htmlflag['html-editor']}*/
 		if (CKEDITOR.instances[id]) CKEDITOR.instances[id].setData(html);/*{/if}*/
 	}
+}, filepanel = {
+	filewin: null,
+	init: function(ac){
+		if ('reset' === ac) return $.pluploader.reset();
+		var op = {
+			id: 'plupload-file-panel', top:'100',
+			url:'{:url cp/file/upload}',
+			browse:'#file-browse',
+			multipart_params: {hash:'{echo $this->cp->file->hash()}'},
+			onRender: this.browse,
+			onSubmit: this.inspic,
+			onClose: function(){
+				$('.nav li.active', this.boxes).removeClass('active');
+				$('.picselected').empty().hide();
+			},
+			FilesAdded: function(e, up, files){
+				up.settings.multipart_params = jQuery.extend({}, up.settings.multipart_params);
+				up.start();
+			},
+			UploadComplete: function(e, up, files){
+				filepanel.clean_cache();
+				filepanel.getfile(1);
+			}
+		};
+		$('.uploadbtn').plupload_plus(op);
+	},
+	browse: function(){
+		var me=this;
+		$('.picpanel:hidden', this.boxes).show();
+		filepanel.getfile(1);
+		filepanel.filewin = this;
+		if (this.boxes.data('called')) return ;
+		this.boxes.data('called', 1);
+		$('.tab-pane',this.boxes).on('click.setpic', 'a', filepanel.setpic);
+		$('.picselected').on('click.removepic', 'a', function(e){
+			if (!$(this).siblings().length) $(this).parent().hide();
+			$(this).remove();
+			return false;
+		});
+		$('.pagination',filepanel.filewin.boxes).on('click.change-page', 'a',
+		function(){
+			filepanel.getfile($(this).data('page'));
+			return false;
+		});
+	},
+	setpic: function(){
+		var limit = parseInt($(filepanel.filewin.ele).data('limit'),10);
+		$('.picselected:hidden').show();
+		if (limit===1) $('.picselected').empty();
+		if (limit > $('.picselected a').length){
+			$(this).clone().removeAttr('class').appendTo('.picselected');
+		}
+		return false;
+	},
+	inspic: function(){
+		if (!$('.picselected a').length) return false;
+		var el=filepanel.filewin.ele, a=$('.picselected a');
+		$('.picselected').empty();
+		if ($(el).prev().is('[name=sd_coverpic]')){
+			$(el).prev().val(a.eq(0).data('path'));
+		}else{
+			var res=[];
+			a.each(function(){
+				res.push('<p><img src="'+$(this).attr('href')+'" class="localimg" /></p>');
+			});
+			$(el).parent().siblings('.html-editor').trigger('append-data', [res.join("\n")]);
+		}
+		this.hide();
+	},
+	getfile: function(p){
+		p = jQuery.extend({}, {thumb:'small', page:p || 1});
+		filepanel.key=$.param(p);
+		if ($.datacache.data[filepanel.key]) return filepanel.build($.datacache.data[filepanel.key]);
+		$.getJSON('{:url cp/file/get}', p, function(res){
+			$.datacache.data[filepanel.key] = res.body;
+			filepanel.build(res.body);
+		});
+	},
+	build: function(res){
+		$.tmpl($('#browse-tmpl').text(), res.data).appendTo($('.tab-pane:visible',filepanel.filewin.boxes).empty());
+		$('.pagination',filepanel.filewin.boxes).pages(res.page);
+	},
+	clean_cache: function(){
+		if (!this.key) return ;
+		var k = this.key.replace(/&?page=\d+/i, '');
+		$.each($.datacache.data, function(n, data){
+			if (n.indexOf(k) !== -1) delete $.datacache.data[n];
+		});
+	}
 };
 $(function(){
 	app.init();
@@ -245,6 +350,7 @@ $(function(){
 		$(this).prev().css('display','block');
 		$('input[name=uptxt]:hidden').val('1');
 		CKEDITOR.replace(this, {language: '{$config[site][language]}',width:'98%'});
+		$('#insbtn').appendTo($(this).parent());
 	}).bind('setdata', function(){
 		if (CKEDITOR.instances[this.id]){
 			if ($.trim($('[name=description]').val())===''){
@@ -254,7 +360,9 @@ $(function(){
 		}else if (app.task==='edit'){
 			$(this).attr('disabled', 'disabled');
 		}
-	});/*{/if}*/
+	}).bind('append-data', function(e, html){
+		if (CKEDITOR && CKEDITOR.instances[this.id]) CKEDITOR.instances[this.id].insertHtml(html);
+	});;/*{/if}*/
 });
 </script>
 {template footer}

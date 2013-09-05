@@ -124,7 +124,7 @@ class archives_controller extends common_controller{
 			$tid = ($typeid AND FALSE!==($index=cstrpos($data['tid'], $typeid))) ? substr(",{$data['tid']},", $index+strlen(",{$typeid},")) : $data['tid'];
 			$position = array_merge((array)$position,
 					$this->cp->tree->property('tid', 'venue')->position($typeid ? "{$this->vars['lc']['fullalias']}/tid/[alias]" : "search/{$mc['prefix']}/tid/[id]", $tid, 1));
-			$data['lasttid'] = qstrstr($tid, ',', TRUE);
+			$data['lasttid'] = get_from_string($tid, ',', 'end');
 		}
 		$data['content'] = htmlspecialchars($data['content']);
 		if ($data['content'] AND $mc['enable_ubb']){

@@ -20,7 +20,7 @@ class archives_controller extends common_controller{
 		$search = $this->channel->get_search($fields);
 		$list = array_keys($this->channel->get_fields($channel['id'], 5));
 		$cond = $this->archives->apply_cond($fields);
-		$data = $this->archives
+		$data = $this->archives->callback()
 			->attr('fields', join(',', $list))
 			->page($this->gp('page'), $this->gp('limit'))->order()
 			->where($cond)->findAll();
@@ -96,6 +96,7 @@ class archives_controller extends common_controller{
 		if (!$this->form->validate($this->channel->get_fields($channel['id'], 3), $this->post)){
 			exit($this->form->error());
 		}
+		$this->post['uid'] = $this->user->us['id'];
 		$id = $this->archives->save($id, $this->post);
 		if ($id) return $this->output(1, 'supe_success', array('id'=>$id));
 		return $this->output(0, 'unknown_error');
@@ -105,7 +106,7 @@ class archives_controller extends common_controller{
 		if (!$this->vars['tabletit']) $this->assign('tabletit', '[+] '. lang('button.add').' '. $channel['channel_name']);
 		$group = array('common', 'extend');
 		if ($channel['form_group']) $group = array_merge ($group, explode(',', $channel['form_group']));
-		if ($channel['pic_category']) $group[] = 'picpanel';
+		//if ($channel['pic_category']) $group[] = 'picpanel';
 		$form = array();
 		foreach ($group as $k=>$one){
 			$fields = $this->channel->get_fields($channel['id'], 3, $k);

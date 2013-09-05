@@ -25,10 +25,10 @@
 					}
 				});
 			};
-			$(expr)
-				.bind('check-status', cs)
-				.on('click.open-dialog', '.gologin', opend)
-				.trigger('check-status');
+		$(expr)
+			.bind('check-status', cs)
+			.on('click.open-dialog', '.gologin', opend)
+			.trigger('check-status');
 	}, d = function(res, fn){
 		$.isFunction(fn) && fn();
 		$.dialog('<strong>'+(res.message)+'</strong>', {width:350, buttons:res.body});

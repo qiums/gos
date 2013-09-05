@@ -45,7 +45,7 @@
           <td><!--{if !$row[attrib]}-->N/A<!--{else}--><i class="icons attrib-{$row[attrib]}">{$row[attrib]}</i><!--{/if}--></td>
           <td><input type="text" name="sortby[{$row[id]}]" value="{$row[sortby]}" style="width:40px" /></td><!--{/if}-->
           <td>{echo D::cdate($row[createtime],'y/m/d H:i')}</td>
-          <td><a class="preview" href="{:url('admin/archives/preview',array('mid'=>$row[mid],'id'=>$row[id]))}" title="{lang form_label.preview}"><i class="icon-screenshot"></i>{lang button.preview}</a>
+          <td><a class="preview" href="{$row[link]}" target="_blank" title="{lang form_label.preview}"><i class="icon-screenshot"></i>{lang button.preview}</a>
             <a class="edit" href="{:url('admin/archives/'.$channel[prefix],array('edit'=>$row[id]))}" title="{lang form_label.edit}"><i class="icon-edit"></i>{lang button.edit}</a></td>
         </tr>
         <!--{/loop}-->
@@ -96,7 +96,7 @@
 </script><!--{/if}-->
 <script type="text/javascript">
 var app={
-	post: {thumb:'small'}, filewin: null,
+	post: {thumb:'small'}, filewin: null, key:null,
 	init: function(){
 		$('form[name=dataForm]').saveForm(app.callback);
 		$('#check-all').check('[data-item="check"]',
@@ -117,29 +117,48 @@ var app={
 		//$('a.coverpic').hover(this.previewpic, function(){$('#preview-pic').remove();});
 		if ($.pluploader) $.pluploader.callback(this.uploader);/*<!--{/if}-->*/
 	},/*<!--{if $config[env][action]!=='trash'}-->*/
+	clean_cache: function(){
+		if (!this.key) return ;
+		var k = this.key.replace(/&?page=\d+/i, '');
+		$.each($.datacache.data, function(n, data){
+			if (n.indexOf(k) !== -1) delete $.datacache.data[n];
+		});
+	},
 	uploader: function(ac){
 		if ('reset' === ac) return $.pluploader.reset();
 		var op = {
 			id: 'plupload-file-panel', top:'100', limit:'1',
 			url:'{:url cp/file/upload}',
 			browse:'#file-browse',
+			multipart_params: {hash:'{echo $this->cp->file->hash()}'},
 			onRender: app.browse,
 			onSubmit: app.inspic,
 			onClose: function(){
 				$('.nav li.active', this.boxes).removeClass('active');
+				$('.picselected').empty().hide();
+			},
+			FilesAdded: function(e, up, files){
+				up.settings.multipart_params = jQuery.extend({}, up.settings.multipart_params, app.post);
+				up.start();
+			},
+			UploadComplete: function(e, up, files){
+				app.clean_cache();
+				app.get(1);
 			}
 		};
 		$('a.coverpic').imgpreview(600,600).plupload_plus(op);
 	},
 	browse: function(){
 		// this => dialog window
-		var me=this, id = $(me.ele).data('id');
-		$('.picpanel:hidden', this.boxes).show();
+		var me=this;
+		$('.picpanel:hidden', this.boxes).show();<!--{if $channel[pic_category]}-->
 		$('.nav', this.boxes).on('shown', 'a', function(){
-			app.post.aid = id;
+			app.post.mid = '{$channel[id]}';
+			app.post.aid = $(me.ele).data('id');
 			app.post.cid = $(this).data('ccid');
 			app.get(1);
-		}).find('a:first').trigger('click.tab.data-api');
+		}).find('a:first').trigger('click.tab.data-api');<!--{else}-->
+		app.get(1);<!--{/if}-->
 		app.filewin = this;
 		if (this.boxes.data('called')) return ;
 		this.boxes.data('called', 1);
@@ -166,7 +185,7 @@ var app={
 	},
 	inspic: function(){
 		if (!$('.picselected a').length) return false;
-		var el=this.ele, a=$('.picselected a:first'), path=$(this.ele).data('path');
+		var el=this.ele, a=$('.picselected a:first'), path=a.data('path');
 		$('.picselected').empty();
 		if ($(el).prev().is('[name=sd_coverpic]')){
 			$(el).prev().val(path);
@@ -182,13 +201,10 @@ var app={
 	},
 	get: function(p){
 		p = jQuery.extend({}, app.post, {page:p || 1});
-		/*{if $channel[pic_category]}*/
-		p.mid = '{$channel[id]}';
-		/*{/if}*/
-		var k=$.param(p);
-		if ($.datacache.data[k]) return app.build($.datacache.data[k]);
+		app.key=$.param(p);
+		if ($.datacache.data[app.key]) return app.build($.datacache.data[app.key]);
 		$.getJSON('{:url cp/file/get}', p, function(res){
-			$.datacache.data[k] = res.body;
+			$.datacache.data[app.key] = res.body;
 			app.build(res.body);
 		});
 	},

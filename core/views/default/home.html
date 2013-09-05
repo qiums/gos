@@ -33,10 +33,10 @@
 			$(function(){
 				$('.left-nav').on('mouseover.trigger-boxes', 'a',
 				function(){
-					var index=parseInt($(this).data('index'),10)-1;
+					var index=parseInt($(this).data('index'),10);
 					$('.left-nav a.on').removeClass('on');
-					$('.bigimages div, .images-info>div').hide();
-					$('.bigimages div:eq('+index+'),.images-info>div:eq('+index+')').show();
+					$('.bigimages div, .images-info>div').addClass('hide');
+					$('.bigimages div.b'+index+',.images-info div.c'+index).removeClass('hide');
 					$(this).addClass('on');
 				}).find('a:eq(0)').trigger('mouseover.trigger-boxes');
 			});
@@ -75,7 +75,7 @@
                                 	<div class="img-info">
                                         <div class="img-right">
                                         	<span class="zhu">${tl}</span>
-                                            <h2><a href="#">${fulltitle}</a></h2>
+                                            <h2><a href="${link}">${fulltitle}</a></h2>
                                             <p>${description}</p>
                                         </div>
                                     	<div class="img-left">

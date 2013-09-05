@@ -48,6 +48,25 @@
             <div style="clear:both;"></div>
         </div>
     </div>
+<!--{if $lc[ubb_tags]}-->
+<script type="text/x-jquery-tmpl" id="venue-tmpl">
+<fieldset class="ubbdata fdatavenue">
+  <legend>${fulltitle}</legend>
+  <a class="picthumb" href="${link}"><img src="${thumb}" /></a>
+  <ul>
+    <li class="daddress">${enaddr}<br />${cnaddr}</li>
+    <li class="description">${description} <a href="${link}" class="more">Full listing&raquo;</a></li>
+  </ul>
+</fieldset>
+</div>
+</script>
+<script type="text/javascript" src="0/jslib/jquery.ubbcode.js"></script>
+<script type="text/javascript">
+$(function(){
+	$('.ubbparse').ubbparse('{echo str_replace(",","|",$lc[ubb_tags])}','{echo url("search/index")}',{thumb:'small'});
+});
+</script>
+<!--{/if}-->
 <script type="text/javascript">
 $(function(){
 	$('.dload a').iscroll(parseInt($('.c-mid').outerWidth(false),10)-($('.c-right:visible').length>0?50:100),

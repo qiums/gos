@@ -28,16 +28,15 @@ class home_controller extends common_controller{
 			}
 			$this->user->supe_login();
 			if ($this->user->error()) return ;
-			session::set('supe', 1);
-			cookie::set('#city', $this->post['subsite'],7*86400);
+			$this->user->supe_cookie($this->post);
 			if ($this->post['language']) cookie::set('supe_language', $this->post['language']);
-			return $this->output(1, 'supe_login_success');
+			return $this->output(1, lang('supe_login_success', $this->post));
 		}
 		$this->assign('form', $this->form->data('home','login')->render('', array('username'=>$us['name'])));
 		$this->view('login');
 	}
 	public function logout(){
-		session::del('supe');
+		$this->user->del_supecookie();
 		redirect('admin');
 	}
 	public function lang(){

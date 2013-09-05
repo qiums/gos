@@ -191,15 +191,15 @@ class user_model extends model{
 		$this->del_supecookie();
 	}
 	function supe_cookie($post){
-		cookie::set('supeflag', 1);
+		session::set('supe', 1);
 		//cookie::set('#city', $post['city'],7*86400);
-		if ($post['language']) cookie::set("#{$GLOBALS['DIR']}language", $post['language'], 7*86400);
-		session::set('supename', $post['username']);
+		if ($post['language']) cookie::set('supe_language', $post['language']);
+		//session::set('supename', $post['username']);
 	}
 	function del_supecookie(){
-		cookie::set('supeflag', NULL);
-		cookie::set('city', NULL);
-		session::set('supename', NULL);
+		session::del('supe');
+		//cookie::del('city');
+		//session::del('supename');
 	}
 	public function apply_cond($fields=array(), $post=array()){
 		$cond = parent::apply_cond($fields, $post);

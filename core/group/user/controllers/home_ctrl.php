@@ -32,6 +32,7 @@ class home_controller extends common_controller{
 		$this->view('home');
 	}
 	public function login(){
+		if ($this->uid) return redirect('user');
 		if (($black_ip = $this->user->gc('black_ip_list'))){
 			if (preg_match('/'. str_replace(array('.', '*'), array('\.', '.+?'), $black_ip). '/is', response::ip()))
 				return $this->output('disable_login_ip');
@@ -43,6 +44,7 @@ class home_controller extends common_controller{
 		);
 		$form['remember'] = array('type'=>'input:checkbox', 'option'=>'1=Remember me?', 'value'=>'1');
 		if ($this->post){
+			$logintype = $this->post['logintype'];
 			if (!$this->form->validate($form)){
 				exit($this->form->geterror());
 			}
@@ -50,7 +52,7 @@ class home_controller extends common_controller{
 			if (FALSE === $id) return $this->user->error();
 			if (!$this->qdata['url']) $this->qdata['url'] = url('user');
 			if ($_ENV['ajaxreq']){
-				$btn[lang('button.continue')] = 'close';//$this->qdata['url'];
+				$btn[lang('button.continue')] = 'standard'===$logintype ? 'reload' : 'close';//$this->qdata['url'];
 				return $this->output(1,
 						lang('login_success', $this->post),
 						$btn);
@@ -63,11 +65,13 @@ class home_controller extends common_controller{
 		$this->view('login');
 	}
 	public function logout(){
+		if (!$this->uid) return redirect('user/home/login');
 		$this->user->del_cookie();
 		redirect('#back#');
 	}
 	public function signup(){
 		// Register Form
+		if ($this->uid) return redirect('user');
 		if ($this->post){
 			if (!$this->form->validate($this->regform)){
 				exit($this->form->geterror());

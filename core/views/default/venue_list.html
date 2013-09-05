@@ -238,10 +238,10 @@ var markers = []
 <!--{/if}-->
 <script type="text/javascript">
 $(function(){
-	$('input[name=tid]').dropmenu({
+	$('input[name=tid]','form[name=searchForm]').dropmenu({
 		url:'{url cp/tree/json/tid/venue}', data:{'do':'all'}
 	});
-	$('input[name=region]').dropmenu({
+	$('input[name=region]','form[name=searchForm]').dropmenu({
 		url:'{url cp/tree/json/tid/region}', data:{'do':'all'}
 	});
 	$('.stardiv span').each(function(){

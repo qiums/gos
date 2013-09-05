@@ -73,7 +73,7 @@ class category_controller extends common_controller{
 			}
 			if (!isset($res['del']) OR $res['del']>0){
 				$this->category->where('id', $id)->update(array('coverpic'=>$res['filepath']));
-				$this->category->find(TRUE);
+				$this->category->qfind(TRUE);
 			}
 		}
 		return $this->output(1, 'upload_complete', $res);
@@ -92,6 +92,6 @@ class category_controller extends common_controller{
 		if ($data['content']){
 			$data['content'] = $this->ubb->replace(htmlspecialchars($data['content']));
 		}
-		if ($_ENV['ajaxreq'] AND 'html'===$_ENV['datatype']) exit($data['content']);
+		if ($_ENV['ajaxreq'] === 'html') exit($data['content']);
 	}
 }

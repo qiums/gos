@@ -2,25 +2,47 @@
     <div class="where">
         <ul>
             <li>
-                <a href="search/venue/tid/1" id="where-to-eat">
+                <a href="search/venue/tid/1" id="where-to-eat" data-tid="1">
                     <h3>Where to Eat</h3>
                     <span>Find a hotel in Shanghai</span>
                 </a>
             </li>
             <li>
-                <a href="search/venue/tid/75" id="where-to-have-drink">
+                <a href="search/venue/tid/75" id="where-to-have-drink" data-tid="75">
                     <h3>Where to have drinks</h3>
                     <span>Find a hotel in Shanghai</span>
                 </a>
             </li>
             <li>
-                <a href="search/venue/tid/9" id="where-to-stay">
+                <a href="search/venue/tid/9" id="where-to-stay" data-tid="9">
                     <h3>Where to stay</h3>
                     <span>Find a hotel in Shanghai</span>
                 </a>
             </li>
         </ul>
     </div>
+    <div class="hide">
+    	<div id="filter-panel">
+        <form action="search/venue" method="get">
+            <div class="formline"><label>CUISINE</label>
+            	<input type="hidden" name="tid" data-kname="dataname" data-alt="SELECT CUISINE" id="qc-hidden-tid" /></div>
+            <div class="formline"><label>AREA</label>
+            	<input type="hidden" data-kname="dataname" data-alt="SELECT REGIONS" name="region" id="qc-hidden-region" /></div>
+            <div class="formline"><button type="submit" class="btn btn-primary">Search</button></div>
+        </form>
+        </div>
+    </div>
+    <script type="text/javascript">
+	$('.where a').on('click.pop-filter',
+	function(){
+		$(this).dialog({
+			width:300, addclass:'nopadding', type:'popover', target:'#filter-panel', position:'right', float:'abs', id:'where-popover', title:'SEARCH',message:'aa',
+			onRender: function(){
+				$('input[name=tid]', this.boxes).val($(this.ele).data('tid')).dropmenu({}, 'init');
+			}});
+		return false;
+	});
+	</script>
     <div class="search2">
     <form action="search/map" method="get">
         <input type="text" name="local" placeholder="Where am I now..." value="{$G[local]}" class="so1"/><input type="submit" value="" class="so2" />
@@ -52,7 +74,7 @@
 					$(me).data('tmpl', tmpl);
 				}
 				if ($(me).data('loaded')) return ;
-				if (url.search('user')!=-1 && !$('#toplogin').data('logined')){
+				if (url.search('user')>-1 && !$('#toplogin').data('logined')){
 					return $(me).removeClass('loading').empty().append('<li>Please login first.</li>');
 				}
 				$.getJSON(url, {limit:8, style:'sample'},

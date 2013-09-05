@@ -3,7 +3,7 @@ return array(
 	'id' => array('islist'=>'1'),
 	'subject' => array('type'=>'input:text', 'attr'=>'class="req-any minlength2" maxlength="200"', 'islist'=>'1'),
 	'subtitle' => array('type'=>'input:text', 'attr'=>'class="req-any" maxlength="200"', 'islist'=>'1'),
-	'arcindex.searchtag' => array('search'=>'k|1|m'),
+	'arcindex.searchtag' => array('search'=>'k|1|m|*'),
 	'arcindex.catetag' => array('type'=>'input:hidden', 'attr'=>'class="req-any  minlength1 mselect" data-kname="catename"', 'search'=>'m', 'option'=>'u.category/data', 'pattern'=>'cat:tag', 'alias'=>'cid'),
 	'users.username' => array('search'=>'k|2', 'islist'=>'1'),
 	//'users.email' => array('search'=>'k|2', 'islist'=>'1'),
